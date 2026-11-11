@@ -1,31 +1,30 @@
-// Componente raiz. Por enquanto mostra os 6 trechos mudando de estado.
-// No commit 6 ele vai trocar entre as telas Cidadão e Agente.
+// Componente raiz: guarda qual aba está aberta e mostra a tela certa.
+// O useLeituras fica aqui (e não dentro da tela) para a simulação continuar
+// rodando mesmo quando o usuário troca de aba.
+import { useState } from 'react'
 import { useLeituras } from './hooks/useLeituras.js'
-import CartaoTrecho from './components/CartaoTrecho.jsx'
+import Cabecalho from './components/Cabecalho.jsx'
+import Cidadao from './pages/Cidadao.jsx'
+import Agente from './pages/Agente.jsx'
+
+const ABAS = [
+  { id: 'cidadao', rotulo: 'Cidadão' },
+  { id: 'agente', rotulo: 'Agente' },
+]
 
 function App() {
+  const [aba, setAba] = useState('cidadao')
   const { trechos, passagem } = useLeituras()
 
   return (
-    <main className="mx-auto max-w-6xl p-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-4xl font-black uppercase [font-stretch:75%]">Pulso Web</h1>
-        <p className="border-2 border-asfalto bg-white px-2 py-1 text-sm font-bold uppercase shadow-dura">
-          Dados simulados
-        </p>
-      </div>
+    <>
+      <Cabecalho abas={ABAS} abaAtiva={aba} aoTrocarAba={setAba} />
 
-      {/* aria-live: o leitor de tela avisa quando o número da passagem muda */}
-      <p className="mt-4 inline-block border-2 border-asfalto bg-painel px-3 py-2 font-letreiro text-xl text-ambar" aria-live="polite">
-        PASSAGEM {passagem}
-      </p>
-
-      <section className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-label="Trechos da linha">
-        {trechos.map((trecho) => (
-          <CartaoTrecho key={trecho.id} trecho={trecho} />
-        ))}
-      </section>
-    </main>
+      {/* role="tabpanel" liga este conteúdo à aba selecionada (acessibilidade) */}
+      <main id={`painel-${aba}`} role="tabpanel" aria-labelledby={`aba-${aba}`} className="mx-auto max-w-6xl p-4">
+        {aba === 'cidadao' ? <Cidadao trechos={trechos} passagem={passagem} /> : <Agente />}
+      </main>
+    </>
   )
 }
 
