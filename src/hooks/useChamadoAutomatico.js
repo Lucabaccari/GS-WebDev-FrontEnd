@@ -3,19 +3,21 @@
 import { useEffect, useRef } from 'react'
 import { chamadosParaAbrir, montarChamadoAutomatico } from '../utils/regras.js'
 
-export function useChamadoAutomatico({ trechos, passagem, chamados, carregando, criar }) {
+// ativo: false desliga a regra (chave do modo demonstração), para quem só está olhando
+// o site não criar chamados na API compartilhada.
+export function useChamadoAutomatico({ trechos, passagem, chamados, carregando, criar, ativo }) {
   // useRef guarda um valor que sobrevive entre renderizações sem redesenhar a tela.
   // Aqui ele lembra a última passagem já conferida, para não criar o mesmo chamado duas vezes.
   const ultimaConferida = useRef(0)
 
   useEffect(() => {
     // Espera a lista da API chegar: sem ela não dá para saber se o chamado já existe.
-    if (carregando) return
+    if (!ativo || carregando) return
     if (ultimaConferida.current === passagem) return
     ultimaConferida.current = passagem
 
     for (const { trecho, camada } of chamadosParaAbrir(trechos, chamados)) {
       criar(montarChamadoAutomatico(trecho, camada))
     }
-  }, [passagem, trechos, chamados, carregando, criar])
+  }, [passagem, trechos, chamados, carregando, criar, ativo])
 }

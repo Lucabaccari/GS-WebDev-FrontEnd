@@ -28,6 +28,17 @@ body {
   font-family: var(--font-sans);
 }
 
+/*
+  Acessibilidade: foco bem visível para quem navega pelo teclado.
+  :focus-visible só aparece no teclado (não no clique do mouse).
+  Contorno asfalto + anel amarelo: aparece tanto no fundo claro quanto no escuro.
+*/
+:focus-visible {
+  outline: 3px solid var(--color-asfalto);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--color-atencao);
+}
+
 /* Acessibilidade: quem pediu menos movimento no sistema não vê animações. */
 @media (prefers-reduced-motion: reduce) {
   *,

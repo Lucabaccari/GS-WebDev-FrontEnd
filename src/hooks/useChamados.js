@@ -7,13 +7,27 @@ import {
   atualizarChamado,
   excluirChamado,
 } from '../services/chamadosService.js'
+import { salvarCache, lerCache } from '../services/cache.js'
+
+const CHAVE_CACHE = 'pulso:chamados' // nome da cópia salva no navegador
 
 export function useChamados() {
   const [chamados, setChamados] = useState([]) // a lista que aparece na tela
   const [carregando, setCarregando] = useState(true) // true enquanto espera a API
   const [erro, setErro] = useState(null) // mensagem de erro, ou null se deu tudo certo
 
-  // Busca a lista de novo (ex.: botão "Atualizar").
+  // Quando a API falha (ex.: sem internet), mostra a última cópia salva, se houver.
+  function usarCache(e) {
+    const salvos = lerCache(CHAVE_CACHE)
+    if (salvos) {
+      setChamados(salvos)
+      setErro('Sem conexão com a API. Mostrando os últimos chamados salvos.')
+    } else {
+      setErro(e.message)
+    }
+  }
+
+  // Busca a lista de novo (ex.: botão "Tentar de novo" ou quando a internet volta).
   async function carregar() {
     setCarregando(true)
     setErro(null)
@@ -21,7 +35,7 @@ export function useChamados() {
       const dados = await listarChamados()
       setChamados(dados)
     } catch (e) {
-      setErro(e.message)
+      usarCache(e)
     } finally {
       setCarregando(false)
     }
@@ -32,9 +46,15 @@ export function useChamados() {
   useEffect(() => {
     listarChamados()
       .then((dados) => setChamados(dados))
-      .catch((e) => setErro(e.message))
+      .catch(usarCache)
       .finally(() => setCarregando(false))
   }, [])
+
+  // Toda vez que a lista muda (e já terminou de carregar), salva uma cópia no navegador.
+  // Esperar o carregamento evita apagar a cópia antiga com a lista vazia do começo.
+  useEffect(() => {
+    if (!carregando) salvarCache(CHAVE_CACHE, chamados)
+  }, [chamados, carregando])
 
   // Cria na API e coloca o chamado novo no começo da lista.
   async function criar(dados) {

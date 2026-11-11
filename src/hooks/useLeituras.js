@@ -35,27 +35,38 @@ function primeiraPassagem() {
   return { passagem: 1, leituras, sequencias: atualizarSequencias({}, leituras, TRECHOS) }
 }
 
-// intervaloMs: tempo entre uma passagem e outra (padrão: 4 segundos).
-export function useLeituras(intervaloMs = 4000) {
+// Opções:
+// - intervaloMs: tempo entre uma passagem e outra (padrão: 4 segundos)
+// - pausado: true para o ônibus "parar" (modo demonstração ou sem conexão)
+export function useLeituras({ intervaloMs = 4000, pausado = false } = {}) {
   // Um estado só com tudo da passagem, porque as 3 partes mudam juntas.
   // A função dentro do useState só roda na primeira vez.
   const [dados, setDados] = useState(primeiraPassagem)
 
+  // Gera a próxima passagem. Usada pelo timer e pelo botão "Avançar passagem".
+  function avancar() {
+    const leituras = gerarPassagem(TRECHOS)
+    // "anterior" é o estado de antes: precisamos dele para continuar a contagem.
+    setDados((anterior) => ({
+      passagem: anterior.passagem + 1,
+      leituras,
+      sequencias: atualizarSequencias(anterior.sequencias, leituras, TRECHOS),
+    }))
+  }
+
   useEffect(() => {
+    if (pausado) return // pausado: nenhum timer é criado
+
     // setInterval repete a função a cada intervaloMs.
-    const timer = setInterval(() => {
-      const leituras = gerarPassagem(TRECHOS)
-      // "anterior" é o estado de antes: precisamos dele para continuar a contagem.
-      setDados((anterior) => ({
-        passagem: anterior.passagem + 1,
-        leituras,
-        sequencias: atualizarSequencias(anterior.sequencias, leituras, TRECHOS),
-      }))
-    }, intervaloMs)
+    const timer = setInterval(avancar, intervaloMs)
 
-    // Limpeza: quando o componente sai da tela, para o timer.
+    // Limpeza: roda ao pausar, ao mudar a velocidade ou quando o componente sai da tela.
     return () => clearInterval(timer)
-  }, [intervaloMs])
+  }, [intervaloMs, pausado])
 
-  return { trechos: montarTrechos(dados.leituras, dados.sequencias), passagem: dados.passagem }
+  return {
+    trechos: montarTrechos(dados.leituras, dados.sequencias),
+    passagem: dados.passagem,
+    avancar,
+  }
 }

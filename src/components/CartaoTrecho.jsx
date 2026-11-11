@@ -28,7 +28,7 @@ function CartaoTrecho({ trecho }) {
         {sequencia > 0 && (
           <p className="mt-2 border-l-4 border-critico pl-2 text-sm font-semibold">
             {sequencia >= PASSAGENS_PARA_CHAMADO
-              ? `Crítico há ${sequencia} passagens. Chamado automático aberto.`
+              ? `Crítico há ${sequencia} passagens. Limite para chamado automático atingido.`
               : `Crítico há ${sequencia} de ${PASSAGENS_PARA_CHAMADO} passagens para abrir chamado.`}
           </p>
         )}
