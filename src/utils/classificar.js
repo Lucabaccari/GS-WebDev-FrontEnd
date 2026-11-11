@@ -124,3 +124,10 @@ export function estadoMaisGrave(estados) {
   }
   return pior
 }
+
+// Estado de um trecho olhando uma camada ('calor', 'luz'...) ou todas ('geral').
+// O trecho precisa vir do hook useLeituras (com .estados e .estadoGeral).
+export function estadoDoTrecho(trecho, camada) {
+  if (camada === 'geral') return trecho.estadoGeral
+  return trecho.estados[camada]
+}
