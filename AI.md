@@ -53,3 +53,21 @@ Regras que seguimos:
 - **O que a IA sugeriu:** criar `utils/regras.js` com `PASSAGENS_PARA_CHAMADO`, `atualizarSequencias` (soma 1 a cada passagem crítica e zera com qualquer outro resultado, inclusive "sem dados"), `chamadosParaAbrir` (abre só quando a contagem chega exatamente ao limite e não duplica se já houver um automático sem resolver para o mesmo trecho e tipo) e `montarChamadoAutomatico`. O `useLeituras` passou a guardar passagem, leituras e sequências num estado só. Criar o hook `useChamadoAutomatico` no `App`, com `useRef` para não conferir a mesma passagem duas vezes. Criar `utils/indicadores.js` (contagens por status, tipo e origem, e tempo médio de resolução), `formatarDuracao` e o componente `Indicadores`, com placas sem setinhas e barras simples por tipo. O cartão do trecho mostra "Crítico há N de 6 passagens".
 - **O que mudamos:** o grupo trocou a regra da 3ª passagem (do PDF) para a **6ª passagem**. CLAUDE.md, README e PLANO-DE-COMMITS foram atualizados. A IA também reduziu a variação da luz na simulação (de ±8 para ±3 lux) e deixou a R. Oscar Freire como "rua escura" (1 lux), para a regra aparecer de forma previsível na demo. _(completar se houver mais)_
 - **Como validamos:** um script com 9 testes da regra e dos indicadores, sem nenhuma falha: abre só na 6ª, zera a contagem, não duplica, calcula o tempo médio. Com o app rodando contra o MockAPI real, os chamados automáticos nasceram sozinhos na 6ª passagem crítica. Depois que um deles foi resolvido, uma nova sequência abriu outro, como a regra prevê. Os indicadores e o tempo médio foram conferidos na tela. Os chamados de teste foram apagados. `npm run build` e `npm run lint` sem erros.
+
+### Sessão 8: modo demonstração, sem conexão e acessibilidade (commit 9)
+
+- **O que a IA sugeriu:**
+  - **Demo:** o `useLeituras` passou a aceitar `pausado` e `intervaloMs` e a devolver `avancar()`. O componente `ControlesDemo` tem Pausar/Continuar, "Avançar passagem" e as velocidades Lenta (8 s), Normal (4 s) e Rápida (1,5 s), com o aviso "Simulação acelerada... Na rua, são vários minutos".
+  - **Sem conexão:** o hook `useOnlineStatus` ouve os eventos `online`/`offline` do navegador. O `BannerOffline` mostra o aviso. Sem internet, a simulação para e a tela mantém as últimas leituras. `services/cache.js` salva os chamados no `localStorage` (com `try/catch`). Se a API falhar, o `useChamados` mostra a cópia salva com o aviso. Quando a internet volta, os chamados são buscados de novo.
+  - **Chave do chamado automático:** botão "Chamado automático: ligado/desligado" no modo demonstração, que começa **desligado**. Como a API é compartilhada e não tem login, qualquer pessoa que abrisse o site criaria chamados automáticos. Agora isso só acontece quando alguém liga a chave (por exemplo, na apresentação).
+  - **Acessibilidade:** foco visível com `:focus-visible` (contorno asfalto e anel amarelo), setas ← → nas abas (só a aba ativa entra no Tab) e o link "Pular para o conteúdo".
+- **O que mudamos:** o aluno pediu a chave para ligar e desligar o chamado automático, depois de discutir que o MockAPI é um banco único, sem usuários. _(completar se houver mais)_
+- **Como validamos:**
+  - Com a chave desligada, a R. Oscar Freire chegou a 9 passagens críticas e nenhum POST saiu do app. O hook foi testado isolado: desligado não cria, ligado cria 1 chamado e a mesma passagem não cria de novo.
+  - Pausar congela a passagem, "Avançar" soma 1 e a velocidade Rápida faz 2 passagens em 3,2 s.
+  - Simulando a perda de conexão, o aviso aparece, a simulação para e os controles ficam bloqueados. Quando a conexão volta, tudo retoma.
+  - Com a API derrubada de propósito, os chamados salvos continuam na tela, e "Tentar de novo" volta ao normal.
+  - O contraste de todas as cores usadas foi calculado pela fórmula WCAG e todas passam de 4,5:1 (a menor é 5,02:1).
+  - Com a tecla Tab de verdade, aparece "Pular para o conteúdo" e o foco fica visível.
+  - No celular (375 px), nada vaza da tela e todos os botões e campos têm 44 px ou mais.
+  - `npm run build` e `npm run lint` sem erros.

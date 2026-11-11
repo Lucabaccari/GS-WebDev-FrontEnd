@@ -52,3 +52,10 @@ export function gerarPassagem(trechos) {
   }
   return leituras
 }
+
+// Velocidades do modo demonstração (tempo entre uma passagem e outra).
+export const VELOCIDADES = [
+  { id: 'lenta', rotulo: 'Lenta', intervaloMs: 8000 },
+  { id: 'normal', rotulo: 'Normal', intervaloMs: 4000 },
+  { id: 'rapida', rotulo: 'Rápida', intervaloMs: 1500 },
+]
