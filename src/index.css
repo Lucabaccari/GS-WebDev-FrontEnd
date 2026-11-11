@@ -1,0 +1,40 @@
+/* Carrega o Tailwind CSS (versão 4). */
+@import "tailwindcss";
+
+/*
+  Cores e fontes do guia de estilo do Pulso.
+  Cada variável --color-X vira classes do Tailwind: bg-X, text-X, border-X.
+  Ex.: bg-concreto, text-asfalto, border-critico.
+*/
+@theme {
+  --color-concreto: #E9E6DF;   /* fundo */
+  --color-asfalto: #1B1C1E;    /* texto e bordas */
+  --color-atencao: #FFC400;    /* amarelo */
+  --color-critico: #D7261E;    /* vermelho */
+  --color-normal: #17753F;     /* verde */
+  --color-ambar: #FFB000;      /* texto do letreiro */
+  --color-painel: #0E0E0F;     /* fundo do letreiro */
+
+  --font-sans: "Archivo", system-ui, sans-serif;
+  --font-letreiro: "Doto", monospace;
+
+  /* Sombra dura (sem desfoque), como pede o guia */
+  --shadow-dura: 4px 4px 0 0 #1B1C1E;
+}
+
+body {
+  background-color: var(--color-concreto);
+  color: var(--color-asfalto);
+  font-family: var(--font-sans);
+}
+
+/* Acessibilidade: quem pediu menos movimento no sistema não vê animações. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
