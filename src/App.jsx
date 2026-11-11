@@ -3,6 +3,7 @@
 // rodando mesmo quando o usuário troca de aba.
 import { useState } from 'react'
 import { useLeituras } from './hooks/useLeituras.js'
+import { useChamados } from './hooks/useChamados.js'
 import Cabecalho from './components/Cabecalho.jsx'
 import Cidadao from './pages/Cidadao.jsx'
 import Agente from './pages/Agente.jsx'
@@ -15,6 +16,8 @@ const ABAS = [
 function App() {
   const [aba, setAba] = useState('cidadao')
   const { trechos, passagem } = useLeituras()
+  // Os chamados também ficam aqui: as duas telas veem a mesma lista.
+  const { chamados, carregando, erro, carregar, criar, mudarStatus, excluir } = useChamados()
 
   return (
     <>
@@ -22,7 +25,18 @@ function App() {
 
       {/* role="tabpanel" liga este conteúdo à aba selecionada (acessibilidade) */}
       <main id={`painel-${aba}`} role="tabpanel" aria-labelledby={`aba-${aba}`} className="mx-auto max-w-6xl p-4">
-        {aba === 'cidadao' ? <Cidadao trechos={trechos} passagem={passagem} /> : <Agente />}
+        {aba === 'cidadao' ? (
+          <Cidadao trechos={trechos} passagem={passagem} chamados={chamados} aoCriarChamado={criar} />
+        ) : (
+          <Agente
+            chamados={chamados}
+            carregando={carregando}
+            erro={erro}
+            aoRecarregar={carregar}
+            aoMudarStatus={mudarStatus}
+            aoExcluir={excluir}
+          />
+        )}
       </main>
     </>
   )
