@@ -10,12 +10,12 @@ const PERFIS = {
   2: { calor: 31, luz: 12, pavimento: 1.6, ar: 22 },
   3: { calor: 36, luz: 25, pavimento: 1.3, ar: 55 },
   4: { calor: 29, luz: 30, pavimento: 2.1, ar: 45 },
-  5: { calor: 27, luz: 3, pavimento: 1.0, ar: 18 },
+  5: { calor: 27, luz: 1, pavimento: 1.0, ar: 18 }, // rua escura: fica crítica quase sempre
   6: { calor: 34, luz: 18, pavimento: 1.8, ar: 35 },
 }
 
 // Quanto o valor pode variar para cima ou para baixo a cada passagem.
-const VARIACAO = { calor: 3, luz: 8, pavimento: 0.4, ar: 12 }
+const VARIACAO = { calor: 3, luz: 3, pavimento: 0.4, ar: 12 }
 
 // Chance de o sensor falhar e mandar uma leitura inválida (5%).
 const CHANCE_FALHA = 0.05

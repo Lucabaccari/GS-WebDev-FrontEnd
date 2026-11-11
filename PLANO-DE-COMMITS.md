@@ -24,7 +24,7 @@ São **10 commits planejados**, numa lista só, do começo ao fim do projeto. Ca
 | 5 | `feat(hooks,ui): cria useLeituras e mostra os trechos nos 3 estados` | `useLeituras` (simula as passagens), `StatusPicto` e `CartaoTrecho` com visto, losango e octógono | mostra os 6 trechos mudando de estado |
 | 6 | `feat(ui): monta a tela do Cidadão com mapa, letreiro e abas` | `Cabecalho`, `Abas`, `LetreiroLED`, `MapaEsquematico` em SVG, `Legenda` e `SeletorCamada` | tem a tela do Cidadão completa para leitura |
 | 7 | `feat(chamados): CRUD de chamados na interface` | `BilheteChamado`, `ListaChamados`, `BotaoParada`, `FormChamado`, atualizar status, excluir com confirmação e `FiltrosChamados` | cria, lista, atualiza e exclui chamados de verdade |
-| 8 | `feat(agente,regras): painel do Agente e chamado automático` | Tela do Agente com `Indicadores`, e a regra da 3ª passagem crítica que abre chamado com `origem = automatico` | mostra o painel da subprefeitura e gera chamados sozinho |
+| 8 | `feat(agente,regras): painel do Agente e chamado automático` | Tela do Agente com `Indicadores`, e a regra da 6ª passagem crítica que abre chamado com `origem = automatico` | mostra o painel da subprefeitura e gera chamados sozinho |
 | 9 | `feat(demo,offline): modo demonstração, aviso offline e acessibilidade` | Pausa e velocidade da demo, `useOnlineStatus` com `BannerOffline` e cache, foco, contraste, teclado e ajustes de celular | tem a demo para o vídeo, funciona sem sinal e no celular |
 | 10 | `chore(deploy): seed, deploy e documentação final` | Script de chamados de exemplo, configuração do deploy, README completo e AI.md final | está no ar, com README e AI.md prontos para entregar |
 

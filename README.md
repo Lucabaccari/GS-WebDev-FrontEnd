@@ -12,7 +12,7 @@ Disciplinas: **Front-End Design** e **Web Development**.
 | **Problema** | Calor, ruas escuras, buracos e poluição afetam quem anda e pega ônibus em São Paulo, mas quase nunca são medidos trecho a trecho. |
 | **Solução** | **Pulso**: caixas de sensores no teto dos ônibus medem calor, iluminação, buracos e poluição por trecho da rua a cada passagem. |
 | **Quem usa** | **Cidadão**: vê o estado de cada trecho da linha e avisa um problema com o botão "Solicitar parada". **Agente da subprefeitura**: acompanha os chamados e os indicadores. |
-| **Regra principal** | Na 3ª passagem com o mesmo resultado crítico no mesmo trecho, o sistema abre um chamado sozinho. |
+| **Regra principal** | Na 6ª passagem seguida com o mesmo resultado crítico no mesmo trecho, o sistema abre um chamado sozinho. |
 
 ## Tecnologias
 

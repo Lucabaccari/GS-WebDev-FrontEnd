@@ -4,8 +4,11 @@ import FitaEstado from './FitaEstado.jsx'
 import EtiquetaEstado from './EtiquetaEstado.jsx'
 import { CAMADAS } from '../utils/classificar.js'
 import { formatarValor } from '../utils/formatadores.js'
+import { PASSAGENS_PARA_CHAMADO } from '../utils/regras.js'
 
 function CartaoTrecho({ trecho }) {
+  const sequencia = Math.max(...Object.values(trecho.sequencias))
+
   return (
     <article className="border-[3px] border-asfalto bg-white shadow-dura">
       <header className="flex items-center gap-3 p-3">
@@ -20,6 +23,15 @@ function CartaoTrecho({ trecho }) {
 
       <div className="p-3">
         <EtiquetaEstado estado={trecho.estadoGeral} grande />
+
+        {/* Contagem da regra do chamado automático (maior sequência crítica entre as camadas) */}
+        {sequencia > 0 && (
+          <p className="mt-2 border-l-4 border-critico pl-2 text-sm font-semibold">
+            {sequencia >= PASSAGENS_PARA_CHAMADO
+              ? `Crítico há ${sequencia} passagens. Chamado automático aberto.`
+              : `Crítico há ${sequencia} de ${PASSAGENS_PARA_CHAMADO} passagens para abrir chamado.`}
+          </p>
+        )}
 
         {/* Lista de leituras: <dl> é a lista de "nome: valor" do HTML */}
         <dl className="mt-3 divide-y-2 divide-asfalto/15">
