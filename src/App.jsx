@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { useLeituras } from './hooks/useLeituras.js'
 import { useChamados } from './hooks/useChamados.js'
+import { useChamadoAutomatico } from './hooks/useChamadoAutomatico.js'
 import Cabecalho from './components/Cabecalho.jsx'
 import Cidadao from './pages/Cidadao.jsx'
 import Agente from './pages/Agente.jsx'
@@ -18,6 +19,8 @@ function App() {
   const { trechos, passagem } = useLeituras()
   // Os chamados também ficam aqui: as duas telas veem a mesma lista.
   const { chamados, carregando, erro, carregar, criar, mudarStatus, excluir } = useChamados()
+  // Regra da 6ª passagem crítica: roda aqui para funcionar em qualquer aba.
+  useChamadoAutomatico({ trechos, passagem, chamados, carregando, criar })
 
   return (
     <>

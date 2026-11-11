@@ -83,7 +83,7 @@ Estados por camada. Os limites ainda precisam ser confirmados nas fontes (INMET,
 | Pavimento (pico, g) | abaixo de 1,5 | 1,5 a 2,0 | acima de 2,0 |
 | Ar (PM2.5, µg/m³) | até 25 | 25 a 50 | acima de 50 |
 
-- Na **3ª passagem** com o mesmo resultado crítico no mesmo trecho, nasce um chamado automático (`origem = automatico`).
+- Na **6ª passagem** seguida com o mesmo resultado crítico no mesmo trecho e camada, nasce um chamado automático (`origem = automatico`). O PDF falava em 3ª; o grupo decidiu usar 6ª. O número fica em `PASSAGENS_PARA_CHAMADO` (`utils/regras.js`).
 - Leitura inválida (vazia, `NaN`, fora de faixa) não vira estado: tratar como "sem dados".
 - Trechos (confirmar com a equipe): 1 Av. Paulista, 2 R. Augusta, 3 R. da Consolação, 4 Av. Rebouças, 5 R. Oscar Freire, 6 Av. Brig. Luís Antônio.
 
