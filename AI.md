@@ -71,3 +71,10 @@ Regras que seguimos:
   - Com a tecla Tab de verdade, aparece "Pular para o conteúdo" e o foco fica visível.
   - No celular (375 px), nada vaza da tela e todos os botões e campos têm 44 px ou mais.
   - `npm run build` e `npm run lint` sem erros.
+
+### Sessão 9: seed, deploy e documentação final (commit 10)
+
+- **O que a IA sugeriu:** criar `scripts/seed.js` (comando `npm run seed`). Ele lê a `VITE_API_URL` do `.env` e cria 6 chamados de exemplo simulados, com status, tipos e origens variados e datas no passado, para os indicadores terem dados. A opção `--limpar` apaga tudo antes de criar e avisa que a API é compartilhada. No README entraram as seções Funcionalidades, Requisitos do desafio (onde cada um está no código), os comandos de seed, o passo a passo do deploy na Vercel (com a variável `VITE_API_URL`) e Limitações (API sem login e compartilhada, simulação por navegador, limites do plano gratuito, o que um sistema real teria). O CLAUDE.md foi atualizado com os 4 hooks e os arquivos novos.
+- **Erro da IA no caminho:** um comando de terminal com crases de Markdown entre aspas duplas fez o shell tentar executar trechos do texto. Nenhum comando chegou a rodar, porque todos falharam com "script não encontrado". A IA conferiu o Git, os arquivos e a API antes de continuar e refez a edição com a ferramenta de edição de arquivos.
+- **O que mudamos:** _(completar)_
+- **Como validamos:** rodamos `npm run seed -- --limpar`, que apagou 10 chamados de teste e criou os 6 exemplos, conferidos na API. `node --check` no script de seed, `npm run build` e `npm run lint` sem erros. O app foi aberto no navegador do aluno com `npm run dev -- --open`.
