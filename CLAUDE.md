@@ -8,7 +8,7 @@ Trabalho da Global Solution 2026.2 da FIAP (Engenharia de Software, 1º ano), te
 
 **Pulso:** caixas de sensores no teto dos ônibus de São Paulo medem calor, iluminação, buracos e poluição por trecho da rua. O **Pulso Web** é o app que mostra isso:
 
-- **Cidadão:** mapa da linha com o estado de cada trecho, letreiro, e o botão "Solicitar parada" para avisar um problema.
+- **Cidadão:** mapa da linha com o estado de cada trecho, letreiro, e o botão "Avisar problema".
 - **Agente da subprefeitura:** painel de chamados e indicadores.
 
 É uma **demonstração acadêmica**: dados simulados, nada de dados pessoais reais.
@@ -27,7 +27,7 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 - React com **Vite** (JavaScript, JSX) e **Tailwind CSS**.
 - No mínimo **8 componentes** React organizados e reutilizáveis.
 - **useState** e **useEffect** obrigatórios.
-- No mínimo **2 custom hooks** (usamos 4: `useChamados`, `useLeituras`, `useChamadoAutomatico`, `useOnlineStatus`).
+- No mínimo **2 custom hooks** (usamos 5: `useChamados`, `useLeituras`, `useOnibus`, `useChamadoAutomatico`, `useOnlineStatus`).
 - **Separação de responsabilidades:** lógica de negócio e acesso a dados fora dos componentes visuais.
 - **API externa com CRUD completo** (criar, consultar, atualizar, excluir).
 - Funcionalidades reais ligadas ao tema. **Não pode ser só uma interface estática.**
@@ -41,10 +41,10 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 src/
   components/   componentes visuais reutilizáveis
   pages/        telas: Cidadao.jsx, Agente.jsx
-  hooks/        useChamados.js, useLeituras.js, useChamadoAutomatico.js, useOnlineStatus.js
+  hooks/        useChamados.js, useLeituras.js, useOnibus.js, useChamadoAutomatico.js, useOnlineStatus.js
   services/     api.js, chamadosService.js, cache.js (HTTP e cópia local)
-  utils/        classificar.js, regras.js, simulacao.js, chamados.js, indicadores.js, mensagens.js, formatadores.js (funções puras)
-  data/         linha.js (os 6 trechos)
+  utils/        classificar.js, regras.js, simulacao.js, chamados.js, indicadores.js, mensagens.js, formatadores.js, geo.js, icones.js (funções puras)
+  data/         ruas.js (as 6 ruas, traçado do OpenStreetMap e 5 pontos de medição por rua)
 ```
 
 Regra: componentes **não** chamam `fetch`. Quem chama é `services/`, e os hooks usam os services.
@@ -60,7 +60,10 @@ Campos de um chamado (todos String, exceto os marcados):
 |---|---|
 | `id` | gerado pelo MockAPI |
 | `tipo` | `calor`, `luz`, `pavimento`, `ar` |
-| `trechoId` | Number, de 1 a 6 |
+| `trechoId` | Number, de 1 a 6 (é o id da **rua**; o nome do campo ficou por compatibilidade) |
+| `pontoId` | id do ponto de medição, ex.: `'5-3'` (3º ponto da rua 5) |
+| `pontoNome` | ex.: `altura do nº 900` (rótulo simulado) |
+| `lat`, `lng` | Number, coordenadas do ponto (para o mapa) |
 | `trechoNome` | nome do trecho |
 | `status` | `aberto`, `em_atendimento`, `resolvido` |
 | `prioridade` | `baixa`, `media`, `alta` |
@@ -85,7 +88,12 @@ Estados por camada. Os limites ainda precisam ser confirmados nas fontes (INMET,
 
 - Na **6ª passagem** seguida com o mesmo resultado crítico no mesmo trecho e camada, nasce um chamado automático (`origem = automatico`). O PDF falava em 3ª; o grupo decidiu usar 6ª. O número fica em `PASSAGENS_PARA_CHAMADO` (`utils/regras.js`).
 - Leitura inválida (vazia, `NaN`, fora de faixa) não vira estado: tratar como "sem dados".
-- Trechos (confirmar com a equipe): 1 Av. Paulista, 2 R. Augusta, 3 R. da Consolação, 4 Av. Rebouças, 5 R. Oscar Freire, 6 Av. Brig. Luís Antônio.
+- Ruas: 1 Av. Paulista, 2 R. Augusta, 3 R. da Consolação, 4 Av. Rebouças, 5 R. Oscar Freire, 6 Av. Brig. Luís Antônio. Cada rua tem um **ponto de medição a cada 100 m** (`ESPACO_ENTRE_PONTOS_M`), com numeração simulada (1 número por metro).
+- **O estado é por ponto, não pela rua inteira.** A rua mostra um resumo (quantos pontos em cada estado). A regra da 6ª passagem conta por ponto.
+- **Local da ocorrência:** luz e pavimento mostram só o lugar exato, com margem de 20 números (`localDaOcorrencia` em `utils/simulacao.js`). Calor e ar mostram o trecho de 100 m do ponto.
+- Mapa: Leaflet + react-leaflet, fundo do OpenStreetMap (com atribuição), em tons de cinza no CSS.
+- **Um ônibus com sensor em cada rua**, os 6 ao mesmo tempo (`utils/rota.js`): 3 minutos por passagem (`DURACAO_PASSAGEM_MS`), em ida e volta (do nº 1 ao fim, depois do fim ao nº 1), com paradas de ônibus simuladas a cada 450 m (`PARADA_MS` = 5 s). O sensor lê cada ponto quando o ônibus passa pelo meio dele (`useOnibus` avisa, `useLeituras` registra). "Passagem" de um ponto = cada vez que o ônibus passa por ele.
+- Visões do mapa: "Todas as ruas" (mapa amplo com os 6 ônibus) e cada rua separada (as outras somem; zoom, paradas e câmera acompanhando o ônibus).
 
 ## Direção visual (guia de estilo aprovado pelo grupo)
 
@@ -95,7 +103,9 @@ Conceito: **o app como itinerário**, inspirado na faixa do Metrô, no totem ace
 - Fontes: **Archivo** (títulos e texto, condensada nos títulos) e **Doto** (só o letreiro).
 - Estados sempre com **cor + forma + padrão + texto**: normal = visto e fita lisa; atenção = losango e fita listrada; crítico = octógono e fita diagonal. Nunca só cor.
 - Bordas de 2 a 3 px em asfalto, sombras duras (sem blur), pictogramas soltos (sem círculo atrás).
-- Botão principal do cidadão: **"Solicitar parada"** (vermelho), com resposta no letreiro "Parada solicitada".
+- Botão principal do cidadão: **"Avisar problema"** (vermelho), com resposta no letreiro "Aviso recebido". (Antes era "Solicitar parada"; o aluno trocou por fazer mais sentido.)
+- Formulário: rua, trecho (os trechos de 100 m da rua escolhida), tipo (4 camadas + "Outros") e descrição.
+- Numeração exata (metro a metro) só na rua em foco; nos resumos, o trecho de 100 m.
 - Chamado = **bilhete**: protocolo, picote, carimbo de status, etiqueta "Dados simulados".
 - Texto curto, verbo no começo. Ex.: "Trecho escuro. Prefira outro caminho agora."
 - **Evitar:** gradientes de fundo, vidro fosco, ícone em bolinha, emoji, Inter e Space Grotesk, neon, linha de KPIs com setinha.
