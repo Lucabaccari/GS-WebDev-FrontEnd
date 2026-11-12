@@ -1,6 +1,6 @@
 // Indicadores do painel do Agente, em placas (sem setinhas de alta/baixa, como pede o guia).
 // Recebe os números prontos de utils/indicadores.js pela prop "dados".
-import { CAMADAS } from '../utils/classificar.js'
+import { TIPOS_DE_PROBLEMA } from '../utils/chamados.js'
 import { formatarDuracao } from '../utils/formatadores.js'
 
 // Uma placa: número grande + nome. A faixa de cima reforça o significado com cor.
@@ -38,11 +38,11 @@ function Indicadores({ dados }) {
         <div className="border-2 border-asfalto bg-white p-3">
           <h3 className="mb-2 text-sm font-bold uppercase">Chamados por tipo</h3>
           <ul className="space-y-2">
-            {Object.entries(CAMADAS).map(([tipo, regra]) => {
+            {TIPOS_DE_PROBLEMA.map(({ id: tipo, nome }) => {
               const quantidade = dados.porTipo[tipo] || 0
               return (
                 <li key={tipo} className="grid grid-cols-[7rem_1fr_2rem] items-center gap-2 text-sm">
-                  <span className="font-semibold">{regra.nome}</span>
+                  <span className="font-semibold">{nome}</span>
                   <span className="h-4 border-2 border-asfalto bg-concreto">
                     <span className="block h-full bg-asfalto" style={{ width: `${(quantidade / maior) * 100}%` }} />
                   </span>

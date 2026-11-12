@@ -1,4 +1,5 @@
 // Botões para escolher o que o mapa mostra: tudo (Geral) ou uma camada só.
+// Ficam por cima do mapa, num grupo compacto.
 // Props: valor (camada escolhida) e aoMudar (função chamada com a nova camada).
 import { CAMADAS } from '../utils/classificar.js'
 
@@ -10,27 +11,27 @@ const OPCOES = [
 
 function SeletorCamada({ valor, aoMudar }) {
   return (
-    <fieldset>
-      <legend className="mb-2 text-sm font-bold uppercase">Ver no mapa</legend>
-      <div className="flex flex-wrap gap-2">
-        {OPCOES.map((opcao) => {
-          const ativo = opcao.id === valor
-          return (
-            <button
-              key={opcao.id}
-              type="button"
-              aria-pressed={ativo}
-              onClick={() => aoMudar(opcao.id)}
-              className={`min-h-11 border-2 border-asfalto px-3 text-sm font-bold ${
-                ativo ? 'bg-asfalto text-white' : 'bg-white shadow-dura hover:bg-concreto'
-              }`}
-            >
-              {opcao.nome}
-            </button>
-          )
-        })}
-      </div>
-    </fieldset>
+    // No celular os botões ficam numa linha só, que rola para o lado (não cobre o mapa).
+    <div
+      role="group"
+      aria-label="O que mostrar no mapa"
+      className="flex overflow-x-auto border-2 border-asfalto bg-white shadow-dura"
+    >
+      {OPCOES.map((opcao) => {
+        const ativo = opcao.id === valor
+        return (
+          <button
+            key={opcao.id}
+            type="button"
+            aria-pressed={ativo}
+            onClick={() => aoMudar(opcao.id)}
+            className={`min-h-11 shrink-0 px-3 text-sm font-bold whitespace-nowrap ${ativo ? 'bg-asfalto text-white' : 'hover:bg-concreto'}`}
+          >
+            {opcao.nome}
+          </button>
+        )
+      })}
+    </div>
   )
 }
 

@@ -1,5 +1,5 @@
 // Textos curtos para o cidadão, com o verbo no começo (regra do guia de estilo).
-// Função pura: recebe os trechos e devolve a frase do letreiro.
+// Função pura: recebe os pontos e devolve a frase do letreiro.
 
 // Uma frase para cada camada em atenção ou crítico.
 const FRASES = {
@@ -16,7 +16,7 @@ const FRASES = {
     atencao: 'Piso irregular. Olhe onde pisa.',
   },
   ar: {
-    critico: 'Ar poluído. Evite esforço neste trecho.',
+    critico: 'Ar poluído. Evite esforço neste ponto.',
     atencao: 'Ar carregado. Pegue leve.',
   },
 }
@@ -24,28 +24,35 @@ const FRASES = {
 // Peso de cada estado: quanto maior, mais urgente.
 const PESO = { critico: 2, atencao: 1 }
 
-// Procura o alerta mais urgente da linha.
+// Procura o alerta mais urgente entre os pontos.
 // camada: 'geral' (olha as 4 camadas) ou uma camada só ('calor', 'luz'...).
-// Devolve { trecho, camada, estado } ou null se está tudo normal.
-export function alertaMaisUrgente(trechos, camada = 'geral') {
+// Devolve { ponto, camada, estado } ou null se está tudo normal.
+export function alertaMaisUrgente(pontos, camada = 'geral') {
   const camadasParaOlhar = camada === 'geral' ? ['calor', 'luz', 'pavimento', 'ar'] : [camada]
   let melhor = null
 
-  for (const trecho of trechos) {
+  for (const ponto of pontos) {
     for (const c of camadasParaOlhar) {
-      const estado = trecho.estados[c]
+      const estado = ponto.estados[c]
       const peso = PESO[estado] || 0 // normal e sem dados valem 0
       if (peso > 0 && (!melhor || peso > PESO[melhor.estado])) {
-        melhor = { trecho, camada: c, estado }
+        melhor = { ponto, camada: c, estado }
       }
     }
   }
   return melhor
 }
 
-// Monta a frase do letreiro. Ex.: "R. Oscar Freire: Trecho escuro. Prefira outro caminho agora."
-export function mensagemLetreiro(trechos, camada = 'geral') {
-  const alerta = alertaMaisUrgente(trechos, camada)
-  if (!alerta) return 'Linha sem alertas. Boa viagem.'
-  return `${alerta.trecho.nome}: ${FRASES[alerta.camada][alerta.estado]}`
+// Frase de um alerta. Ex.: "R. Oscar Freire, nº 1036 a 1056: Trecho escuro. Prefira outro caminho agora."
+export function fraseDoAlerta(alerta) {
+  // O local é o da ocorrência: 20 números para luz e pavimento, o trecho de 100 m para calor e ar.
+  const local = alerta.ponto.locais[alerta.camada].nome
+  return `${alerta.ponto.ruaNome}, ${local}: ${FRASES[alerta.camada][alerta.estado]}`
+}
+
+// Monta a frase do letreiro a partir do alerta mais urgente.
+export function mensagemLetreiro(pontos, camada = 'geral') {
+  const alerta = alertaMaisUrgente(pontos, camada)
+  if (!alerta) return 'Ruas sem alertas. Boa viagem.'
+  return fraseDoAlerta(alerta)
 }

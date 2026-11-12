@@ -1,14 +1,17 @@
-// Controles do modo demonstração: pausar, avançar uma passagem e mudar a velocidade.
-// Deixa claro que o tempo é acelerado: na rua, um ônibus leva vários minutos entre passagens.
+// Controles do modo demonstração: pausar, adiantar 15 segundos e mudar a velocidade.
+// Na velocidade 1x cada ônibus leva 3 minutos para percorrer a sua rua (uma passagem).
+// Para ver a regra da 6ª passagem acontecer, use 10x: cada passagem leva 18 segundos.
 //
-// Props: pausado, aoPausar, aoAvancar, velocidade, aoMudarVelocidade, bloqueado (sem conexão),
-// automaticoLigado e aoAlternarAutomatico (liga/desliga a criação de chamados automáticos).
+// Props: passagem (a menor entre os 6 ônibus), pausado, aoPausar, aoAvancar, velocidade,
+// aoMudarVelocidade, bloqueado (sem conexão), automaticoLigado e aoAlternarAutomatico.
 import { VELOCIDADES } from '../utils/simulacao.js'
 import { PASSAGENS_PARA_CHAMADO } from '../utils/regras.js'
+import { DURACAO_PASSAGEM_MS } from '../utils/rota.js'
 
 const BOTAO = 'min-h-11 border-2 border-asfalto px-3 text-sm font-bold disabled:opacity-60'
 
 function ControlesDemo({
+  passagem,
   pausado,
   aoPausar,
   aoAvancar,
@@ -19,21 +22,34 @@ function ControlesDemo({
   aoAlternarAutomatico,
 }) {
   const atual = VELOCIDADES.find((v) => v.id === velocidade)
+  // Quanto tempo de verdade leva uma passagem nesta velocidade, e as 6 passagens da regra.
+  const segundosPorPassagem = DURACAO_PASSAGEM_MS / 1000 / atual.fator
+  const minutosAteRegra = (segundosPorPassagem * PASSAGENS_PARA_CHAMADO) / 60
 
   return (
-    <section aria-labelledby="titulo-demo" className="border-2 border-dashed border-asfalto bg-white p-3">
-      <h2 id="titulo-demo" className="text-sm font-bold uppercase">Modo demonstração</h2>
-      <p className="mt-1 text-sm">
-        Simulação acelerada: 1 passagem a cada {(atual.intervaloMs / 1000).toLocaleString('pt-BR')} s. Na rua, são vários minutos.
+    // <details> é uma caixa que abre e fecha sozinha (sem JavaScript). Começa fechada.
+    <details className="border-2 border-dashed border-asfalto bg-white">
+      <summary className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-3 px-3 text-sm font-bold uppercase">
+        Modo demonstração
+        <span className="font-normal normal-case">
+          Passagem {passagem} · {pausado ? 'pausado' : `velocidade ${atual.rotulo}`} · chamado automático{' '}
+          {automaticoLigado ? 'ligado' : 'desligado'}
+        </span>
+      </summary>
+      <div className="border-t-2 border-dashed border-asfalto p-3">
+      <p className="text-sm">
+        Cada rua tem um ônibus com sensor. Nesta velocidade, cada um leva{' '}
+        {segundosPorPassagem.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} s para percorrer a rua inteira.
+        As {PASSAGENS_PARA_CHAMADO} passagens da regra do chamado automático levam uns{' '}
+        {minutosAteRegra.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} min.
       </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button type="button" onClick={aoPausar} disabled={bloqueado} className={`${BOTAO} bg-asfalto text-white`}>
           {pausado ? 'Continuar' : 'Pausar'}
         </button>
-        {/* Só faz sentido avançar na mão quando está pausado */}
-        <button type="button" onClick={aoAvancar} disabled={!pausado || bloqueado} className={`${BOTAO} bg-white`}>
-          Avançar passagem
+        <button type="button" onClick={aoAvancar} disabled={bloqueado} className={`${BOTAO} bg-white`}>
+          Adiantar 15 s
         </button>
 
         <span className="ml-1 text-sm font-semibold" id="rotulo-velocidade">Velocidade:</span>
@@ -68,7 +84,8 @@ function ControlesDemo({
             : `Ligue para a regra da ${PASSAGENS_PARA_CHAMADO}ª passagem criar chamados na API.`}
         </p>
       </div>
-    </section>
+      </div>
+    </details>
   )
 }
 

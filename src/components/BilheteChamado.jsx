@@ -2,8 +2,10 @@
 // Props:
 // - chamado: o objeto vindo da API
 // - aoMudarStatus(chamado, status) e aoExcluir(id): opcionais. Sem elas, o bilhete só mostra.
+// - selecionado: true quando o agente clicou neste chamado no mapa (ganha destaque)
+// - aoVerNoMapa(chamado): opcional. Mostra o botão "Ver no mapa".
 import { useState } from 'react'
-import { ROTULOS_STATUS, ROTULOS_PRIORIDADE, ROTULOS_ORIGEM, rotuloTipo } from '../utils/chamados.js'
+import { ROTULOS_STATUS, ROTULOS_PRIORIDADE, ROTULOS_ORIGEM, rotuloTipo, localDoChamado } from '../utils/chamados.js'
 import { formatarProtocolo, formatarDataHora } from '../utils/formatadores.js'
 
 // Cor do carimbo de cada status (o texto também muda, então não depende só da cor).
@@ -13,12 +15,16 @@ const CORES_CARIMBO = {
   resolvido: 'border-normal text-normal',
 }
 
-function BilheteChamado({ chamado, aoMudarStatus, aoExcluir }) {
+function BilheteChamado({ chamado, aoMudarStatus, aoExcluir, selecionado = false, aoVerNoMapa }) {
   // true enquanto o bilhete pergunta "Excluir mesmo?"
   const [confirmando, setConfirmando] = useState(false)
 
   return (
-    <article className="border-[3px] border-asfalto bg-white shadow-dura">
+    // id: permite rolar a fila até este bilhete quando ele é clicado no mapa
+    <article
+      id={`bilhete-${chamado.id}`}
+      className={`border-[3px] bg-white ${selecionado ? 'border-critico shadow-[6px_6px_0_0_#D7261E]' : 'border-asfalto shadow-dura'}`}
+    >
       {/* Parte de cima: protocolo e carimbo */}
       <div className="flex items-start justify-between gap-3 p-3">
         <div>
@@ -35,9 +41,14 @@ function BilheteChamado({ chamado, aoMudarStatus, aoExcluir }) {
 
       <div className="space-y-2 p-3">
         <p className="text-lg leading-tight font-black uppercase [font-stretch:75%]">
-          {rotuloTipo(chamado.tipo)} · {chamado.trechoNome}
+          {rotuloTipo(chamado.tipo)} · {localDoChamado(chamado)}
         </p>
         <p>{chamado.descricao}</p>
+        {aoVerNoMapa && chamado.lat !== undefined && chamado.lat !== '' && (
+          <button type="button" onClick={() => aoVerNoMapa(chamado)} className="min-h-11 text-sm font-bold underline">
+            Ver no mapa
+          </button>
+        )}
 
         <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
           <dt className="font-semibold">Prioridade</dt>
