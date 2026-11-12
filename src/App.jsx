@@ -3,6 +3,7 @@
 // continuarem funcionando mesmo quando o usuário troca de aba.
 import { useState, useEffect, useRef } from 'react'
 import { useLeituras } from './hooks/useLeituras.js'
+import { useOnibus } from './hooks/useOnibus.js'
 import { useChamados } from './hooks/useChamados.js'
 import { useChamadoAutomatico } from './hooks/useChamadoAutomatico.js'
 import { useOnlineStatus } from './hooks/useOnlineStatus.js'
@@ -21,20 +22,23 @@ const ABAS = [
 function App() {
   const [aba, setAba] = useState('cidadao')
   const [pausado, setPausado] = useState(false) // pausa do modo demonstração
-  const [velocidade, setVelocidade] = useState('normal')
+  const [velocidade, setVelocidade] = useState('1x')
   // Começa desligado: só cria chamados automáticos na API quando alguém liga (ex.: na apresentação).
   const [automaticoLigado, setAutomaticoLigado] = useState(false)
   const online = useOnlineStatus()
 
-  // Sem internet, os sensores não mandam dados: a simulação para e a tela
-  // continua mostrando as últimas leituras.
-  const intervaloMs = VELOCIDADES.find((v) => v.id === velocidade).intervaloMs
-  const { trechos, passagem, avancar } = useLeituras({ intervaloMs, pausado: pausado || !online })
+  // As leituras de cada ponto. Os ônibus avisam quando passam pelos pontos (registrarLeituras).
+  const { ruas, pontos, contagem, registrarLeituras } = useLeituras()
+
+  // Os 6 ônibus com sensor, um em cada rua. Sem internet, os dados não chegam:
+  // eles param e a tela continua mostrando as últimas leituras.
+  const fator = VELOCIDADES.find((v) => v.id === velocidade).fator
+  const { onibus: frota, avancar } = useOnibus({ fator, pausado: pausado || !online, aoPassarNosPontos: registrarLeituras })
 
   // Os chamados também ficam aqui: as duas telas veem a mesma lista.
   const { chamados, carregando, erro, carregar, criar, mudarStatus, excluir } = useChamados()
-  // Regra da 6ª passagem crítica: roda aqui para funcionar em qualquer aba.
-  useChamadoAutomatico({ trechos, passagem, chamados, carregando, criar, ativo: automaticoLigado })
+  // Regra da 6ª passagem crítica em cada ponto: confere a cada leitura nova ("contagem").
+  useChamadoAutomatico({ pontos, passagem: contagem, chamados, carregando, criar, ativo: automaticoLigado })
 
   // Quando a internet volta, busca os chamados de novo na API.
   const estavaOffline = useRef(false)
@@ -60,22 +64,11 @@ function App() {
       <Cabecalho abas={ABAS} abaAtiva={aba} aoTrocarAba={setAba} />
       {!online && <BannerOffline />}
 
-      <div className="mx-auto max-w-6xl space-y-6 p-4">
-        <ControlesDemo
-          pausado={pausado}
-          aoPausar={() => setPausado(!pausado)}
-          aoAvancar={avancar}
-          velocidade={velocidade}
-          aoMudarVelocidade={setVelocidade}
-          bloqueado={!online}
-          automaticoLigado={automaticoLigado}
-          aoAlternarAutomatico={() => setAutomaticoLigado(!automaticoLigado)}
-        />
-
+      <div className="mx-auto max-w-7xl space-y-5 p-4">
         {/* role="tabpanel" liga este conteúdo à aba selecionada (acessibilidade) */}
         <main id="conteudo" tabIndex={-1} role="tabpanel" aria-labelledby={`aba-${aba}`}>
           {aba === 'cidadao' ? (
-            <Cidadao trechos={trechos} passagem={passagem} chamados={chamados} aoCriarChamado={criar} />
+            <Cidadao ruas={ruas} pontos={pontos} frota={frota} chamados={chamados} aoCriarChamado={criar} />
           ) : (
             <Agente
               chamados={chamados}
@@ -87,6 +80,20 @@ function App() {
             />
           )}
         </main>
+
+        {/* Modo demonstração: fica no fim da página e começa fechado,
+            para não parecer parte do produto. */}
+        <ControlesDemo
+          passagem={Math.min(...frota.map((o) => o.passagem))}
+          pausado={pausado}
+          aoPausar={() => setPausado(!pausado)}
+          aoAvancar={() => avancar(15000)}
+          velocidade={velocidade}
+          aoMudarVelocidade={setVelocidade}
+          bloqueado={!online}
+          automaticoLigado={automaticoLigado}
+          aoAlternarAutomatico={() => setAutomaticoLigado(!automaticoLigado)}
+        />
       </div>
     </>
   )

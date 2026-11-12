@@ -39,6 +39,58 @@ body {
   box-shadow: 0 0 0 5px var(--color-atencao);
 }
 
+/* Mapa (Leaflet): ícones sem a caixa branca padrão e texto na fonte do app. */
+.pulso-icone {
+  background: none;
+  border: none;
+}
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--color-concreto);
+}
+/* O fundo do OpenStreetMap é colorido; em cinza ele não compete com as cores dos estados. */
+.leaflet-tile-pane {
+  filter: grayscale(1) contrast(0.85) brightness(1.08);
+}
+.leaflet-tooltip {
+  border: 2px solid var(--color-asfalto);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 0 var(--color-asfalto);
+  font-weight: 600;
+  color: var(--color-asfalto);
+}
+
+/* Ônibus: desliza entre uma posição e outra (a tela atualiza 5 vezes por segundo).
+   Durante o zoom do mapa a transição é desligada, senão o ônibus "escorrega". */
+.onibus-icone {
+  transition: transform 200ms linear;
+}
+.leaflet-zoom-anim .onibus-icone {
+  transition: none;
+}
+/* Caixa de sensores piscando enquanto o ônibus está parado lendo o ponto. */
+.sensor-lendo {
+  animation: sensor-pisca 0.8s steps(2, jump-none) infinite;
+}
+@keyframes sensor-pisca {
+  50% {
+    opacity: 0.35;
+  }
+}
+/* Balão do ônibus: etiqueta escura com texto âmbar, como o letreiro. */
+.leaflet-tooltip.balao-onibus {
+  background: var(--color-painel);
+  color: var(--color-ambar);
+  border-color: var(--color-painel);
+  font-family: var(--font-letreiro);
+  font-size: 13px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.leaflet-tooltip.balao-onibus::before {
+  border-right-color: var(--color-painel);
+}
+
 /* Acessibilidade: quem pediu menos movimento no sistema não vê animações. */
 @media (prefers-reduced-motion: reduce) {
   *,

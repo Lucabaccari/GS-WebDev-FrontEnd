@@ -125,9 +125,30 @@ export function estadoMaisGrave(estados) {
   return pior
 }
 
-// Estado de um trecho olhando uma camada ('calor', 'luz'...) ou todas ('geral').
-// O trecho precisa vir do hook useLeituras (com .estados e .estadoGeral).
-export function estadoDoTrecho(trecho, camada) {
-  if (camada === 'geral') return trecho.estadoGeral
-  return trecho.estados[camada]
+// Estado de um ponto olhando uma camada ('calor', 'luz'...) ou todas ('geral').
+// O ponto precisa vir do hook useLeituras (com .estados e .estadoGeral).
+export function estadoDoPonto(ponto, camada) {
+  if (camada === 'geral') return ponto.estadoGeral
+  return ponto.estados[camada]
+}
+
+// Resumo de uma rua: quantos pontos em cada estado e o pior deles.
+// Ex.: { normal: 3, atencao: 1, critico: 1, sem_dados: 0, pior: 'critico', total: 5 }
+// A rua NÃO fica toda crítica: o resumo só conta quantos pontos têm problema.
+export function resumirRua(rua, camada) {
+  const resumo = { normal: 0, atencao: 0, critico: 0, sem_dados: 0, total: rua.pontos.length }
+  const estados = rua.pontos.map((ponto) => estadoDoPonto(ponto, camada))
+  for (const estado of estados) resumo[estado] += 1
+  resumo.pior = estadoMaisGrave(estados)
+  return resumo
+}
+
+// Texto do resumo. Ex.: '5 pontos · 1 crítico · 1 atenção' ou '5 pontos · todos normais'
+export function textoResumo(resumo) {
+  const partes = [`${resumo.total} pontos`]
+  if (resumo.critico) partes.push(`${resumo.critico} crítico${resumo.critico > 1 ? 's' : ''}`)
+  if (resumo.atencao) partes.push(`${resumo.atencao} atenção`)
+  if (resumo.sem_dados) partes.push(`${resumo.sem_dados} sem dados`)
+  if (partes.length === 1) partes.push('todos normais')
+  return partes.join(' · ')
 }

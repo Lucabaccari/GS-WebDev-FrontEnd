@@ -32,3 +32,12 @@ export function formatarDuracao(minutos) {
   if (horas === 0) return `${resto} min`
   return `${horas} h ${resto} min`
 }
+
+// Tempo curto no formato de relógio. Ex.: 75000 ms -> '1:15' | 9000 ms -> '0:09'.
+// Arredonda para cima: faltando 0,4 s ainda mostra '0:01'.
+export function formatarRelogio(ms) {
+  const segundos = Math.max(0, Math.ceil(ms / 1000))
+  const minutos = Math.floor(segundos / 60)
+  const resto = String(segundos % 60).padStart(2, '0')
+  return `${minutos}:${resto}`
+}

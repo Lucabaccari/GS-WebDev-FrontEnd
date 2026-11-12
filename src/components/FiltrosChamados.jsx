@@ -1,8 +1,8 @@
-// Filtros da lista de chamados: status, tipo e trecho.
+// Filtros da lista de chamados: status, tipo e rua.
 // Props: filtros ({ status, tipo, trechoId }) e aoMudar (recebe o objeto de filtros novo).
-import { CAMADAS } from '../utils/classificar.js'
-import { ROTULOS_STATUS, FILTROS_VAZIOS } from '../utils/chamados.js'
-import { TRECHOS } from '../data/linha.js'
+// (Na API o campo da rua se chama "trechoId", por isso o filtro usa esse nome.)
+import { ROTULOS_STATUS, FILTROS_VAZIOS, TIPOS_DE_PROBLEMA } from '../utils/chamados.js'
+import { RUAS } from '../data/ruas.js'
 
 const CLASSE_CAMPO = 'mt-1 block min-h-11 w-full border-2 border-asfalto bg-white px-2'
 
@@ -13,7 +13,7 @@ function FiltrosChamados({ filtros, aoMudar }) {
   }
 
   return (
-    <fieldset className="grid gap-3 border-2 border-asfalto bg-white p-3 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end">
+    <fieldset className="grid grid-cols-2 items-end gap-3 border-2 border-asfalto bg-white p-3">
       <legend className="px-1 text-sm font-bold uppercase">Filtrar chamados</legend>
 
       <label className="text-sm font-semibold">
@@ -30,18 +30,18 @@ function FiltrosChamados({ filtros, aoMudar }) {
         Tipo
         <select value={filtros.tipo} onChange={(e) => mudar('tipo', e.target.value)} className={CLASSE_CAMPO}>
           <option value="">Todos</option>
-          {Object.entries(CAMADAS).map(([id, regra]) => (
-            <option key={id} value={id}>{regra.nome}</option>
+          {TIPOS_DE_PROBLEMA.map((t) => (
+            <option key={t.id} value={t.id}>{t.nome}</option>
           ))}
         </select>
       </label>
 
       <label className="text-sm font-semibold">
-        Trecho
+        Rua
         <select value={filtros.trechoId} onChange={(e) => mudar('trechoId', e.target.value)} className={CLASSE_CAMPO}>
-          <option value="">Todos</option>
-          {TRECHOS.map((t) => (
-            <option key={t.id} value={t.id}>{t.id}. {t.nome}</option>
+          <option value="">Todas</option>
+          {RUAS.map((rua) => (
+            <option key={rua.id} value={rua.id}>{rua.nome}</option>
           ))}
         </select>
       </label>
