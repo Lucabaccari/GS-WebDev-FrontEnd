@@ -27,7 +27,7 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 - React com **Vite** (JavaScript, JSX) e **Tailwind CSS**.
 - No mínimo **8 componentes** React organizados e reutilizáveis.
 - **useState** e **useEffect** obrigatórios.
-- No mínimo **2 custom hooks** (usamos 3: `useChamados`, `useLeituras`, `useOnlineStatus`).
+- No mínimo **2 custom hooks** (usamos 4: `useChamados`, `useLeituras`, `useChamadoAutomatico`, `useOnlineStatus`).
 - **Separação de responsabilidades:** lógica de negócio e acesso a dados fora dos componentes visuais.
 - **API externa com CRUD completo** (criar, consultar, atualizar, excluir).
 - Funcionalidades reais ligadas ao tema. **Não pode ser só uma interface estática.**
@@ -41,9 +41,9 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 src/
   components/   componentes visuais reutilizáveis
   pages/        telas: Cidadao.jsx, Agente.jsx
-  hooks/        useChamados.js, useLeituras.js, useOnlineStatus.js
-  services/     api.js, chamadosService.js (só chamadas HTTP)
-  utils/        classificar.js, formatadores.js (funções puras)
+  hooks/        useChamados.js, useLeituras.js, useChamadoAutomatico.js, useOnlineStatus.js
+  services/     api.js, chamadosService.js, cache.js (HTTP e cópia local)
+  utils/        classificar.js, regras.js, simulacao.js, chamados.js, indicadores.js, mensagens.js, formatadores.js (funções puras)
   data/         linha.js (os 6 trechos)
 ```
 
