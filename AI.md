@@ -57,7 +57,7 @@ Combinados que valeram o projeto todo:
 - **Testes no navegador:** cada funcionalidade foi clicada de verdade, no computador e no celular (375 px), conferindo também que nada vaza da tela e que o console fica sem erros.
 - **API:** o CRUD foi testado contra o MockAPI real; os registros de teste foram apagados. Para testar o envio de aviso sem criar chamado de verdade, a resposta da API foi simulada só durante o teste.
 - **Dados reais:** abrimos cada fonte. Um número que a pesquisa trouxe errado (frota de 13.416 ônibus) foi corrigido para o valor da fonte (13.496).
-- **O que ajustamos depois de testar:** o termômetro e a escala cortados no celular, a prioridade que "pulava" ao mudar o status, o ponto do mapa fora do centro, o tour cobrindo o mapa e textos longos demais.
+- **O que ajustamos depois de testar:** o termômetro e a escala cortados no celular, a prioridade que "pulava" ao mudar o status, o ponto do mapa fora do centro, o tour cobrindo o mapa, o mapa que "prendia" o dedo e não deixava rolar a página no celular (agora ele fica parado e o zoom é pelos botões), a lista de todos os pontos que ficava enorme no celular e textos longos demais.
 
 ## 5. Análise crítica
 

@@ -1,7 +1,8 @@
 // Painel da rua escolhida.
 // - Em cima: as ocorrências (lugares em atenção ou crítico), com a numeração exata.
 // - Embaixo, numa caixa que abre e fecha: todos os pontos de medição (a cada 100 m),
-//   numa faixa vertical como as estações de uma linha de metrô.
+//   numa faixa vertical como as estações de uma linha de metrô. No celular essa lista
+//   não aparece: só o ponto escolhido, para a tela não ficar enorme.
 // Clicar num ponto abre o detalhe das 4 leituras e o botão "Avisar problema aqui".
 //
 // Props: rua, camada, pontoSelecionadoId, aoSelecionarPonto(ponto), aoAvisar(ponto),
@@ -96,6 +97,7 @@ function PainelRua({ rua, camada, pontoSelecionadoId, aoSelecionarPonto, aoAvisa
   const ocorrencias = rua.pontos.flatMap((p) => ocorrenciasDoPonto(p, camada))
   // O ponto onde o ônibus está agora (o sensor está medindo ali).
   const pontoDoOnibus = rua.pontos.find((p) => onibus.numero > p.inicioM && onibus.numero <= p.fimM)
+  const pontoEscolhido = rua.pontos.find((p) => p.id === pontoSelecionadoId) // ou undefined
 
   return (
     <section aria-labelledby="titulo-rua" className="space-y-4">
@@ -140,8 +142,23 @@ function PainelRua({ rua, camada, pontoSelecionadoId, aoSelecionarPonto, aoAvisa
         )}
       </div>
 
-      {/* <details> abre e fecha sozinho. Começa aberto se algum ponto foi escolhido. */}
-      <details open={Boolean(pontoSelecionadoId)}>
+      {/* Celular: sem a lista de todos os pontos (ficava enorme). Só o ponto escolhido
+          (no mapa ou nas ocorrências) aparece aqui, com o detalhe e "Avisar problema aqui". */}
+      {pontoEscolhido && (
+        <ol className="border-l-2 border-linha-forte sm:hidden">
+          <LinhaPonto
+            ponto={pontoEscolhido}
+            camada={camada}
+            aberto
+            sensorAqui={pontoEscolhido.id === pontoDoOnibus?.id}
+            aoSelecionar={aoSelecionarPonto}
+            aoAvisar={aoAvisar}
+          />
+        </ol>
+      )}
+
+      {/* Tablet e computador: <details> abre e fecha sozinho. Começa aberto se algum ponto foi escolhido. */}
+      <details open={Boolean(pontoSelecionadoId)} className="hidden sm:block">
         <summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">
           Todos os {rua.pontos.length} pontos de medição
         </summary>

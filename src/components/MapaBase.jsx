@@ -14,10 +14,14 @@ import { Fragment } from 'react'
 import { MapContainer, TileLayer, Polyline, Tooltip, ZoomControl } from 'react-leaflet'
 import AjusteDoMapa from './AjusteDoMapa.jsx'
 import { LIMITES_MAPA } from '../data/ruas.js'
+import { ehCelular } from '../utils/tela.js'
 
 const ATRIBUICAO = '&copy; <a href="https://www.openstreetmap.org/copyright">colaboradores do OpenStreetMap</a>'
 
 function MapaBase({ ruas, aoSelecionarRua, enquadrarSozinho = true, children, rotulo }) {
+  // No celular o mapa fica parado: não arrasta com o dedo (assim o dedo rola a página)
+  // e o zoom é só pelos botões + e − (zoom no centro: o "−" volta ao mesmo enquadramento).
+  const fixo = ehCelular()
   const umaRuaSo = ruas.length === 1 // com uma rua só, a linha fica mais grossa
 
   return (
@@ -31,6 +35,9 @@ function MapaBase({ ruas, aoSelecionarRua, enquadrarSozinho = true, children, ro
         maxZoom={18}
         zoomControl={false} // o zoom vai para a direita (à esquerda ficam os botões de camada)
         scrollWheelZoom={false} // não "prende" a rolagem da página ao passar o mouse
+        dragging={!fixo}
+        touchZoom={!fixo}
+        doubleClickZoom={!fixo}
         className="h-full w-full"
       >
         <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution={ATRIBUICAO} />
