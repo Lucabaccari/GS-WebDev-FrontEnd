@@ -5,6 +5,9 @@ Disciplinas: **Front-End Design** e **Web Development**.
 
 > **Demonstração acadêmica.** Todos os dados são simulados. O app não usa dados pessoais reais.
 
+- **Site publicado:** https://gs-web-dev-front-end-nu.vercel.app
+- **Repositório:** https://github.com/Lucabaccari/GS-WebDev-FrontEnd
+
 ## Ficha CitizenTech
 
 | | |
@@ -104,7 +107,9 @@ O app é publicado na [Vercel](https://vercel.com), ligada a este repositório d
 3. Em **Environment Variables**, crie `VITE_API_URL` com o mesmo valor do `.env.example`.
 4. Clique em **Deploy**. A cada `git push` na `main`, a Vercel publica de novo.
 
-Link do deploy: _(preencher)_
+Link do deploy: **https://gs-web-dev-front-end-nu.vercel.app**
+
+Na Vercel, a variável `VITE_API_URL` (a mesma do `.env.example`) fica em **Settings → Environment Variables**. O Vite coloca o valor dela no código na hora do build, então, se ela mudar, é preciso publicar de novo.
 
 ## Limitações (é uma demonstração)
 
@@ -120,7 +125,11 @@ Link do deploy: _(preencher)_
 
 | Nome | RM |
 |---|---|
-| _(preencher)_ | |
+| Gustavo Pereira | 570549 |
+| Lara Beatriz | 572589 |
+| Lívia Laur | 569017 |
+| Luca Baccari | 569807 |
+| Rafael Dias | 570504 |
 
 ## Uso de IA
 

@@ -17,7 +17,7 @@ Combinados que valeram o projeto todo:
 - Todo código precisava ser entendido por quem ia apresentar. Por isso pedimos código simples, comentado em português.
 - Nada de dados reais inventados: o que é simulado aparece como simulado na tela.
 
-## 2. Interações realizadas (exemplos representativos)
+## 2. Interações realizadas (principais pedidos)
 
 | O que pedimos (resumo do prompt) | O que a IA respondeu ou fez | O que fizemos com isso |
 |---|---|---|
