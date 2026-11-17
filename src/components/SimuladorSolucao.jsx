@@ -181,52 +181,57 @@ function SimuladorSolucao({ passos }) {
 
   return (
     <div className="grid overflow-hidden rounded-3xl border border-linha bg-white shadow-suave lg:grid-cols-[300px_1fr]">
-      {/* Lista das etapas (à esquerda) */}
-      <ol className="border-b border-linha bg-papel p-3 lg:border-r lg:border-b-0">
+      {/* Lista das etapas (à esquerda). No computador, as 4 etapas dividem a altura toda da barra,
+          cada uma com o número grande, o título e a situação (agora, feita ou bloqueada). */}
+      <ol className="flex flex-col gap-2 border-b border-linha bg-papel p-3 lg:border-r lg:border-b-0">
         {passos.map((p, i) => {
           const aberta = i === etapa
+          const situacao = feitas[i] ? 'Feita' : aberta ? 'Agora' : liberada(i) ? 'Liberada' : 'Bloqueada: termine a anterior'
           return (
-            <li key={p.numero}>
+            <li key={p.numero} className="lg:flex-1">
               <button
                 type="button"
                 disabled={!liberada(i)}
                 aria-current={aberta ? 'step' : undefined}
                 onClick={() => setEtapa(i)}
-                className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition ${
-                  aberta ? 'bg-white shadow-suave' : 'hover:bg-white/60'
-                } disabled:cursor-not-allowed disabled:opacity-50`}
+                className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition lg:h-full lg:flex-col lg:items-start lg:justify-between lg:gap-4 lg:border lg:p-4 ${
+                  aberta ? 'bg-white shadow-suave lg:border-tinta' : 'hover:bg-white/60 lg:border-linha lg:border-dashed'
+                } disabled:cursor-not-allowed disabled:opacity-60`}
               >
                 <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-xs ${
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-xs lg:h-10 lg:w-10 lg:text-sm ${
                     feitas[i] ? 'bg-normal text-white' : aberta ? 'bg-tinta text-white' : 'border border-linha-forte text-tinta-2'
                   }`}
                 >
                   {feitas[i] ? '✓' : liberada(i) ? p.numero : <Cadeado />}
                 </span>
-                <span className="font-medium">{p.titulo}</span>
+                <span>
+                  <span className="block font-medium lg:text-lg">{p.titulo}</span>
+                  <span className="hidden font-mono text-[11px] text-tinta-2 lg:block">{situacao}</span>
+                </span>
               </button>
             </li>
           )
         })}
-        <li className="mt-3 px-3 font-mono text-[11px] text-tinta-2">Exemplo ilustrativo · dados simulados</li>
+        <li className="px-3 pt-1 font-mono text-[11px] text-tinta-2">Exemplo ilustrativo · dados simulados</li>
       </ol>
 
       {/* Palco da etapa aberta (à direita) */}
-      {/* Altura mínima = a da etapa 1 (foto 16:9 + leituras), para o quadro não encolher nas outras etapas.
-          Conta: largura do palco (tela até 80rem, menos margens e a lista de 300px) x 9/16 + o resto da etapa. */}
-      <div className="min-w-0 p-5 md:p-8 lg:min-h-[calc((min(100vw,80rem)-2rem-300px-4rem)*9/16+24rem)]">
+      {/* Altura mínima = a da etapa mais alta (a 1, com a foto), para o quadro não mudar de tamanho entre as etapas.
+          A foto tem largura máxima de 480 px, então essa altura é fixa e cabe numa tela comum. */}
+      <div className="min-w-0 p-5 md:p-6 lg:min-h-[632px]">
         <p className="font-mono text-[11px] tracking-[0.18em] text-[#B8402D] uppercase">
           Etapa {passos[etapa].numero} de 04
         </p>
-        <h3 className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">{passos[etapa].titulo}</h3>
+        <h3 className="mt-1 text-2xl font-medium tracking-tight">{passos[etapa].titulo}</h3>
         <p className="mt-2 max-w-xl text-tinta-2">{passos[etapa].texto}</p>
 
-        <div className="mt-6">
+        <div className="mt-4">
           {/* ===== Etapa 1: Mede ===== */}
           {etapa === 0 && (
             <div>
               {/* A foto fica no formato original (sem cortar): assim a caixa no teto cai sempre no lugar certo. */}
-              <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-tinta">
+              <div className="relative aspect-[16/9] max-w-[480px] overflow-hidden rounded-2xl bg-tinta">
                 <img
                   src="/imagens/onibus-ana-rosa.webp"
                   alt="Ônibus municipal passando pela Av. Paulista à noite"
