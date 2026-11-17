@@ -1,411 +1,70 @@
 # Uso de IA no projeto
 
-> **Rascunho.** Este arquivo cobre o projeto inteiro e é atualizado a cada sessão de trabalho até a entrega final.
+Este arquivo registra, de forma transparente, como usamos Inteligência Artificial no desenvolvimento do **Pulso Web** (Global Solution 2026.2, CitizenTech).
 
-Ferramenta usada: **Claude Code** (Anthropic), guiado pelo arquivo [CLAUDE.md](CLAUDE.md).
+## 1. Ferramentas utilizadas
 
-Regras que seguimos:
+| Ferramenta | Para que usamos |
+|---|---|
+| **Claude Code** (Anthropic), no app de desktop e no VS Code | Par de programação: planejar os commits, escrever e revisar código React, explicar trechos em português simples, rodar build e lint, testar o app num navegador embutido (computador e celular) e manter a documentação. Seguia as regras do nosso arquivo [CLAUDE.md](CLAUDE.md). |
+| **Claude Code: pesquisa na web** | Encontrar dados públicos sobre São Paulo (frota de ônibus, passageiros, iluminação, ondas de calor, ilha de calor em Paraisópolis). Cada número foi conferido por nós na página de origem antes de entrar no site. |
 
-- A IA não faz commit sozinha. Cada mudança é revisada e aprovada por um integrante.
-- Todo código precisa ser entendido por quem vai apresentar.
-- Toda mudança é validada rodando o app, o build e o lint.
+Outras ferramentas que **não são IA**, mas apareceram no processo: `ffmpeg` (tirar quadros do vídeo do grupo e borrar placas na foto), MockAPI (API dos chamados) e OpenStreetMap (traçado das ruas e fundo do mapa).
 
-## Registro por sessão
+Combinados que valeram o projeto todo:
 
-### Sessão 1: setup do projeto (commits 1 e 2)
+- A IA **não fazia commit sozinha**: ela mostrava a mudança, propunha a mensagem e esperava a nossa aprovação.
+- Todo código precisava ser entendido por quem ia apresentar. Por isso pedimos código simples, comentado em português.
+- Nada de dados reais inventados: o que é simulado aparece como simulado na tela.
 
-- **O que a IA sugeriu:** criar a base com o template React do Vite e o Tailwind v4 via plugin do Vite. Colocar as cores e fontes do guia de estilo no `@theme` do CSS, respeitar `prefers-reduced-motion` e montar as pastas do projeto, o `.env.example`, este AI.md e o README.
-- **O que mudamos:** separamos o setup em dois commits para seguir o `PLANO-DE-COMMITS.md`. _(complete com o que mais mudou)_
-- **Como validamos:** `npm run build` e `npm run lint` sem erros. Abrimos o app com `npm run dev` e vimos o visual do guia, com o console sem erros.
+## 2. Interações realizadas (exemplos representativos)
 
-### Sessão 2: regras de classificação e trechos da linha (commit 3)
+| O que pedimos (resumo do prompt) | O que a IA respondeu ou fez | O que fizemos com isso |
+|---|---|---|
+| "Quero começar o projeto, aqui está todo o contexto" (com o CLAUDE.md e o plano de commits) | Montou a base com Vite + React + Tailwind v4, as pastas (`components`, `hooks`, `services`, `utils`, `data`) e propôs os commits na ordem do plano. | Revisamos e aprovamos commit por commit. |
+| "Como funciona o MockAPI quando outra pessoa usar o site, sem login?" | Explicou que a API é um banco único e aberto: todos veem e mudam os mesmos chamados. Sugeriu uma chave para o chamado automático começar desligado. | Aceitamos a chave e registramos a limitação no README. |
+| "Está muito básico. Quero um mapa de verdade, e o problema no ponto da rua, não na rua inteira." | Trouxe o Leaflet com o traçado real das 6 ruas, pontos de medição a cada 100 m e o local exato da ocorrência ("nº 1036 a 1056"). | Definimos as 6 ruas, o formato dos nomes dos pontos e pedimos vários ajustes até ficar claro. |
+| "Esse chamado automático, quero que aconteça na 6ª passagem." Depois: "no terceiro alerta consecutivo". | Mudou a regra numa constante só (`PASSAGENS_PARA_CHAMADO`) e escreveu testes que conferem o 1º, o 2º e o 3º alerta. | Voltamos para a 3ª passagem para seguir o vídeo e o PDF do grupo. |
+| "Quero um index explicando o problema e a solução, alinhado ao vídeo, com dados reais." | Criou a página Início, com o termômetro animado de Paraisópolis × Morumbi, o simulador em 4 etapas e o diagrama "Por dentro". | Cortamos excesso de informação, mudamos textos, pedimos a foto do ônibus e um passo para cada jeito de abrir o chamado. |
+| "Ajuste para ser responsivo; faça uma revisão geral." | Mediu cada tela em 375, 768 e 1024 px. Criou o menu do celular e diminuiu os ícones do mapa. | Apontamos o que estava ruim no nosso celular (termômetro cortado, camadas rolando de lado) e conferimos de novo. |
+| "Avisar o usuário sobre o melhor caminho: ele escolhe ruas e intervalos, e o app vê se há alerta." | Criou o "Verifique seu caminho" (plano B), com a conta em `utils/caminho.js`, separada da tela. | Deixamos claro na tela que, na vida real, o caminho viria da origem e do destino. |
 
-- **O que a IA sugeriu:** criar `utils/classificar.js` com os limites do PDF numa tabela só (`CAMADAS`), a função `classificar(camada, valor)`, que devolve `normal`, `atencao`, `critico` ou `sem_dados`, a função `leituraValida`, que trata vazio, `NaN` e valor fora da faixa do sensor como "sem dados", e `estadoMaisGrave`. Criar também `data/linha.js` com os 6 trechos e a função `buscarTrecho`. As faixas mínima e máxima de cada sensor são simuladas e estão marcadas assim no código.
-- **O que mudamos:** _(completar)_
-- **Como validamos:** um script de teste com 27 casos, incluindo os valores exatos nas bordas (30 °C, 5 lux, 1,5 g, 25 µg/m³) e leituras inválidas, sem nenhuma falha. `npm run build` e `npm run lint` sem erros.
+## 3. Aplicação no projeto
 
-### Sessão 3: cliente da API e hook useChamados (commit 4)
+**O que a IA ajudou a desenvolver:**
 
-- **O que a IA sugeriu:** criar `services/api.js`, o único lugar que chama `fetch`. Ele lê `VITE_API_URL` do `.env` e lança erro quando a resposta não é `ok`. Criar `services/chamadosService.js` com o CRUD (`criarChamado`, `listarChamados`, `buscarChamado`, `atualizarChamado` com PUT do objeto completo e `excluirChamado`). Criar `hooks/useChamados.js` com `useState` (lista, carregando, erro) e `useEffect` (carrega ao abrir, sem chamar setState direto dentro do efeito, como o lint pediu), mais as funções `criar`, `atualizar`, `mudarStatus` e `excluir`. O `mudarStatus` preenche `resolvidoEm` ao resolver.
-- **O que mudamos:** _(completar)_
-- **Como validamos:** no console do navegador, com o app rodando, testamos o CRUD contra o MockAPI real: POST, GET da lista e de um item, PUT e DELETE. Depois montamos um componente temporário para testar o hook: começa carregando, termina carregado, cria, muda o status e exclui. Os registros de teste foram apagados e a API voltou a ficar vazia. `npm run build` e `npm run lint` sem erros.
+- **Base e dados:** serviços da API (`services/api.js`, `chamadosService.js`, `cache.js`), o único lugar que chama `fetch`; o CRUD completo de chamados (criar, listar, mudar status, excluir); o seed com chamados de exemplo.
+- **Lógica de negócio (funções puras em `utils/`):** classificação dos estados pelos limites do PDF, regra do chamado automático no 3º alerta seguido, simulação das leituras, ônibus em ida e volta, prioridade e ordem da fila, indicadores e a verificação do caminho.
+- **8 custom hooks:** `useChamados`, `useLeituras`, `useOnibus`, `useChamadoAutomatico`, `useOnlineStatus`, `useNaTela`, `useContagem` e `useTour`.
+- **40 componentes**, entre eles o mapa (`MapaBase`, camadas de pontos, ônibus e chamados), o bilhete do chamado, o formulário "Avisar problema", o simulador do Início, os tours guiados e o painel de demonstração.
+- **Telas:** Início (problema, solução, por dentro, demonstrações), Cidadão (mapa ao vivo, resumo das ruas, aviso, caminho) e Agente (indicadores e fila, com cores próprias).
+- **Qualidade:** acessibilidade (estado sempre com cor + forma + texto, botões de 44 px, teclado, `prefers-reduced-motion`), uso sem internet e versão para celular.
 
-### Sessão 4: leituras simuladas e trechos nos 3 estados (commit 5)
+**Decisões que foram do grupo:**
 
-- **O que a IA sugeriu:** criar `utils/simulacao.js` com perfis inventados por trecho e chance de 5% de falha do sensor, `utils/formatadores.js` (valor com unidade e vírgula decimal) e o hook `useLeituras`, que gera uma passagem a cada 4 s com `setInterval` dentro do `useEffect` e limpa o timer ao sair. O estado de cada trecho é calculado a partir das leituras, sem ser guardado à parte. Componentes: `StatusPicto` (visto, losango, octógono e quadrado tracejado em SVG), `FitaEstado` (fita lisa, listrada ou diagonal), `EtiquetaEstado` (pictograma + texto) e `CartaoTrecho`. Os componentes `FitaEstado` e `EtiquetaEstado` não estavam no plano. Foram criados para reaproveitar nas próximas telas.
-- **O que mudamos:** _(completar)_
-- **Como validamos:** abrimos no navegador e vimos os 6 trechos com os 3 estados e "sem dados", cada um com cor, forma, padrão e texto. A passagem avança sozinha e os valores mudam. No celular (375 px) não aparece rolagem horizontal. `npm run build` e `npm run lint` sem erros.
+- O tema e o discurso vieram do nosso vídeo: o ônibus que já roda a cidade vira sensor.
+- Escolhemos as 6 ruas da região da Paulista e pedimos que o problema aparecesse **no ponto exato**, não na rua inteira, porque é isso que ajuda o cidadão e a subprefeitura de verdade.
+- Trocamos "Solicitar parada" por **"Avisar problema"**, por fazer mais sentido para quem usa.
+- Mudamos a regra para a 6ª passagem e depois voltamos para a **3ª**, para ficar igual ao que o vídeo e o PDF prometem.
+- Pedimos várias vezes menos informação na tela: tiramos fontes do meio do texto, a faixa rolante, "Quem participa", a legenda do mapa e etiquetas repetidas.
+- Pedimos **duas visões bem diferentes** (cidadão em tons claros e coral, agente em azul) e os tours para quem chega pela primeira vez.
+- O modo demonstração ficou na tela do Cidadão, porque é lá que os ônibus andam, e o chamado automático começa desligado para não encher a API de quem só está visitando.
 
-### Sessão 5: tela do Cidadão (commit 6)
+## 4. Validação das respostas
 
-- **O que a IA sugeriu:** dividir o app em telas (`pages/Cidadao.jsx` e `pages/Agente.jsx`, este último ainda como aviso) com troca por abas no `App`. O `useLeituras` subiu para o `App` para a simulação não reiniciar ao trocar de aba. Componentes novos: `Cabecalho`, `Abas` (com `role="tab"` e `aria-selected`), `LetreiroLED` (fonte Doto e `aria-live`), `SeletorCamada` (botões com `aria-pressed`), `MapaEsquematico` (faixa vertical em SVG com padrões liso, listrado e diagonal, e resumo em texto para leitor de tela) e `Legenda`. Lógica nova fora dos componentes: `utils/mensagens.js` (frase do letreiro com verbo no começo, escolhendo o alerta mais urgente) e `estadoDoTrecho` em `classificar.js`.
-- **O que mudamos:** _(completar)_
-- **Como validamos:** no navegador, o letreiro mostra o alerta mais grave, o seletor muda o mapa e o letreiro (ex.: "Luz à noite" destaca a R. Oscar Freire escura) e as abas trocam de tela. No celular (375 px) nada passa da largura da tela e todos os botões têm 44 px ou mais. `npm run build` e `npm run lint` sem erros.
+- **Build e lint** (`npm run build` e `npm run lint`) rodados antes de cada commit, sem erros.
+- **Testes da lógica** com scripts no computador: limites dos estados (inclusive os valores exatos nas bordas), regra do 3º alerta (o 1º e o 2º não abrem, o 3º abre, não duplica, uma leitura normal zera) e o caminho (Av. Paulista inteira dá "Evite"; do nº 1 ao 1200, "Pode seguir").
+- **Testes no navegador:** cada funcionalidade foi clicada de verdade, no computador e no celular (375 px), conferindo também que nada vaza da tela e que o console fica sem erros.
+- **API:** o CRUD foi testado contra o MockAPI real; os registros de teste foram apagados. Para testar o envio de aviso sem criar chamado de verdade, a resposta da API foi simulada só durante o teste.
+- **Dados reais:** abrimos cada fonte. Um número que a pesquisa trouxe errado (frota de 13.416 ônibus) foi corrigido para o valor da fonte (13.496).
+- **O que ajustamos depois de testar:** o termômetro e a escala cortados no celular, a prioridade que "pulava" ao mudar o status, o ponto do mapa fora do centro, o tour cobrindo o mapa e textos longos demais.
 
-### Sessão 6: CRUD de chamados na interface (commit 7)
+## 5. Análise crítica
 
-- **O que a IA sugeriu:** criar `utils/chamados.js` com os rótulos, a prioridade calculada pelo estado atual do trecho (crítico = alta, atenção = média), a validação do formulário e o filtro da lista. Em `formatadores.js`, criar o protocolo `PL-000001` e a data em formato brasileiro. Componentes novos: `BotaoParada`, `FormChamado` (campos controlados e erro com `role="alert"`), `BilheteChamado` (protocolo, picote, carimbo de status, etiqueta "Dados simulados", botões de status e exclusão com confirmação dentro do próprio bilhete), `ListaChamados` (carregando, erro com "Tentar de novo" e lista vazia) e `FiltrosChamados`. O `useChamados` subiu para o `App`, para as duas telas verem a mesma lista. O letreiro mostra "Parada solicitada" por 5 s (um `useEffect` com `setTimeout`). O lint pediu para tirar a constante `FILTROS_VAZIOS` do arquivo do componente, e ela foi para `utils/chamados.js`.
-- **O que mudamos:** _(completar)_
-- **Como validamos:** testamos pela interface, contra o MockAPI real: o formulário vazio mostra o erro, o envio cria o chamado e o letreiro mostra "Parada solicitada". Na aba Agente, o bilhete aparece com prioridade "Alta", o status muda para "Em atendimento", o filtro por "Resolvido" mostra 0 de 1 e o "Limpar" volta a mostrar tudo. A exclusão pede confirmação e apaga, e a API voltou a ficar vazia. `npm run build` e `npm run lint` sem erros.
+**Benefícios.** A IA acelerou muito o trabalho pesado: ligar mapa, simulação e API levaria semanas para um grupo do 1º ano. Ela também foi uma boa professora. Quando perguntávamos "por que os dados atualizam a cada 4 segundos?" ou "como o MockAPI funciona sem login?", a resposta vinha em português simples e nos ajudou a entender e defender as escolhas. Ter testes e medições a cada mudança deu confiança para mexer no projeto sem medo de quebrar.
 
-### Sessão 7: painel do Agente e chamado automático (commit 8)
+**Limitações.** A IA não substitui o olhar do grupo. Várias versões ficaram "corretas, mas feias" ou com informação demais, e só percebemos isso abrindo no celular e mostrando para outras pessoas. Ela também errou: comandos de terminal com crases que não rodaram, um enquadramento de mapa que cortava as ruas, um número de fonte errado. Tudo foi pego nos testes, mas mostrou que cada resposta precisa ser conferida.
 
-- **O que a IA sugeriu:** criar `utils/regras.js` com `PASSAGENS_PARA_CHAMADO`, `atualizarSequencias` (soma 1 a cada passagem crítica e zera com qualquer outro resultado, inclusive "sem dados"), `chamadosParaAbrir` (abre só quando a contagem chega exatamente ao limite e não duplica se já houver um automático sem resolver para o mesmo trecho e tipo) e `montarChamadoAutomatico`. O `useLeituras` passou a guardar passagem, leituras e sequências num estado só. Criar o hook `useChamadoAutomatico` no `App`, com `useRef` para não conferir a mesma passagem duas vezes. Criar `utils/indicadores.js` (contagens por status, tipo e origem, e tempo médio de resolução), `formatarDuracao` e o componente `Indicadores`, com placas sem setinhas e barras simples por tipo. O cartão do trecho mostra "Crítico há N de 6 passagens".
-- **O que mudamos:** o grupo trocou a regra da 3ª passagem (do PDF) para a **6ª passagem**. CLAUDE.md, README e PLANO-DE-COMMITS foram atualizados. A IA também reduziu a variação da luz na simulação (de ±8 para ±3 lux) e deixou a R. Oscar Freire como "rua escura" (1 lux), para a regra aparecer de forma previsível na demo. _(completar se houver mais)_
-- **Como validamos:** um script com 9 testes da regra e dos indicadores, sem nenhuma falha: abre só na 6ª, zera a contagem, não duplica, calcula o tempo médio. Com o app rodando contra o MockAPI real, os chamados automáticos nasceram sozinhos na 6ª passagem crítica. Depois que um deles foi resolvido, uma nova sequência abriu outro, como a regra prevê. Os indicadores e o tempo médio foram conferidos na tela. Os chamados de teste foram apagados. `npm run build` e `npm run lint` sem erros.
+**Dificuldades.** O mais difícil foi saber pedir: no começo, pedidos vagos geravam soluções grandes demais. Fomos aprendendo a pedir uma coisa por vez, com exemplos ("o °C está separado do 15 no celular"). Outro desafio foi acompanhar tantas mudanças e garantir que conseguimos explicar cada parte. Por isso mantivemos o código comentado e os commits pequenos e revisados.
 
-### Sessão 8: modo demonstração, sem conexão e acessibilidade (commit 9)
-
-- **O que a IA sugeriu:**
-  - **Demo:** o `useLeituras` passou a aceitar `pausado` e `intervaloMs` e a devolver `avancar()`. O componente `ControlesDemo` tem Pausar/Continuar, "Avançar passagem" e as velocidades Lenta (8 s), Normal (4 s) e Rápida (1,5 s), com o aviso "Simulação acelerada... Na rua, são vários minutos".
-  - **Sem conexão:** o hook `useOnlineStatus` ouve os eventos `online`/`offline` do navegador. O `BannerOffline` mostra o aviso. Sem internet, a simulação para e a tela mantém as últimas leituras. `services/cache.js` salva os chamados no `localStorage` (com `try/catch`). Se a API falhar, o `useChamados` mostra a cópia salva com o aviso. Quando a internet volta, os chamados são buscados de novo.
-  - **Chave do chamado automático:** botão "Chamado automático: ligado/desligado" no modo demonstração, que começa **desligado**. Como a API é compartilhada e não tem login, qualquer pessoa que abrisse o site criaria chamados automáticos. Agora isso só acontece quando alguém liga a chave (por exemplo, na apresentação).
-  - **Acessibilidade:** foco visível com `:focus-visible` (contorno asfalto e anel amarelo), setas ← → nas abas (só a aba ativa entra no Tab) e o link "Pular para o conteúdo".
-- **O que mudamos:** o aluno pediu a chave para ligar e desligar o chamado automático, depois de discutir que o MockAPI é um banco único, sem usuários. _(completar se houver mais)_
-- **Como validamos:**
-  - Com a chave desligada, a R. Oscar Freire chegou a 9 passagens críticas e nenhum POST saiu do app. O hook foi testado isolado: desligado não cria, ligado cria 1 chamado e a mesma passagem não cria de novo.
-  - Pausar congela a passagem, "Avançar" soma 1 e a velocidade Rápida faz 2 passagens em 3,2 s.
-  - Simulando a perda de conexão, o aviso aparece, a simulação para e os controles ficam bloqueados. Quando a conexão volta, tudo retoma.
-  - Com a API derrubada de propósito, os chamados salvos continuam na tela, e "Tentar de novo" volta ao normal.
-  - O contraste de todas as cores usadas foi calculado pela fórmula WCAG e todas passam de 4,5:1 (a menor é 5,02:1).
-  - Com a tecla Tab de verdade, aparece "Pular para o conteúdo" e o foco fica visível.
-  - No celular (375 px), nada vaza da tela e todos os botões e campos têm 44 px ou mais.
-  - `npm run build` e `npm run lint` sem erros.
-
-### Sessão 9: seed, deploy e documentação final (commit 10)
-
-- **O que a IA sugeriu:** criar `scripts/seed.js` (comando `npm run seed`). Ele lê a `VITE_API_URL` do `.env` e cria 6 chamados de exemplo simulados, com status, tipos e origens variados e datas no passado, para os indicadores terem dados. A opção `--limpar` apaga tudo antes de criar e avisa que a API é compartilhada. No README entraram as seções Funcionalidades, Requisitos do desafio (onde cada um está no código), os comandos de seed, o passo a passo do deploy na Vercel (com a variável `VITE_API_URL`) e Limitações (API sem login e compartilhada, simulação por navegador, limites do plano gratuito, o que um sistema real teria). O CLAUDE.md foi atualizado com os 4 hooks e os arquivos novos.
-- **Erro da IA no caminho:** um comando de terminal com crases de Markdown entre aspas duplas fez o shell tentar executar trechos do texto. Nenhum comando chegou a rodar, porque todos falharam com "script não encontrado". A IA conferiu o Git, os arquivos e a API antes de continuar e refez a edição com a ferramenta de edição de arquivos.
-- **O que mudamos:** _(completar)_
-- **Como validamos:** rodamos `npm run seed -- --limpar`, que apagou 10 chamados de teste e criou os 6 exemplos, conferidos na API. `node --check` no script de seed, `npm run build` e `npm run lint` sem erros. O app foi aberto no navegador do aluno com `npm run dev -- --open`.
-
-### Sessão 10: mapa real, criticidade por ponto e redesenho
-
-- **O que o aluno pediu:** achou o projeto básico. Pediu um mapa de verdade (Leaflet) com as 6 ruas, que o problema fosse mostrado **no ponto da rua** em vez de marcar a rua inteira como crítica, e um design melhor, mantendo as cores.
-- **O que a IA sugeriu e fez:**
-  - **Dados:** `data/ruas.js` (substitui `linha.js`) com o traçado das 6 ruas tirado do OpenStreetMap pela API Overpass e simplificado para uma linha central por rua. Cada rua tem 5 pontos de medição com rótulo simulado ("altura do nº 900"), e cada ponto "cuida" de um pedaço da rua.
-  - **Lógica por ponto:** a simulação passou a gerar leituras por ponto. Quase todos os pontos ficam normais e só 6 têm problema (inventados). A regra da 6ª passagem conta por ponto e não duplica no mesmo ponto. O chamado ganhou `pontoId`, `pontoNome`, `lat` e `lng`. A rua mostra um resumo ("5 pontos · 1 crítico · 1 atenção") com `resumirRua`.
-  - **Mapa (Leaflet + react-leaflet):** `MapaBase` (fundo do OpenStreetMap em tons de cinza, as 6 ruas em asfalto, zoom à direita), `CamadaPontos` (só o pedaço do ponto muda de cor: fita listrada na atenção, vermelha no crítico, mais o pictograma), `OnibusMarcador` (ônibus que anda pela rua a cada passagem, parado para quem pede menos movimento), `CamadaChamados` (chamados no ponto exato, desenho pelo status), `FocoNoMapa` ("Ver no mapa") e `AjusteDoMapa` (reenquadra o mapa quando a caixa muda de tamanho).
-  - **Redesenho:** cabeçalho mais leve com marca, letreiro em faixa fina, mapa no centro da tela do Cidadão com o painel da rua ao lado (`SeletorRua` e `PainelRua`, com os pontos em faixa vertical, como estações), "Solicitar parada" sobre o mapa, "Avisar problema aqui" já preenchendo o ponto no formulário, legenda compacta e o modo demonstração numa caixa recolhível no fim da página. Na tela do Agente: mapa de chamados mais a fila de atendimento ordenada por status, prioridade e tempo de espera (`ordenarFila`).
-  - Foram removidos `CartaoTrecho`, `MapaEsquematico`, `FitaEstado` e `linha.js`, que foram substituídos.
-- **Problemas encontrados e corrigidos no caminho:**
-  - O fundo da CARTO passou a pedir chave, e foi trocado pelo do OpenStreetMap.
-  - O letreiro mostrava "UNDEFINED" porque os pontos estavam sem o nome da rua.
-  - O `react-leaflet` não atualiza o `title` do marcador, e o leitor de tela leria o estado antigo. A correção foi recriar o marcador quando o estado muda.
-  - O mapa ficava afastado demais. O zoom fracionado (`zoomSnap` de 0,25) resolveu.
-  - Dois pontos com problema ficavam no mesmo cruzamento. O problema simulado da Rebouças mudou de ponto.
-  - O `react-dom/server` aumentava o app em 200 KB e foi trocado por SVG em texto.
-  - A IA errou de novo com crases dentro de um comando de terminal. Nada foi executado, e a correção foi feita com a ferramenta de edição.
-- **O que mudamos:** o aluno definiu 6 ruas com pontos dentro delas e o formato dos nomes dos pontos. _(completar)_
-- **Como validamos:**
-  - Um script com 10 testes sem nenhuma falha: chamado só no ponto certo e na 6ª passagem, vizinho não conta, não duplica, resumo da rua, ordem da fila, caminho do ônibus.
-  - No navegador: o clique no marcador abre o ponto no painel, "Avisar problema aqui" abre o formulário com o ponto, a camada "Luz" mostra só os pontos de luz e um aviso de teste apareceu no mapa do Agente no ponto certo (depois foi apagado da API).
-  - No celular (375 px), nada vaza e todos os botões têm 44 px ou mais.
-  - O console ficou sem erros depois de reiniciar o servidor.
-  - `npm run build` e `npm run lint` sem erros.
-
-### Sessão 11: um ônibus com sensor, câmera que acompanha e visões do mapa
-
-- **O que o aluno pediu:** ainda achou simples. Pediu que só um ônibus da rota leve o sensor, que ele percorra cada rua em 1 minuto fazendo paradas, que ao escolher uma rua as outras sumam e o mapa aproxime e acompanhe o ônibus, que exista uma opção para ver todas as ruas com o mapa mais amplo e um ícone de ônibus mais bonito.
-- **O que a IA sugeriu e fez:**
-  - **Rota** (`utils/rota.js`, funções puras): o ônibus passa pelas 6 ruas em sequência. A ordem e o sentido são escolhidos para ele "pular" menos entre o fim de uma rua e o começo da próxima. Cada rua tem 60 s divididos em "etapas": andando (tempo proporcional à distância) e parado 4 s em cada um dos 5 pontos. `estadoNoTempo` diz onde o ônibus está em qualquer momento, `inicioDaProximaParada` serve ao botão de pular e `tempoAteRua` dá a previsão de chegada.
-  - **Hooks:** `useOnibus` (novo) guarda o tempo da simulação, anda 5 vezes por segundo e avisa quando o ônibus chega numa parada. `useLeituras` passou a registrar a leitura **só do ponto onde o ônibus parou** (`registrarLeitura`), contando as leituras de cada ponto. A regra da 6ª passagem agora conta por parada (`atualizarSequenciaPonto`).
-  - **Mapa:**
-    - `CameraDoMapa` enquadra a rua ou todas as ruas e acompanha o ônibus. Se a pessoa arrasta o mapa, ele para de seguir e aparece o botão "Acompanhar ônibus".
-    - `CamadaRastro` desenha em âmbar tracejado o trecho que o ônibus já percorreu.
-    - O ícone novo mostra o ônibus visto de cima, girando conforme a direção, com a caixa de sensores âmbar no teto, que pisca enquanto lê. O balão escuro diz "Lendo nº 900" ou "Próx.: nº 1300".
-    - O ponto que está sendo lido ganha moldura âmbar.
-  - **Telas:**
-    - `SeletorVisao` tem "Seguir ônibus", "Todas as ruas" e as 6 ruas, cada uma com "ônibus em m:ss".
-    - `PainelViagem` mostra a rua atual, a parada, a barra do trajeto com as 5 paradas e quando o ônibus chega na próxima rua.
-    - `PainelRua` mostra os pontos na ordem do ônibus, com "Lendo agora", "Próxima parada" e "Leitura nº N".
-    - `PainelTodas` traz o resumo das 6 ruas embaixo do mapa amplo.
-    - Quando a rua escolhida não tem o ônibus, aparece o aviso "Chega aqui em m:ss" com o botão "Seguir o ônibus agora".
-  - **Modo demonstração:** velocidades 1x, 2x, 5x e 10x, e "Pular para a próxima parada".
-  - **Desempenho:** como a tela redesenha 5 vezes por segundo, os ícones do mapa ficam guardados em cache para não serem recriados a cada vez.
-- **Problemas encontrados e corrigidos:**
-  - Erro de arredondamento no "pular para a próxima parada": o tempo calculado caía uma fração antes da parada. A correção soma 1 ms.
-  - O lint avisou sobre dependências da câmera. A correção foi ler a posição e os limites por `useRef`, para só reenquadrar quando a visão muda.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - 16 testes da rota sem nenhuma falha: cada rua soma 60 s, 5 paradas em ordem, uma volta passa pelas 30 paradas (também a 10x), "pular" vai para a parada certa (inclusive trocando de rua e de volta) e a previsão de chegada está certa.
-  - Os testes da sessão anterior continuam passando, e a sequência por parada conta 1, 2, ..., 7 e volta a 0 com uma leitura normal.
-  - No navegador: "Seguir ônibus" mostra só a rua do ônibus com o ônibus no centro, e troca de rua sozinho quando ele termina uma. "Todas as ruas" mostra as 6. Uma rua sem o ônibus mostra a previsão de chegada. Na parada, a contagem de leituras do ponto subiu de 1 para 2 e a caixa do sensor piscou.
-  - No celular (375 px), nada vaza nas três visões e na tela do Agente.
-  - Console sem erros. `npm run build` e `npm run lint` sem erros.
-
-### Sessão 12: um ônibus por rua, medição a cada 100 m e local exato
-
-- **O que o aluno pediu:** ver cada ônibus na sua rua ao mesmo tempo, também no mapa geral. Passagem de 3 minutos. Medir a cada 100 m e apontar o número exato da ocorrência com margem de 20 números ("Av. Paulista, de 1006 a 1030"). Para luz e pavimento, destacar só aquele ponto, e não o trecho todo.
-- **O que a IA sugeriu e fez:**
-  - **Dados:** `data/ruas.js` regerado a partir do mesmo traçado, com um ponto a cada 100 m (159 pontos). Cada ponto ganhou `inicioM`, `fimM`, `numeroDe` e `numeroAte`. A numeração é simulada: 1 número por metro. Foi criada a função `pontoNoMetro`.
-  - **Rota** (`utils/rota.js`, reescrita): 6 trajetos, um por rua. Cada ônibus faz a passagem em 3 min, sempre no sentido da numeração, com paradas de ônibus simuladas a cada 450 m, e sai 30 s depois do anterior. `estadoDoOnibus` diz onde está cada ônibus, e `pontosPassados` diz quais pontos ele passou entre dois momentos. O sensor lê nesses pontos, andando ou parado.
-  - **Simulação:** os problemas ganharam um lugar exato em metros (`PROBLEMAS`). `localDaOcorrencia` devolve 20 números em volta do lugar para luz e pavimento, e o trecho de 100 m para calor e ar.
-  - **Hooks:** `useOnibus` move os 6 ônibus e avisa os pontos passados. `useLeituras.registrarLeituras` atualiza vários pontos de uma vez e calcula, uma vez só, o local de cada camada de cada ponto (`LOCAIS`).
-  - **Mapa e telas:**
-    - `CamadaPontos` destaca só o local exato, e no mapa amplo mostra apenas os lugares com problema. `CamadaParadas` mostra as placas de parada. Os ônibus ficam menores no mapa amplo.
-    - `PainelRua` traz as ocorrências com a numeração ("lugar exato" ou "trecho de 100 m") e todos os pontos numa caixa que abre e fecha.
-    - `PainelViagem` mostra a numeração onde o ônibus está.
-    - `PainelTodas` mostra os 6 ônibus com uma barrinha do trajeto.
-    - Letreiro, chamados automáticos, chamados do cidadão e seed passaram a usar o local exato.
-  - **Modo demonstração:** "Adiantar 15 s" no lugar de "pular para a próxima parada".
-- **Problemas encontrados e corrigidos:**
-  - A numeração repetia o número na divisa de dois trechos ("900 a 1000" e "1000 a 1100"). Agora cada trecho começa no número seguinte.
-  - Os 6 ônibus ficavam grandes demais no mapa amplo e ganharam uma versão menor.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - Testes de lógica sem nenhuma falha: 6 ônibus, passagem de exatamente 3 min, numa passagem cada um dos 159 pontos é lido uma vez (também a 10x), os ônibus em posições diferentes, todos os problemas dentro de algum ponto, luz na Oscar Freire em "nº 1036 a 1056", calor usando o trecho inteiro, ponto do problema quase sempre crítico e ponto vizinho normal.
-  - Os testes antigos da regra continuam passando.
-  - No navegador: os 6 ônibus andam juntos no mapa amplo. Na rua escolhida, o ônibus fica no centro, com as placas de parada e a ocorrência "nº 1036 a 1056 · lugar exato". A 10x, um ponto passou da leitura nº 1 para a nº 2.
-  - No celular, nada vaza. Numa aba nova, depois de passar por todas as visões e pelo Agente, o console ficou sem erros.
-  - `npm run build` e `npm run lint` sem erros.
-
-### Sessão 13: ida e volta, numeração por contexto, "Avisar problema" e formulário novo
-
-- **O que o aluno pediu:**
-  - Mostrar o número metro a metro só na rua escolhida, e o trecho de 100 m nos outros lugares.
-  - Ônibus em ida e volta, em vez de recomeçar do início.
-  - Trocar "Solicitar parada" por algo como "avisar problema".
-  - Um formulário melhor: campo de rua, campo de trecho que depende da rua e tipo com a opção "Outros".
-- **O que a IA sugeriu e fez:**
-  - **Ida e volta** (`utils/rota.js`): as passagens ímpares são ida (do nº 1 ao fim) e as pares são volta (do fim ao nº 1). As paradas ficam no mesmo lugar físico nos dois sentidos (`etapasIda` e `etapasVolta`). Na volta, o ícone gira 180°. O rastro e a barra do trajeto passam a crescer a partir da ponta em que o ônibus começou. `pontosPassados` trata a virada na ponta da rua. O estado do ônibus ganhou `indo`, `rastro` e `trecho`.
-  - **Numeração por contexto:** os botões das ruas e os cartões de "Todas as ruas" mostram o trecho ("nº 401 a 500") e se o ônibus está indo ou voltando. O número exato fica no painel da viagem, no balão do ônibus e no letreiro da rua em foco.
-  - **Botão "Avisar problema"** (`BotaoAvisar`, antes `BotaoParada`), com pictograma de alfinete com "!". A resposta no letreiro passou a ser "Aviso recebido. A subprefeitura vai analisar.".
-  - **Formulário:**
-    - Campos: 1) rua; 2) trecho, bloqueado até escolher a rua, com a lista dos trechos de 100 m daquela rua e o aviso "— Luz à noite: crítico" quando o sensor já achou algo ali; 3) tipo, em botões de escolha (radio), com "Outros".
-    - Quando o sensor já registrou o mesmo problema no trecho, aparece a dica "Seu aviso ajuda a confirmar".
-    - Em "Outros", a descrição pede pelo menos 10 letras e a prioridade começa baixa.
-    - `TIPOS_DE_PROBLEMA` também passou a valer nos filtros e nos indicadores do Agente.
-- **Problemas encontrados e corrigidos:** alguns ônibus mostravam "passagem 0" por causa do atraso de saída, e a contagem passou a começar em 1. O teste antigo "3 min leem todos os pontos" deixou de valer com a ida e volta e foi trocado por dois: "uma passagem lê cada ponto uma vez" e "ida + volta lê cada ponto 2 vezes".
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - Testes de lógica sem nenhuma falha: ida e volta de 3 min cada, virada sem pulo, sentido alternando, paradas iguais nos dois sentidos, cada passagem lê todos os pontos uma vez, ida + volta lê cada ponto 2 vezes, passagens começando em 1.
-  - No navegador:
-    - Os resumos mostram o trecho e o sentido.
-    - Na volta da R. da Consolação, a numeração caiu de 249 para 202.
-    - No formulário, o campo de trecho fica bloqueado até escolher a rua, a dica do sensor aparece e "Outros" exige 10 letras.
-    - O aviso "Outros" apareceu no Agente com prioridade baixa e foi apagado da API depois.
-  - No celular, o formulário cabe e todos os campos têm 44 px ou mais.
-  - Numa aba nova, o console ficou sem erros. `npm run build` e `npm run lint` sem erros.
-- **Ajuste pedido depois:** o aluno quis que o tipo do problema tivesse o mesmo formato dos outros campos. Os botões de escolha (radio) viraram uma lista de seleção igual às de rua e trecho, com o mesmo estilo e 44 px de altura. Conferimos no navegador: os 3 campos iguais, a dica do sensor funcionando e o console sem erros.
-
-### Sessão 14: página inicial (Início) e visual novo
-
-- **O que o aluno pediu:** uma página inicial que explique o problema e a solução e leve às demonstrações do cidadão e do agente, com o discurso do vídeo do grupo e dados pesquisados na internet. Também pediu para mudar o design, que estava grande, quadrado e feio, usando o Behance e o Awwwards como referência e alinhando o Início ao visual das telas do app.
-- **Como a IA usou o vídeo:** extraiu quadros e as legendas com o `ffmpeg` (sem enviar o vídeo para nenhum serviço). Disso saíram o roteiro (pergunta dos 13 mil sensores, Paraisópolis e Morumbi, caixinha no teto do ônibus, ESP32 → MQTT → back-end → painel e app, operadoras, subprefeituras, cidadãos e saúde, "Toda cidade com ônibus pode ter um Pulso.") e a identidade visual (fundo escuro, IBM Plex, coral, rótulos em fonte monoespaçada). Diferença encontrada: o vídeo diz que o chamado nasce na **3ª** passagem, e o app usa a **6ª**, que foi a decisão do aluno.
-- **Dados pesquisados e conferidos na fonte (abrindo cada página):**
-  - 13.496 ônibus na frota contratada, em dez. de 2025 (Diário do Transporte, com dados da SPTrans e da SMT). A busca tinha dado 13.416, e ao abrir a matéria a IA corrigiu.
-  - 7,05 milhões de passageiros por dia em 2025 (Diário do Transporte).
-  - Paraisópolis com até 45 °C e o Morumbi com 30 °C de temperatura de superfície no verão de 2024/25 (Agência FAPESP, estudo do CEFAVELA/UFABC).
-  - Mais de 600 mil pontos de iluminação pública (Prefeitura de SP).
-  - 120 mil mortes associadas a ondas de calor no Brasil entre 2000 e 2019 (Band, estudo da Fiocruz e da UFBA).
-  - Os números ficam em `data/inicio.js`, cada um com a fonte, e aparecem na página com o link.
-- **O que a IA fez:**
-  - **Visual novo:** tokens em `index.css` (papel, superfície, tinta, linha, coral e sombra suave) e fontes IBM Plex Sans e Mono. Dois scripts trocaram as classes antigas em todos os componentes (115 trocas: borda de 1 px, cantos arredondados, sem caixa-alta pesada, pesos mais leves). Depois veio o ajuste à mão de cabeçalho, abas (controle em pílula), letreiro (faixa fina com ponto "ao vivo"), etiquetas de estado (fundo suave), bilhete, indicadores e painel da viagem.
-  - **Página Início** (`pages/Inicio.jsx`): topo escuro com a frase do vídeo e o `PainelAoVivo` (a simulação de verdade, com os 6 ônibus e as ocorrências), "O problema" (`ComparacaoCalor` com os termômetros e os `CartaoDado` com fonte), "A solução" em 4 passos, "Por dentro", "Quem participa", a escala (uma linha, depois a frota, depois a cidade), as duas demonstrações e o rodapé com as fontes.
-  - **Componentes novos:** `MarcaPulso`, `CartaoDado`, `ComparacaoCalor` e `PainelAoVivo`.
-  - **Endereço por tela:** `#inicio`, `#cidadao` e `#agente`, e o Início abre primeiro.
-- **Problemas encontrados e corrigidos:**
-  - A IA tinha usado vidro fosco (`backdrop-blur`), que o guia proíbe, e trocou por fundo sólido.
-  - O link "Pular para o conteúdo" mudava o endereço para `#conteudo` e jogaria a pessoa para o Início. Agora só um `#` de tela troca a aba.
-  - Os cantos do mapa não acompanhavam a caixa arredondada, e a caixa ganhou `overflow-hidden`.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - Contraste de todas as cores novas calculado pela fórmula WCAG, todas acima de 4,5:1 (a menor é 4,97).
-  - No navegador: Início, Cidadão e Agente. Os botões do Início levam às telas, o link `#agente` abre direto e o "Pular para o conteúdo" mantém a tela.
-  - No celular (375 px), nada vaza nas 3 telas e os botões têm 44 px ou mais.
-  - Numa aba nova, o console ficou sem erros. `npm run build` e `npm run lint` sem erros.
-
-### Sessão 15: Início mais moderno, termômetro animado e simulador da solução
-
-- **O que o aluno pediu:**
-  - Animação da temperatura subindo (número e termômetro) quando a seção do problema aparece pela primeira vez.
-  - A seção da solução simulando cada etapa, com participação de quem visita o site.
-  - Um quadro do vídeo com ônibus no trânsito, talvez no topo.
-  - Ícones de cidadão e de agente na demonstração.
-  - Um visual do Início mais moderno e diferenciado. Os ajustes nas outras telas foram aprovados.
-- **Mudanças do próprio aluno, mantidas:** o aluno tinha editado os textos do Início (tirou o sobretítulo do topo, colocou negritos, reescreveu o problema, trocou o título da solução e os textos de "Por dentro" e "Quem participa" e deixou "Agora" no painel ao vivo). A IA leu os arquivos antes e manteve tudo.
-- **O que a IA fez:**
-  - **Quadros do vídeo** (com o `ffmpeg`, no computador do aluno): o topo usa o quadro de 2:18,3 (ônibus na Av. Paulista à noite), recortado acima da legenda gravada. A etapa 1 do simulador usa o de 2:17,5 (ônibus na faixa). As duas imagens estão em `public/imagens/` em WebP (49 KB e 61 KB).
-  - **Hooks novos:** `useNaTela` (IntersectionObserver: avisa quando um elemento aparece na tela) e `useContagem` (faz um número contar com `requestAnimationFrame` e mostra o final direto para quem pede menos movimento).
-  - **`ComparacaoCalor`:** os termômetros sobem de 20 °C até 45 °C e 30 °C quando o cartão aparece, com escala marcada e "+15°" vazado ao fundo.
-  - **`SimuladorSolucao`:** 4 etapas que só liberam a próxima depois da interação. 1) ligar o sensor na foto e ver as 4 leituras; 2) fazer o ônibus passar 6 vezes (os octógonos enchem); 3) o chamado nasce sozinho e a pessoa envia para a subprefeitura; 4) escolher o caminho para voltar a pé (o escuro recebe aviso, o iluminado libera "Ver isso ao vivo na visão do cidadão"). Tudo marcado como exemplo ilustrativo.
-  - **Visual do Início:** foto em tela cheia no topo com a linha do pulso se desenhando, título maior, `FaixaRolante` coral entre as seções, seções numeradas (01 a 05) com números gigantes vazados, fluxo "Por dentro" ligado por traço coral, grade de participantes e rodapé com "Pulso" vazado gigante.
-  - **`IconePerfil`:** ícones desenhados em SVG, uma pessoa com o celular (cidadão) e um prédio público com a prancheta de chamados (agente).
-  - Todas as animações param para quem pede menos movimento, pela regra que já existia no CSS.
-- **Correções no caminho:**
-  - O primeiro quadro do topo vinha escurecido pelo fade do vídeo, e foi trocado por um instante antes.
-  - A linha do pulso cruzava o título e foi para o pé do topo.
-  - O caminho "bom" da etapa 4 passava pela Av. Rebouças, que tem poste apagado na simulação, e foi trocado pela Av. Paulista.
-  - "22h" na etiqueta da foto foi trocado por "à noite", porque não se sabe a hora da gravação.
-  - A contagem de componentes no README foi corrigida para 35.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - No navegador, o termômetro começa em 20/20 e chega a 45/30 ao rolar até ele.
-  - O simulador foi percorrido inteiro por cliques: as etapas começam bloqueadas, com 5 passagens não libera e com 6 libera, o carimbo vira "Na fila da subprefeitura", o caminho escuro dá o aviso e o iluminado libera o botão.
-  - No celular (375 px), nada vaza e os botões têm 44 px ou mais. O console ficou sem erros numa aba nova.
-  - `npm run build` e `npm run lint` sem erros.
-  - O comportamento com "menos movimento" foi conferido pelo código, e não pelo navegador: o painel em segundo plano atrasa as animações, e o teste não diferenciou.
-
-### Sessão 16: chamado no 3º alerta, Início mais enxuto e os 2 jeitos de abrir chamado
-
-- **O que o aluno pediu:**
-  - Menos informação em alguns pontos do Início: topo sem foto e com o fundo escuro de antes, a linha do pulso de um lado ao outro da tela, sem a faixa rolante, sem fontes na seção do problema (só no rodapé) e sem "Quem participa".
-  - **Regra nova:** o chamado automático nasce no **3º alerta seguido** (antes era a 6ª passagem), no app inteiro.
-  - Usar a foto que ele mandou (ônibus "Ana Rosa" na Av. Paulista à noite) no simulador, mostrando os 2 jeitos de abrir um chamado: pelo cidadão ou automático. Na etapa "Orienta", deixar claro que é para escolher uma opção.
-  - Elementos visuais no "Por dentro" que ajudem a entender o fluxo do negócio.
-  - Cartões da demonstração com uma cor cada.
-  - Depois: o "+15°" do problema estava grande demais; e o quadro do simulador encolhia depois da etapa 1. Tirar o botão que levava à demo na etapa 4.
-- **Ajustes finais:** o "+15°" saiu do fundo (vazado gigante) e virou um rótulo pequeno coral entre os dois termômetros ("+15° diferença"). O palco do simulador ganhou altura mínima igual à da etapa 1 (conta com a proporção 16:9 da foto), e a altura ficou igual em todas as etapas (medido em 1024 e 1440 px). Na etapa 4 ficou só o "Recomeçar". Na etapa 1, as leituras passaram a aparecer uma por vez (a cada 0,9 s, com "lendo…" na vez de cada uma); o texto do 1º alerta e o "Próxima etapa" só aparecem depois da 4ª. Na etapa 3, o bilhete ganhou o ícone do tipo do problema (componente novo `IconeProblema`: termômetro com sol, poste apagado, buraco, nuvem de fumaça e alfinete com "?" para "Outros"), conferido nos 5 tipos e no chamado automático. Depois do commit, as etapas da barra lateral passaram a dividir a altura toda dela no computador (cada uma com número maior, título e a situação: "Agora", "Feita" ou "Bloqueada: termine a anterior"); no celular continuam como lista compacta. A caixa do simulador passava da altura da tela (737 a 883 px); a foto ganhou largura máxima de 480 px, os espaços e o título diminuíram, e a altura ficou fixa em 632 px (medida a etapa mais alta), igual em todas as etapas e em 1024 e 1440 px.
-- **O que a IA fez:**
-  - **Regra do 3º alerta:** `PASSAGENS_PARA_CHAMADO = 3` em `utils/regras.js`. O seed passou a usar a mesma constante (texto e número de passagens), e os textos do Início também (`data/inicio.js`). README, CLAUDE.md, PLANO-DE-COMMITS.md e comentários de `App.jsx` e `ControlesDemo` foram atualizados.
-  - **Topo:** sem foto e sem véu, fundo `tinta`. A linha do pulso se desenhava com tracejado de tamanho fixo e não chegava ao fim em telas largas. Agora ela se revela com uma "cortina" (`clip-path`), que funciona em qualquer largura.
-  - **Saíram:** `FaixaRolante` (componente e CSS), as fontes do `ComparacaoCalor` e do `CartaoDado`, "Quem participa" (dados `ATORES` e a escala) e as duas fotos antigas.
-  - **Foto nova** (`public/imagens/onibus-ana-rosa.webp`, 1280 px, 145 KB): as 3 placas visíveis foram borradas com o `ffmpeg` antes de usar. A foto fica no formato original (16:9, sem corte), para a caixinha do sensor cair sempre no teto do ônibus.
-  - **`SimuladorSolucao`:** 1) ligar o sensor: a luz dá crítico e vira o **1º alerta**; 2) "Selecione uma opção": **Automático** (o ônibus passa de novo até o 3º alerta) ou **Pelo cidadão** (um celular com o aviso: escolher o tipo e enviar); 3) o bilhete muda conforme o jeito escolhido ("Chamado automático" ou "Chamado do cidadão", com a prioridade calculada por `prioridadePorEstado`, a mesma do app) e tem o botão "Testar o outro jeito"; 4) "Selecione uma opção" + "Toque em um dos 2 caminhos", com Opção A e Opção B e bolinha de rádio.
-  - **`FluxoPulso` (componente novo):** diagrama em 2 faixas. "O caminho do dado": Dispositivo → MQTT → Back-end → Aplicações, com desenhos em SVG. "O caminho de um problema": Leitura → Estado → 3 alertas seguidos (ou o cidadão avisa) → Chamado → Agente resolve. As ligações são linhas coral tracejadas que andam (deitadas no computador, em pé no celular) e param para quem pede menos movimento.
-  - **Demonstração:** cartão do cidadão coral (texto escuro) e do agente escuro (texto claro). O `IconePerfil` ganhou as props `cor` e `fundo`.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - Teste da regra (script no computador): 1º e 2º alertas não abrem; o 3º abre um chamado com "Leitura crítica em 3 passagens seguidas."; não duplica se já houver um aberto; o 4º não abre de novo; uma leitura normal zera a contagem.
-  - Depois do commit, o seed foi rodado com `--limpar` (com a aprovação do aluno): a API ficou com os 6 chamados de exemplo, e os automáticos dizem "3 passagens". (A primeira tentativa, sem `--limpar`, só somou os exemplos aos antigos.)
-  - No navegador, o simulador foi percorrido pelos 2 jeitos (automático até o 3º alerta, depois "Testar o outro jeito" e o aviso do cidadão), e a etapa 4 deu o aviso na opção A e liberou o botão na B.
-  - A linha do pulso mede a largura toda da tela. "Quem participa" e as fontes da seção do problema não aparecem mais.
-  - No celular (375 px), nada vaza e os botões têm 44 px ou mais. Console sem erros depois de recarregar.
-  - `npm run build` e `npm run lint` sem erros.
-
-### Sessão 17: tela do Cidadão mais limpa
-
-- **O que o aluno pediu:**
-  - No letreiro, trocar o ponto que pisca por um ícone de estado (alerta, atenção...).
-  - Escolha das ruas sem rolar para o lado, com só o intervalo de números do ônibus embaixo do nome.
-  - Tirar a legenda do mapa, os "Últimos avisos" e o bloco do modo demonstração da tela do Cidadão.
-  - Em "As 6 ruas agora", alinhar as partes de dentro dos cartões lado a lado e usar os ícones de tipo de problema que já existiam.
-- **O que a IA fez:**
-  - **`LetreiroLED`:** ganhou a prop opcional `estado`. No Cidadão, ela recebe o estado do alerta mais urgente (`alertaMaisUrgente`) e mostra o `StatusPicto` (octógono, losango ou visto) sobre um fundo branco. Depois de "Aviso recebido", mostra o visto. No Agente, sem `estado`, continua o pontinho.
-  - **`SeletorVisao`:** grade fixa (2 colunas no celular, 4 no tablet e as 7 opções numa linha no computador), sem rolagem. Embaixo do nome, só o intervalo (ex.: "nº 1301 a 1400"); o leitor de tela ouve "Ônibus no ...".
-  - **Saíram do Cidadão:** a `Legenda` (componente apagado, só era usado ali), "Últimos avisos" e o `ControlesDemo`, que agora aparece só na tela do Agente (lá continua o liga/desliga do chamado automático).
-  - **`PainelTodas`:** cada cartão tem 5 partes (nome, resumo, ocorrências, ônibus e botão) e usa `grid-rows-subgrid`: a mesma parte fica na mesma altura em todos os cartões da linha. Cada ocorrência mostra o `IconeProblema` do tipo, o nome, o lugar e o estado (pictograma + texto). Rua sem problema mostra "Nenhuma ocorrência agora."
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - No navegador (1024 px): o seletor não rola, as 7 opções ficam na mesma linha e com a mesma altura; nos cartões, as 5 partes começam na mesma altura que as do cartão ao lado.
-  - O letreiro mostra o ícone e não tem mais o ponto que pisca; legenda, "Últimos avisos" e demonstração não aparecem no Cidadão; no Agente, o modo demonstração continua.
-  - No celular (375 px), a página não vaza para o lado e os botões têm 44 px ou mais. (O seletor de camadas, por cima do mapa, continua rolando para o lado dentro do mapa, como antes.)
-  - Console sem erros numa aba nova, no Cidadão e no Agente. `npm run build` e `npm run lint` sem erros.
-- **Segunda rodada (pedido do aluno):**
-  - O letreiro do topo do Cidadão saiu. Ele só aparece por 5 segundos depois de enviar um aviso ("Aviso recebido"). Com isso, `utils/mensagens.js` (as frases do letreiro) ficou sem uso e foi apagado.
-  - Ícones novos no `IconeProblema`: **pavimento** virou um cone de sinalização laranja no asfalto rachado (o buraco visto de cima não era claro) e **ar** virou uma fábrica com a chaminé soltando fumaça (a nuvem com pontinhos parecia chuva).
-  - Nos cartões das 6 ruas, saiu o ícone de estado ao lado do nome; o estado aparece só em cada ocorrência.
-  - Conferido no navegador (cartões e ícones na tela, sem letreiro no topo), console sem erros, lint e build sem erros.
-
-### Sessão 18: tour guiado na tela do Cidadão
-
-- **O que o aluno pediu:** um tour (tutorial) na primeira visita à tela do Cidadão, com no máximo 6 passos e a opção de pular, para quem visita entender tudo o que existe na tela.
-- **O que a IA fez:**
-  - **`useTour` (hook novo):** guarda o passo e se o tour está aberto. Abre sozinho só se o navegador não tiver a marca `pulso-tour-cidadao` (lida e gravada pelo `services/cache.js`, com try/catch). Pular ou concluir grava a marca.
-  - **`data/tour.js`:** os 6 passos. 1) Boas-vindas, com os 3 estados (visto, losango e octógono; faz o papel da legenda que saiu do mapa); 2) escolha da rua; 3) camadas; 4) mapa; 5) "Avisar problema"; 6) resumo das ruas.
-  - **`TourGuiado` (componente novo):** escurece a tela e destaca o elemento do passo com uma moldura coral (uma sombra enorme em volta faz o "furo" iluminado). O elemento é achado pelo atributo `data-tour`. O cartão mostra "Passo X de 6", bolinhas do progresso, título, texto e os botões "Pular tour", "Voltar" e "Próximo" ("Concluir" no último). Ele fica embaixo ou em cima do elemento; no celular, no pé da tela. Esc pula, o foco do teclado vai para o cartão a cada passo, e a página não recebe cliques enquanto o tour está aberto.
-  - **Tela do Cidadão:** marcas `data-tour` nos elementos e o botão "Como usar" no canto de baixo do mapa, que volta para "Todas as ruas" e abre o tour de novo.
-- **Correções no caminho:**
-  - A medição da posição usava `requestAnimationFrame` e a rolagem era suave; no painel do navegador em segundo plano, os dois ficam parados e o destaque não aparecia. Passou a medir com `setTimeout` e a rolar direto (sem animação); o destaque desliza até o lugar novo.
-  - No celular, o cartão de boas-vindas ficava estreito: ganhou largura fixa. Elementos mais altos que a tela (mapa e resumo) passaram a ser mostrados a partir do começo.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - No navegador (1024 px e 375 px), o tour foi percorrido inteiro: em todos os passos o cartão fica dentro da tela e o elemento destacado aparece. Nos elementos baixos, o cartão não cobre o destaque; no computador, no mapa e no resumo (mais altos que a tela), o cartão fica no canto de baixo, por cima.
-  - "Voltar", "Concluir", "Pular tour" e Esc fecham ou voltam como esperado; "Como usar" reabre no passo 1; ao recarregar depois de ver, o tour não abre sozinho.
-  - Botões do tour com 44 px ou mais. Console sem erros. `npm run build` e `npm run lint` sem erros.
-- **Depois (pedido do aluno):** ao enviar um aviso, a tela rola até o letreiro "Aviso recebido" (antes, quem estava com o formulário lá embaixo não via a confirmação). Testado no navegador com a resposta da API simulada dentro da página (nenhum chamado foi criado no MockAPI): a tela estava a 745 px do topo, voltou e o letreiro apareceu inteiro.
-
-### Sessão 19: tela do Agente com cara própria
-
-- **O que o aluno pediu:**
-  - Cores principais diferentes da tela do cidadão, para mostrar 2 visões diferentes.
-  - Tirar o bloco abaixo da navegação (o letreiro "X chamados sem resolver", repetido nos indicadores) e o mapa grande.
-  - Chamados em linhas, um embaixo do outro, mantendo o filtro, com o ícone do tipo do problema.
-  - Ao clicar num chamado, um mapa pequeno com o ponto onde o problema foi reportado.
-  - Tirar o modo demonstração do Agente. A IA perguntou o que fazer com o chamado automático, que só é ligado ali; o aluno pediu para levar o modo demonstração para o painel do cidadão, com um visual que pareça interativo (antes parecia só um bloco informativo).
-- **O que a IA fez:**
-  - **Cores:** tokens novos no `index.css` (`agente` #1D4E89, `agente-escuro`, `agente-fundo` e `agente-linha`). O `Cabecalho` ganhou a prop `tema` (claro, escuro ou agente): no Agente o topo fica azul e a página, azul-clara. Indicadores, filtros, bordas e botões de status usam o azul.
-  - **`BilheteChamado`:** virou um bilhete deitado. A linha inteira é um botão (`aria-expanded`): canhoto com o `IconeProblema`, picote tracejado, protocolo e data, tipo e local, descrição, prioridade e origem, carimbo do status e uma setinha. Aberto, mostra o mapa pequeno, os dados, "Dados simulados", a mudança de status e a exclusão com confirmação. Só um chamado fica aberto por vez.
-  - **`MapaDoChamado` (componente novo):** mapa pequeno só com a rua do chamado e o marcador do status no ponto do problema. Sem local guardado, mostra um aviso.
-  - **`FocoNoMapa`:** ganhou as props `zoom` e `animar`. No mapa pequeno vai direto ao ponto (zoom 16) e centraliza de novo quando o mapa muda de tamanho.
-  - **`FiltrosChamados`:** numa linha só no computador (2 colunas no celular).
-  - **`ControlesDemo`:** saiu do Agente e foi para o fim do Cidadão. Virou um painel escuro: botão coral de play/pausa com ícone, "+15 s", velocidades numa pílula (a escolhida fica branca) e uma chave liga/desliga (`role="switch"`) para o chamado automático, com a situação atual em fonte de letreiro.
-- **Correções no caminho:**
-  - O ponto do mapa pequeno ficava fora do centro: o "voo" do mapa não termina com o painel do navegador oculto, e o mapa muda de tamanho logo depois de aparecer. Passou a ir direto e a recentralizar a cada mudança de tamanho.
-  - Os botões de velocidade tinham 36 px e passaram para 44 px.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - No navegador: topo azul (rgb 29, 78, 137) e fundo azul-claro no Agente; sem letreiro, sem mapa grande e sem modo demonstração; os chamados em linhas, cada um com o ícone do tipo; abrir um chamado mostra o mapa pequeno com o marcador exatamente no centro (diferença de 0 px, em 2 chamados), e abrir outro fecha o primeiro.
-  - No Cidadão, a chave do chamado automático liga e desliga, a velocidade 10x muda a situação para "1 passagem = 18 s".
-  - No celular (375 px), nada vaza nas duas telas e os botões têm 44 px ou mais. Console sem erros numa aba nova. `npm run build` e `npm run lint` sem erros.
-- **Ajustes seguintes (pedido do aluno):**
-  - A fila passou a ser ordenada pela data de criação: o mais recente primeiro e o mais antigo por último (`ordenarFila`, antes era por status e prioridade).
-  - A prioridade "pulava" quando o status mudava, porque o carimbo ("Em atendimento" é mais largo) ficava numa coluna de largura automática. A coluna do carimbo ganhou largura fixa no computador. Conferido no navegador: a prioridade começa na mesma posição em todas as linhas (Aberto, Em atendimento e Resolvido).
-  - No modo demonstração, saiu o ponto que piscava, e a informação do canto ficou só "1 passagem = X s" (a prop `passagem`, que deixou de ser usada, saiu do componente).
-
-### Sessão 20: revisão para o celular (responsivo)
-
-- **O que o aluno pediu** (achados na versão do celular, mais uma revisão geral):
-  - A comparação das temperaturas quebrada no Início.
-  - As telas num menu do lado direito.
-  - No Cidadão: mesma altura para os blocos das ruas lado a lado; as camadas sem rolar para o lado; mapa mais aproximado nas ruas; ícones de problema e ônibus menores; botões "Avisar problema" e "Como usar" adequados; conferir o tour; caixas das 6 ruas e do modo demonstração menores.
-  - No Agente: ícone do alerta menor no mapa pequeno do chamado.
-- **O que a IA fez:**
-  - **`ComparacaoCalor`:** os termômetros passavam 70 px do cartão. No celular ficam mais baixos e com número menor, e o "+15°" vira uma etiqueta em cima (entre os dois não cabia).
-  - **`MenuCelular` (componente novo):** no celular, o topo mostra um botão com a tela atual e o ícone de menu, no canto direito. Ele abre a lista Início, Cidadão e Agente (a atual marcada "aqui") e fecha ao escolher, com Esc ou tocando fora. No tablet e no computador continuam as abas. A etiqueta "Dados simulados" ficou numa linha só.
-  - **`SeletorVisao`:** `auto-rows-fr`, todas as opções com a mesma altura.
-  - **`SeletorCamada`:** ganhou a prop `grade`. No celular sai de cima do mapa e fica numa linha logo acima dele, com as 5 opções dividindo a largura (fonte menor, nome em 2 linhas quando precisa).
-  - **Mapa no celular** (`utils/tela.js` com `ehCelular`, porque o Leaflet não lê as classes do Tailwind): ícones de estado 30% menores (`compacto` no `iconeEstado`), ônibus 30% menor, mapa mais baixo e enquadramento com margem de 8 px (`getBoundsZoom`), indo direto, sem animação. A `CameraDoMapa` também enquadra de novo quando o mapa muda de tamanho logo depois de abrir.
-  - **Botões:** "Avisar problema" com 44 px e texto menor no celular; "Como usar" vira só o "?" num círculo de 44 px (com nome para leitor de tela).
-  - **Tour:** com as camadas em dois lugares, o tour usa o elemento que está visível. Elementos com quase metade da tela ou mais aparecem a partir do topo, para o cartão não cobrir o mapa.
-  - **Caixas menores no celular:** cartões das 6 ruas (de 222 para 203 px) e modo demonstração (de 301 para 249 px).
-  - **Agente:** o marcador do mapa pequeno usa o tamanho `compacto` (de 34 para 24 px).
-  - **Revisão geral:** no simulador do Início, as 4 etapas ficam lado a lado numa linha no celular (a lista ocupava uns 300 px; agora 119 px); os links das fontes no rodapé ganharam área de toque maior.
-- **Correções no caminho:**
-  - O primeiro enquadramento do celular saía antes de o mapa terminar de mudar de tamanho (as ruas ficavam na parte de baixo). Resolvido enquadrando de novo no evento de mudança de tamanho.
-  - A primeira tentativa de aproximar (+1/4 de zoom) cortava as pontas das ruas e foi desfeita.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - No celular (375 px): nada passa da borda em Início, Cidadão e Agente; botões com 44 px ou mais; o cartão de temperatura cabe inteiro; as ruas ocupam 321 de 341 px de largura do mapa; o menu abre, fecha com Esc e ao tocar fora, e leva ao Agente; o tour passa pelos 6 passos sem cobrir o elemento destacado (exceto o resumo, mais alto que a tela); o marcador do mapa do chamado fica no centro.
-  - No tablet (768 px): abas no topo, camadas por cima do mapa, nada vazando.
-  - No computador (1024 px): igual a antes (ícones de 28 px, "Como usar" com texto, ruas enquadradas).
-  - Console sem erros numa aba nova nas 3 telas. `npm run build` e `npm run lint` sem erros.
-- **Segunda rodada (pedido do aluno):**
-  - No celular, os números da escala do termômetro (20 a 50) ficavam por baixo da coluna. A escala ficou mais larga (\`w-11\`): agora os números ficam 8 px à esquerda da coluna.
-  - Ruas mais destacadas em todos os mapas (no mapa amplo, contorno de 12 px e linha de 6 px; antes 9 e 4).
-  - No celular e no mapa pequeno do chamado, ícones de alerta e ônibus 40% menores (antes 30%) e a fita colorida do alerta 30% mais fina. Medido no celular: alerta de 17 px (antes 20), ônibus de uns 29 px (antes 34), marcador do mapa do chamado de 20 px (antes 24). No computador, os tamanhos continuam os mesmos.
-
-### Sessão 21: ajustes gerais (topo, hero e ônibus no resumo)
-
-- **O que o aluno pediu:** tirar a etiqueta "Dados simulados" do topo (comum às 3 telas), tirar a etiqueta "Sensores nos ônibus de São Paulo" do hero e, nos cartões das 6 ruas, trocar o ponto amarelo pelo ícone do ônibus do mapa.
-- **O que a IA fez:**
-  - `Cabecalho`: só a marca e as abas (ou o menu, no celular). O aviso de dados simulados continua no conteúdo: tour, bilhetes, simulador e rodapé.
-  - Hero do Início: saiu a etiqueta; o título subiu.
-  - `PainelTodas`: componente interno `OnibusMini`, o mesmo desenho do ônibus do mapa (visto de cima, com a caixa âmbar), deitado na barrinha. Ele aponta para a direita na ida e para a esquerda na volta.
-- **O que mudamos:** _(completar)_
-- **Como validamos:** no navegador, o topo não tem mais a etiqueta, o hero não tem a frase, o rodapé ainda avisa dos dados simulados, e os 6 cartões mostram o ônibus (3 indo para a direita, 3 voltando para a esquerda, conferido pelo texto "indo →" / "← voltando"). `npm run build` e `npm run lint` sem erros.
-
-### Sessão 22: tour mostrando uma rua, tour do Agente e "Verifique seu caminho"
-
-- **O que o aluno pediu:**
-  - No tour do Cidadão, mostrar que ao tocar numa rua dá para ver o trecho com mais detalhes.
-  - Um tour também na tela do Agente.
-  - Uma funcionalidade para avisar o cidadão sobre o melhor caminho: ele escolhe uma ou mais ruas e o intervalo em cada uma, e o app verifica se há alerta nesses trechos. Na vida real o cálculo usaria origem e destino; aqui é um "plano B".
-- **O que a IA fez:**
-  - **`useTour`:** ganhou `aoMudarPasso(numero)`, que avisa a tela quando o passo muda (nos botões, sem efeito extra).
-  - **`data/tour.js`:** cada passo do Cidadão diz a visão (`visao`). O 6º passo ("Veja uma rua de perto") abre a Av. Paulista e destaca o painel ao lado do mapa (viagem, paradas e trechos). Para caber em 6 passos, o resumo das ruas passou a ser citado no 2º passo. Tour novo do Agente com 5 passos: boas-vindas, indicadores, filtros, fila e "Abra um chamado" (o tour abre o primeiro chamado sozinho; voltar fecha).
-  - **`BotaoComoUsar` (componente novo):** o mesmo botão nas duas telas ("?" no celular, "? Como usar" no computador). No Agente ele fica ao lado do título "Indicadores".
-  - **`TourGuiado`:** quando o elemento é grande e está na metade direita (como o painel da rua), o cartão vai para o canto esquerdo, sem cobrir o destaque.
-  - **`utils/caminho.js`:** `pontosDoTrecho` (os pontos de 100 m que o intervalo cobre, em qualquer sentido), `verificarCaminho` (alertas de cada trecho, crítico primeiro, e o pior estado) e `conselhoDoCaminho` ("Pode seguir", "Siga com cuidado" ou "Evite este caminho agora").
-  - **`VerificarCaminho` (componente novo, "Plano B"):** até 4 ruas; ao escolher a rua, o intervalo já vem com a rua inteira; "Do número" e "Até o número" usam os trechos de 100 m. Mudar algo apaga o resultado até verificar de novo. O resultado usa as leituras de agora (acompanha os ônibus), mostra cada alerta com o ícone, o local e o estado, e "Ver no mapa" abre a rua no ponto. Fica sempre no mesmo lugar da estrutura da tela (logo abaixo do mapa), para não perder o caminho ao trocar de visão.
-- **Correções no caminho:**
-  - Na primeira versão o "Verifique seu caminho" ficava em lugares diferentes em cada visão; ao tocar em "Ver no mapa", ele seria recriado e perderia o caminho. Passou a ficar num lugar fixo.
-  - O lint avisou que o tour usava `mudarVisao` antes de ela existir; a linha do tour foi para depois da função.
-- **O que mudamos:** _(completar)_
-- **Como validamos:**
-  - "Verificar caminho" começa desligado; Av. Paulista inteira dá "Evite" (calor nº 1201 a 1300 e pavimento nº 2206 a 2226, críticos); Av. Paulista do nº 1 ao 1200 dá "Pode seguir"; do nº 1 ao 1300 volta a dar "Evite"; R. Augusta do nº 1 ao 1000 dá "Sem alertas"; mudar um campo apaga o resultado; "Tirar" remove a rua; "Ver no mapa" abre a Av. Paulista e o resultado continua lá.
-  - Tour do Cidadão: o 6º passo abre a Av. Paulista e destaca o painel; voltar ao 5º volta para "Todas as ruas"; o cartão não cobre o painel (computador) e fica embaixo dele (celular).
-  - Tour do Agente: abre sozinho na primeira visita; o 5º passo abre o primeiro chamado; voltar fecha; concluir grava que já viu.
-  - No celular (375 px), nada vaza e os botões e campos têm 44 px ou mais. Console sem erros numa aba nova. `npm run build` e `npm run lint` sem erros.
-- **Ajuste seguinte (pedido do aluno):** no celular, o título "Vizinhos, mas com 15 °C de diferença" quebrava a linha entre o "15" e o "°C". O espaço entre número e unidade virou um espaço que não quebra (` `) nos textos do Início, nas leituras do simulador e no `formatarValor` (que escreve número + unidade em todo o app). Conferido no celular: o "15" e o "°C" ficam na mesma linha.
+**Em resumo:** a IA foi uma ótima parceira de desenvolvimento, mas as decisões sobre o que o Pulso deve ser, para quem e por quê foram nossas.
