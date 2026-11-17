@@ -4,7 +4,7 @@
 import { ROTULOS_STATUS, FILTROS_VAZIOS, TIPOS_DE_PROBLEMA } from '../utils/chamados.js'
 import { RUAS } from '../data/ruas.js'
 
-const CLASSE_CAMPO = 'mt-1 block min-h-11 w-full border-2 border-asfalto bg-white px-2'
+const CLASSE_CAMPO = 'mt-1 block min-h-11 w-full border border-linha rounded-lg bg-white px-2'
 
 function FiltrosChamados({ filtros, aoMudar }) {
   // Troca só um campo e mantém os outros (o "..." copia o objeto).
@@ -13,8 +13,8 @@ function FiltrosChamados({ filtros, aoMudar }) {
   }
 
   return (
-    <fieldset className="grid grid-cols-2 items-end gap-3 border-2 border-asfalto bg-white p-3">
-      <legend className="px-1 text-sm font-bold uppercase">Filtrar chamados</legend>
+    <fieldset className="grid grid-cols-2 items-end gap-3 border border-linha rounded-lg bg-white p-3">
+      <legend className="px-1 text-sm font-semibold">Filtrar chamados</legend>
 
       <label className="text-sm font-semibold">
         Status
@@ -46,7 +46,7 @@ function FiltrosChamados({ filtros, aoMudar }) {
         </select>
       </label>
 
-      <button type="button" onClick={() => aoMudar(FILTROS_VAZIOS)} className="min-h-11 border-2 border-asfalto bg-white px-3 text-sm font-bold">
+      <button type="button" onClick={() => aoMudar(FILTROS_VAZIOS)} className="min-h-11 border border-linha rounded-lg bg-white px-3 text-sm font-medium">
         Limpar
       </button>
     </fieldset>

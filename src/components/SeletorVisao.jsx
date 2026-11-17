@@ -9,8 +9,8 @@ import { resumirRua } from '../utils/classificar.js'
 
 // Classes do botão ativo e do normal (para não repetir).
 function classeBotao(ativo) {
-  return `flex min-h-11 shrink-0 items-center gap-2 border-2 px-3 text-sm font-bold whitespace-nowrap ${
-    ativo ? 'border-asfalto bg-asfalto text-white' : 'border-asfalto/30 bg-white hover:border-asfalto'
+  return `flex min-h-11 shrink-0 items-center gap-2 rounded-xl border px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors ${
+    ativo ? 'border-tinta bg-tinta text-white' : 'border-linha bg-white hover:border-linha-forte'
   }`
 }
 
@@ -34,7 +34,7 @@ function SeletorVisao({ ruas, camada, valor, aoMudar, frota }) {
             <span className="text-left leading-tight">
               {rua.nome}
               {problemas > 0 && <span className="tabular-nums"> ({problemas})</span>}
-              <span className={`block text-xs font-semibold tabular-nums ${ativo ? 'text-ambar' : ''}`}>
+              <span className={`block font-mono text-[11px] font-normal tabular-nums ${ativo ? 'text-ambar' : 'text-tinta-2'}`}>
                 {/* Resumo: o trecho de 100 m. O número exato aparece só na rua em foco. */}
                 {`ônibus ${onibus.parado ? 'parado ' : ''}no ${onibus.trecho}`}
               </span>

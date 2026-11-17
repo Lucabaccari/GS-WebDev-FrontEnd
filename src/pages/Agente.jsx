@@ -41,7 +41,7 @@ function Agente({ chamados, carregando, erro, aoRecarregar, aoMudarStatus, aoExc
 
       <Indicadores dados={indicadores} />
 
-      <div className="grid border-2 border-asfalto bg-white lg:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="grid overflow-hidden rounded-2xl border border-linha bg-white shadow-suave lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="flex flex-col">
           <div className="h-[50vh] min-h-[320px] lg:h-[680px]">
             <MapaBase ruas={RUAS} rotulo="Mapa dos chamados">
@@ -50,7 +50,7 @@ function Agente({ chamados, carregando, erro, aoRecarregar, aoMudarStatus, aoExc
             </MapaBase>
           </div>
           {/* Legenda do mapa do agente: a forma mostra o status */}
-          <ul className="flex flex-wrap gap-x-5 gap-y-1 border-t-2 border-asfalto px-3 py-2 text-sm">
+          <ul className="flex flex-wrap gap-x-5 gap-y-1 border-t border-linha px-3 py-2 text-sm">
             <li className="flex items-center gap-1.5"><StatusPicto estado="critico" tamanho={16} /> Aberto</li>
             <li className="flex items-center gap-1.5"><StatusPicto estado="atencao" tamanho={16} /> Em atendimento</li>
             <li className="flex items-center gap-1.5"><StatusPicto estado="normal" tamanho={16} /> Resolvido</li>
@@ -59,10 +59,10 @@ function Agente({ chamados, carregando, erro, aoRecarregar, aoMudarStatus, aoExc
 
         <section
           aria-labelledby="titulo-fila"
-          className="space-y-4 border-t-2 border-asfalto p-4 lg:h-[722px] lg:overflow-y-auto lg:border-t-0 lg:border-l-2"
+          className="space-y-4 border-t border-linha p-4 lg:h-[722px] lg:overflow-y-auto lg:border-t-0 lg:border-l"
         >
           <div className="flex items-baseline justify-between gap-2">
-            <h2 id="titulo-fila" className="text-2xl font-black uppercase [font-stretch:75%]">Fila de atendimento</h2>
+            <h2 id="titulo-fila" className="text-2xl font-semibold tracking-tight">Fila de atendimento</h2>
             <p className="text-sm font-semibold" role="status">{fila.length} de {chamados.length}</p>
           </div>
 

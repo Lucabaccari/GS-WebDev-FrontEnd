@@ -188,3 +188,88 @@ Regras que seguimos:
   - No celular, o formulário cabe e todos os campos têm 44 px ou mais.
   - Numa aba nova, o console ficou sem erros. `npm run build` e `npm run lint` sem erros.
 - **Ajuste pedido depois:** o aluno quis que o tipo do problema tivesse o mesmo formato dos outros campos. Os botões de escolha (radio) viraram uma lista de seleção igual às de rua e trecho, com o mesmo estilo e 44 px de altura. Conferimos no navegador: os 3 campos iguais, a dica do sensor funcionando e o console sem erros.
+
+### Sessão 14: página inicial (Início) e visual novo
+
+- **O que o aluno pediu:** uma página inicial que explique o problema e a solução e leve às demonstrações do cidadão e do agente, com o discurso do vídeo do grupo e dados pesquisados na internet. Também pediu para mudar o design, que estava grande, quadrado e feio, usando o Behance e o Awwwards como referência e alinhando o Início ao visual das telas do app.
+- **Como a IA usou o vídeo:** extraiu quadros e as legendas com o `ffmpeg` (sem enviar o vídeo para nenhum serviço). Disso saíram o roteiro (pergunta dos 13 mil sensores, Paraisópolis e Morumbi, caixinha no teto do ônibus, ESP32 → MQTT → back-end → painel e app, operadoras, subprefeituras, cidadãos e saúde, "Toda cidade com ônibus pode ter um Pulso.") e a identidade visual (fundo escuro, IBM Plex, coral, rótulos em fonte monoespaçada). Diferença encontrada: o vídeo diz que o chamado nasce na **3ª** passagem, e o app usa a **6ª**, que foi a decisão do aluno.
+- **Dados pesquisados e conferidos na fonte (abrindo cada página):**
+  - 13.496 ônibus na frota contratada, em dez. de 2025 (Diário do Transporte, com dados da SPTrans e da SMT). A busca tinha dado 13.416, e ao abrir a matéria a IA corrigiu.
+  - 7,05 milhões de passageiros por dia em 2025 (Diário do Transporte).
+  - Paraisópolis com até 45 °C e o Morumbi com 30 °C de temperatura de superfície no verão de 2024/25 (Agência FAPESP, estudo do CEFAVELA/UFABC).
+  - Mais de 600 mil pontos de iluminação pública (Prefeitura de SP).
+  - 120 mil mortes associadas a ondas de calor no Brasil entre 2000 e 2019 (Band, estudo da Fiocruz e da UFBA).
+  - Os números ficam em `data/inicio.js`, cada um com a fonte, e aparecem na página com o link.
+- **O que a IA fez:**
+  - **Visual novo:** tokens em `index.css` (papel, superfície, tinta, linha, coral e sombra suave) e fontes IBM Plex Sans e Mono. Dois scripts trocaram as classes antigas em todos os componentes (115 trocas: borda de 1 px, cantos arredondados, sem caixa-alta pesada, pesos mais leves). Depois veio o ajuste à mão de cabeçalho, abas (controle em pílula), letreiro (faixa fina com ponto "ao vivo"), etiquetas de estado (fundo suave), bilhete, indicadores e painel da viagem.
+  - **Página Início** (`pages/Inicio.jsx`): topo escuro com a frase do vídeo e o `PainelAoVivo` (a simulação de verdade, com os 6 ônibus e as ocorrências), "O problema" (`ComparacaoCalor` com os termômetros e os `CartaoDado` com fonte), "A solução" em 4 passos, "Por dentro", "Quem participa", a escala (uma linha, depois a frota, depois a cidade), as duas demonstrações e o rodapé com as fontes.
+  - **Componentes novos:** `MarcaPulso`, `CartaoDado`, `ComparacaoCalor` e `PainelAoVivo`.
+  - **Endereço por tela:** `#inicio`, `#cidadao` e `#agente`, e o Início abre primeiro.
+- **Problemas encontrados e corrigidos:**
+  - A IA tinha usado vidro fosco (`backdrop-blur`), que o guia proíbe, e trocou por fundo sólido.
+  - O link "Pular para o conteúdo" mudava o endereço para `#conteudo` e jogaria a pessoa para o Início. Agora só um `#` de tela troca a aba.
+  - Os cantos do mapa não acompanhavam a caixa arredondada, e a caixa ganhou `overflow-hidden`.
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - Contraste de todas as cores novas calculado pela fórmula WCAG, todas acima de 4,5:1 (a menor é 4,97).
+  - No navegador: Início, Cidadão e Agente. Os botões do Início levam às telas, o link `#agente` abre direto e o "Pular para o conteúdo" mantém a tela.
+  - No celular (375 px), nada vaza nas 3 telas e os botões têm 44 px ou mais.
+  - Numa aba nova, o console ficou sem erros. `npm run build` e `npm run lint` sem erros.
+
+### Sessão 15: Início mais moderno, termômetro animado e simulador da solução
+
+- **O que o aluno pediu:**
+  - Animação da temperatura subindo (número e termômetro) quando a seção do problema aparece pela primeira vez.
+  - A seção da solução simulando cada etapa, com participação de quem visita o site.
+  - Um quadro do vídeo com ônibus no trânsito, talvez no topo.
+  - Ícones de cidadão e de agente na demonstração.
+  - Um visual do Início mais moderno e diferenciado. Os ajustes nas outras telas foram aprovados.
+- **Mudanças do próprio aluno, mantidas:** o aluno tinha editado os textos do Início (tirou o sobretítulo do topo, colocou negritos, reescreveu o problema, trocou o título da solução e os textos de "Por dentro" e "Quem participa" e deixou "Agora" no painel ao vivo). A IA leu os arquivos antes e manteve tudo.
+- **O que a IA fez:**
+  - **Quadros do vídeo** (com o `ffmpeg`, no computador do aluno): o topo usa o quadro de 2:18,3 (ônibus na Av. Paulista à noite), recortado acima da legenda gravada. A etapa 1 do simulador usa o de 2:17,5 (ônibus na faixa). As duas imagens estão em `public/imagens/` em WebP (49 KB e 61 KB).
+  - **Hooks novos:** `useNaTela` (IntersectionObserver: avisa quando um elemento aparece na tela) e `useContagem` (faz um número contar com `requestAnimationFrame` e mostra o final direto para quem pede menos movimento).
+  - **`ComparacaoCalor`:** os termômetros sobem de 20 °C até 45 °C e 30 °C quando o cartão aparece, com escala marcada e "+15°" vazado ao fundo.
+  - **`SimuladorSolucao`:** 4 etapas que só liberam a próxima depois da interação. 1) ligar o sensor na foto e ver as 4 leituras; 2) fazer o ônibus passar 6 vezes (os octógonos enchem); 3) o chamado nasce sozinho e a pessoa envia para a subprefeitura; 4) escolher o caminho para voltar a pé (o escuro recebe aviso, o iluminado libera "Ver isso ao vivo na visão do cidadão"). Tudo marcado como exemplo ilustrativo.
+  - **Visual do Início:** foto em tela cheia no topo com a linha do pulso se desenhando, título maior, `FaixaRolante` coral entre as seções, seções numeradas (01 a 05) com números gigantes vazados, fluxo "Por dentro" ligado por traço coral, grade de participantes e rodapé com "Pulso" vazado gigante.
+  - **`IconePerfil`:** ícones desenhados em SVG, uma pessoa com o celular (cidadão) e um prédio público com a prancheta de chamados (agente).
+  - Todas as animações param para quem pede menos movimento, pela regra que já existia no CSS.
+- **Correções no caminho:**
+  - O primeiro quadro do topo vinha escurecido pelo fade do vídeo, e foi trocado por um instante antes.
+  - A linha do pulso cruzava o título e foi para o pé do topo.
+  - O caminho "bom" da etapa 4 passava pela Av. Rebouças, que tem poste apagado na simulação, e foi trocado pela Av. Paulista.
+  - "22h" na etiqueta da foto foi trocado por "à noite", porque não se sabe a hora da gravação.
+  - A contagem de componentes no README foi corrigida para 35.
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - No navegador, o termômetro começa em 20/20 e chega a 45/30 ao rolar até ele.
+  - O simulador foi percorrido inteiro por cliques: as etapas começam bloqueadas, com 5 passagens não libera e com 6 libera, o carimbo vira "Na fila da subprefeitura", o caminho escuro dá o aviso e o iluminado libera o botão.
+  - No celular (375 px), nada vaza e os botões têm 44 px ou mais. O console ficou sem erros numa aba nova.
+  - `npm run build` e `npm run lint` sem erros.
+  - O comportamento com "menos movimento" foi conferido pelo código, e não pelo navegador: o painel em segundo plano atrasa as animações, e o teste não diferenciou.
+
+### Sessão 16: chamado no 3º alerta, Início mais enxuto e os 2 jeitos de abrir chamado
+
+- **O que o aluno pediu:**
+  - Menos informação em alguns pontos do Início: topo sem foto e com o fundo escuro de antes, a linha do pulso de um lado ao outro da tela, sem a faixa rolante, sem fontes na seção do problema (só no rodapé) e sem "Quem participa".
+  - **Regra nova:** o chamado automático nasce no **3º alerta seguido** (antes era a 6ª passagem), no app inteiro.
+  - Usar a foto que ele mandou (ônibus "Ana Rosa" na Av. Paulista à noite) no simulador, mostrando os 2 jeitos de abrir um chamado: pelo cidadão ou automático. Na etapa "Orienta", deixar claro que é para escolher uma opção.
+  - Elementos visuais no "Por dentro" que ajudem a entender o fluxo do negócio.
+  - Cartões da demonstração com uma cor cada.
+  - Depois: o "+15°" do problema estava grande demais; e o quadro do simulador encolhia depois da etapa 1. Tirar o botão que levava à demo na etapa 4.
+- **Ajustes finais:** o "+15°" saiu do fundo (vazado gigante) e virou um rótulo pequeno coral entre os dois termômetros ("+15° diferença"). O palco do simulador ganhou altura mínima igual à da etapa 1 (conta com a proporção 16:9 da foto), e a altura ficou igual em todas as etapas (medido em 1024 e 1440 px). Na etapa 4 ficou só o "Recomeçar". Na etapa 1, as leituras passaram a aparecer uma por vez (a cada 0,9 s, com "lendo…" na vez de cada uma); o texto do 1º alerta e o "Próxima etapa" só aparecem depois da 4ª. Na etapa 3, o bilhete ganhou o ícone do tipo do problema (componente novo `IconeProblema`: termômetro com sol, poste apagado, buraco, nuvem de fumaça e alfinete com "?" para "Outros"), conferido nos 5 tipos e no chamado automático.
+- **O que a IA fez:**
+  - **Regra do 3º alerta:** `PASSAGENS_PARA_CHAMADO = 3` em `utils/regras.js`. O seed passou a usar a mesma constante (texto e número de passagens), e os textos do Início também (`data/inicio.js`). README, CLAUDE.md, PLANO-DE-COMMITS.md e comentários de `App.jsx` e `ControlesDemo` foram atualizados.
+  - **Topo:** sem foto e sem véu, fundo `tinta`. A linha do pulso se desenhava com tracejado de tamanho fixo e não chegava ao fim em telas largas. Agora ela se revela com uma "cortina" (`clip-path`), que funciona em qualquer largura.
+  - **Saíram:** `FaixaRolante` (componente e CSS), as fontes do `ComparacaoCalor` e do `CartaoDado`, "Quem participa" (dados `ATORES` e a escala) e as duas fotos antigas.
+  - **Foto nova** (`public/imagens/onibus-ana-rosa.webp`, 1280 px, 145 KB): as 3 placas visíveis foram borradas com o `ffmpeg` antes de usar. A foto fica no formato original (16:9, sem corte), para a caixinha do sensor cair sempre no teto do ônibus.
+  - **`SimuladorSolucao`:** 1) ligar o sensor: a luz dá crítico e vira o **1º alerta**; 2) "Selecione uma opção": **Automático** (o ônibus passa de novo até o 3º alerta) ou **Pelo cidadão** (um celular com o aviso: escolher o tipo e enviar); 3) o bilhete muda conforme o jeito escolhido ("Chamado automático" ou "Chamado do cidadão", com a prioridade calculada por `prioridadePorEstado`, a mesma do app) e tem o botão "Testar o outro jeito"; 4) "Selecione uma opção" + "Toque em um dos 2 caminhos", com Opção A e Opção B e bolinha de rádio.
+  - **`FluxoPulso` (componente novo):** diagrama em 2 faixas. "O caminho do dado": Dispositivo → MQTT → Back-end → Aplicações, com desenhos em SVG. "O caminho de um problema": Leitura → Estado → 3 alertas seguidos (ou o cidadão avisa) → Chamado → Agente resolve. As ligações são linhas coral tracejadas que andam (deitadas no computador, em pé no celular) e param para quem pede menos movimento.
+  - **Demonstração:** cartão do cidadão coral (texto escuro) e do agente escuro (texto claro). O `IconePerfil` ganhou as props `cor` e `fundo`.
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - Teste da regra (script no computador): 1º e 2º alertas não abrem; o 3º abre um chamado com "Leitura crítica em 3 passagens seguidas."; não duplica se já houver um aberto; o 4º não abre de novo; uma leitura normal zera a contagem.
+  - O seed não foi rodado de novo: os chamados que já estão na API ainda dizem "6 passagens" até rodar `npm run seed`.
+  - No navegador, o simulador foi percorrido pelos 2 jeitos (automático até o 3º alerta, depois "Testar o outro jeito" e o aviso do cidadão), e a etapa 4 deu o aviso na opção A e liberou o botão na B.
+  - A linha do pulso mede a largura toda da tela. "Quem participa" e as fontes da seção do problema não aparecem mais.
+  - No celular (375 px), nada vaza e os botões têm 44 px ou mais. Console sem erros depois de recarregar.
+  - `npm run build` e `npm run lint` sem erros.

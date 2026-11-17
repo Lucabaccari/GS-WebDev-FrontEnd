@@ -9,7 +9,7 @@ import { CAMADAS, resumirRua, textoResumo } from '../utils/classificar.js'
 function PainelTodas({ ruas, camada, frota, aoVerRua }) {
   return (
     <section aria-labelledby="titulo-todas">
-      <h2 id="titulo-todas" className="mb-3 text-2xl font-black uppercase [font-stretch:75%]">
+      <h2 id="titulo-todas" className="mb-3 text-2xl font-semibold tracking-tight">
         As 6 ruas agora
       </h2>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -25,10 +25,10 @@ function PainelTodas({ ruas, camada, frota, aoVerRua }) {
           )
 
           return (
-            <li key={rua.id} className="flex flex-col border-2 border-asfalto bg-white p-3">
+            <li key={rua.id} className="flex flex-col border border-linha rounded-lg bg-white p-3">
               <div className="flex items-center gap-2">
                 <StatusPicto estado={resumo.pior} tamanho={22} />
-                <h3 className="text-lg leading-tight font-black uppercase [font-stretch:75%]">{rua.nome}</h3>
+                <h3 className="text-lg leading-tight font-semibold tracking-tight">{rua.nome}</h3>
               </div>
               <p className="mt-1 text-sm">{textoResumo(resumo)}</p>
 
@@ -46,9 +46,9 @@ function PainelTodas({ ruas, camada, frota, aoVerRua }) {
               {/* Onde está o ônibus desta rua: barrinha da rua (nº 1 à esquerda) + trecho de 100 m.
                   A marca âmbar mostra a posição; a seta, o sentido (ida ou volta). */}
               <div className="mt-3">
-                <div className="relative h-2 border border-asfalto bg-concreto" aria-hidden="true">
+                <div className="relative h-2 rounded-full bg-linha" aria-hidden="true">
                   <span
-                    className="absolute -top-1 h-4 w-1.5 -translate-x-1/2 border border-asfalto bg-ambar"
+                    className="absolute -top-1 h-4 w-1.5 -translate-x-1/2 rounded-sm border border-tinta/40 bg-ambar"
                     style={{ left: `${onibus.fracao * 100}%` }}
                   />
                 </div>
@@ -60,7 +60,7 @@ function PainelTodas({ ruas, camada, frota, aoVerRua }) {
               <button
                 type="button"
                 onClick={() => aoVerRua(rua.id)}
-                className="mt-3 min-h-11 w-full border-2 border-asfalto bg-white px-3 text-sm font-bold hover:bg-concreto"
+                className="mt-3 min-h-11 w-full border border-linha rounded-lg bg-white px-3 text-sm font-medium hover:bg-concreto"
               >
                 Ver rua e seguir o ônibus
               </button>

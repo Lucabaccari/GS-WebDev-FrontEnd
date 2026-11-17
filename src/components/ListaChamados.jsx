@@ -14,22 +14,22 @@ function ListaChamados({
   aoVerNoMapa,
 }) {
   if (carregando) {
-    return <p className="font-bold" role="status">Carregando chamados...</p>
+    return <p className="font-medium" role="status">Carregando chamados...</p>
   }
 
   return (
     <div className="space-y-4">
       {erro && (
-        <div role="alert" className="flex flex-wrap items-center gap-3 border-2 border-asfalto bg-critico p-3 font-bold text-white">
+        <div role="alert" className="flex flex-wrap items-center gap-3 border border-linha rounded-lg bg-critico p-3 font-medium text-white">
           <p>{erro}</p>
-          <button type="button" onClick={aoTentarDeNovo} className="min-h-11 border-2 border-asfalto bg-white px-3 text-asfalto">
+          <button type="button" onClick={aoTentarDeNovo} className="min-h-11 border border-linha rounded-lg bg-white px-3 text-asfalto">
             Tentar de novo
           </button>
         </div>
       )}
 
       {chamados.length === 0 ? (
-        <p className="border-2 border-dashed border-asfalto p-4">Nenhum chamado por aqui.</p>
+        <p className="border border-dashed border-linha-forte rounded-xl p-4">Nenhum chamado por aqui.</p>
       ) : (
         <ol className="space-y-5">
           {chamados.map((chamado) => (

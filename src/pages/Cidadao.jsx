@@ -154,7 +154,7 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
         <button
           type="button"
           onClick={() => setSeguir(true)}
-          className="absolute top-20 right-3 z-[1000] min-h-11 border-2 border-asfalto bg-white px-3 text-sm font-bold shadow-dura"
+          className="absolute top-20 right-3 z-[1000] min-h-11 border border-linha rounded-lg bg-white px-3 text-sm font-medium shadow-suave"
         >
           Acompanhar ônibus
         </button>
@@ -177,9 +177,9 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
 
       {ruaFoco ? (
         // Uma rua em foco: mapa à esquerda; viagem e painel da rua à direita (embaixo, no celular).
-        <div className="grid border-2 border-asfalto bg-white lg:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="grid overflow-hidden rounded-2xl border border-linha bg-white shadow-suave lg:grid-cols-[minmax(0,1fr)_400px]">
           {mapa}
-          <aside className="flex flex-col border-t-2 border-asfalto lg:h-[680px] lg:border-t-0 lg:border-l-2">
+          <aside className="flex flex-col border-t border-linha lg:h-[680px] lg:border-t-0 lg:border-l">
             <PainelViagem onibus={onibusDaRua} trajeto={trajetoDaRua(ruaFoco.id)} />
             <div className="flex-1 p-4 lg:overflow-y-auto">
               {formulario || (
@@ -198,7 +198,7 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
       ) : (
         // Todas as ruas: mapa amplo, ocupando a largura toda; resumo das ruas embaixo.
         <>
-          <div className="border-2 border-asfalto bg-white">{mapa}</div>
+          <div className="overflow-hidden rounded-2xl border border-linha bg-white shadow-suave">{mapa}</div>
           {formulario}
           <PainelTodas ruas={ruas} camada={camada} frota={frota} aoVerRua={mudarVisao} />
         </>
@@ -208,7 +208,7 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
 
       {ultimosAvisos.length > 0 && (
         <section aria-labelledby="titulo-avisos">
-          <h2 id="titulo-avisos" className="mb-3 text-2xl font-black uppercase [font-stretch:75%]">
+          <h2 id="titulo-avisos" className="mb-3 text-2xl font-semibold tracking-tight">
             Últimos avisos
           </h2>
           {/* Sem aoMudarStatus/aoExcluir: o cidadão só vê o bilhete */}

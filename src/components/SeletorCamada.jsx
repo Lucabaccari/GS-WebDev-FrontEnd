@@ -15,7 +15,7 @@ function SeletorCamada({ valor, aoMudar }) {
     <div
       role="group"
       aria-label="O que mostrar no mapa"
-      className="flex overflow-x-auto border-2 border-asfalto bg-white shadow-dura"
+      className="flex overflow-x-auto border border-linha rounded-lg bg-white shadow-suave"
     >
       {OPCOES.map((opcao) => {
         const ativo = opcao.id === valor
@@ -25,7 +25,7 @@ function SeletorCamada({ valor, aoMudar }) {
             type="button"
             aria-pressed={ativo}
             onClick={() => aoMudar(opcao.id)}
-            className={`min-h-11 shrink-0 px-3 text-sm font-bold whitespace-nowrap ${ativo ? 'bg-asfalto text-white' : 'hover:bg-concreto'}`}
+            className={`min-h-11 shrink-0 px-3 text-sm font-medium whitespace-nowrap ${ativo ? 'bg-asfalto text-white' : 'hover:bg-concreto'}`}
           >
             {opcao.nome}
           </button>

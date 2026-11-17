@@ -27,7 +27,7 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 - React com **Vite** (JavaScript, JSX) e **Tailwind CSS**.
 - No mínimo **8 componentes** React organizados e reutilizáveis.
 - **useState** e **useEffect** obrigatórios.
-- No mínimo **2 custom hooks** (usamos 5: `useChamados`, `useLeituras`, `useOnibus`, `useChamadoAutomatico`, `useOnlineStatus`).
+- No mínimo **2 custom hooks** (usamos 7: `useNaTela`, `useContagem`, `useChamados`, `useLeituras`, `useOnibus`, `useChamadoAutomatico`, `useOnlineStatus`).
 - **Separação de responsabilidades:** lógica de negócio e acesso a dados fora dos componentes visuais.
 - **API externa com CRUD completo** (criar, consultar, atualizar, excluir).
 - Funcionalidades reais ligadas ao tema. **Não pode ser só uma interface estática.**
@@ -41,7 +41,7 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 src/
   components/   componentes visuais reutilizáveis
   pages/        telas: Cidadao.jsx, Agente.jsx
-  hooks/        useChamados.js, useLeituras.js, useOnibus.js, useChamadoAutomatico.js, useOnlineStatus.js
+  hooks/        useChamados.js, useLeituras.js, useOnibus.js, useChamadoAutomatico.js, useOnlineStatus.js, useNaTela.js, useContagem.js
   services/     api.js, chamadosService.js, cache.js (HTTP e cópia local)
   utils/        classificar.js, regras.js, simulacao.js, chamados.js, indicadores.js, mensagens.js, formatadores.js, geo.js, icones.js (funções puras)
   data/         ruas.js (as 6 ruas, traçado do OpenStreetMap e 5 pontos de medição por rua)
@@ -86,29 +86,30 @@ Estados por camada. Os limites ainda precisam ser confirmados nas fontes (INMET,
 | Pavimento (pico, g) | abaixo de 1,5 | 1,5 a 2,0 | acima de 2,0 |
 | Ar (PM2.5, µg/m³) | até 25 | 25 a 50 | acima de 50 |
 
-- Na **6ª passagem** seguida com o mesmo resultado crítico no mesmo trecho e camada, nasce um chamado automático (`origem = automatico`). O PDF falava em 3ª; o grupo decidiu usar 6ª. O número fica em `PASSAGENS_PARA_CHAMADO` (`utils/regras.js`).
+- No **3º alerta seguido** (3ª passagem com o mesmo resultado crítico no mesmo trecho e camada), nasce um chamado automático (`origem = automatico`). É a regra do PDF e do vídeo. (O grupo chegou a usar a 6ª e voltou para a 3ª.) O número fica em `PASSAGENS_PARA_CHAMADO` (`utils/regras.js`).
 - Leitura inválida (vazia, `NaN`, fora de faixa) não vira estado: tratar como "sem dados".
 - Ruas: 1 Av. Paulista, 2 R. Augusta, 3 R. da Consolação, 4 Av. Rebouças, 5 R. Oscar Freire, 6 Av. Brig. Luís Antônio. Cada rua tem um **ponto de medição a cada 100 m** (`ESPACO_ENTRE_PONTOS_M`), com numeração simulada (1 número por metro).
-- **O estado é por ponto, não pela rua inteira.** A rua mostra um resumo (quantos pontos em cada estado). A regra da 6ª passagem conta por ponto.
+- **O estado é por ponto, não pela rua inteira.** A rua mostra um resumo (quantos pontos em cada estado). A regra do 3º alerta conta por ponto.
 - **Local da ocorrência:** luz e pavimento mostram só o lugar exato, com margem de 20 números (`localDaOcorrencia` em `utils/simulacao.js`). Calor e ar mostram o trecho de 100 m do ponto.
 - Mapa: Leaflet + react-leaflet, fundo do OpenStreetMap (com atribuição), em tons de cinza no CSS.
 - **Um ônibus com sensor em cada rua**, os 6 ao mesmo tempo (`utils/rota.js`): 3 minutos por passagem (`DURACAO_PASSAGEM_MS`), em ida e volta (do nº 1 ao fim, depois do fim ao nº 1), com paradas de ônibus simuladas a cada 450 m (`PARADA_MS` = 5 s). O sensor lê cada ponto quando o ônibus passa pelo meio dele (`useOnibus` avisa, `useLeituras` registra). "Passagem" de um ponto = cada vez que o ônibus passa por ele.
 - Visões do mapa: "Todas as ruas" (mapa amplo com os 6 ônibus) e cada rua separada (as outras somem; zoom, paradas e câmera acompanhando o ônibus).
 
-## Direção visual (guia de estilo aprovado pelo grupo)
+## Direção visual (versão 2, alinhada ao vídeo do grupo)
 
-Conceito: **o app como itinerário**, inspirado na faixa do Metrô, no totem aceso, no letreiro de LED dos ônibus, nas placas de trânsito e nas letras populares. Inspiração, **nunca cópia de logotipo** do Metrô ou da SPTrans.
+Conceito: interface **fina e escura nos destaques**, como no vídeo do Pulso: topo escuro no Início, telas do app claras e suaves, rótulos pequenos em fonte monoespaçada, linha do "pulso" em coral. Referências de linguagem: Awwwards e Behance (inspiração, nunca cópia). Nunca copiar logotipo do Metrô ou da SPTrans.
 
-- Cores: concreto `#E9E6DF` (fundo), asfalto `#1B1C1E` (texto), amarelo `#FFC400` (atenção), vermelho `#D7261E` (crítico), verde `#17753F` (normal). Letreiro: âmbar `#FFB000` sobre `#0E0E0F`.
-- Fontes: **Archivo** (títulos e texto, condensada nos títulos) e **Doto** (só o letreiro).
-- Estados sempre com **cor + forma + padrão + texto**: normal = visto e fita lisa; atenção = losango e fita listrada; crítico = octógono e fita diagonal. Nunca só cor.
-- Bordas de 2 a 3 px em asfalto, sombras duras (sem blur), pictogramas soltos (sem círculo atrás).
+- Tokens em `src/index.css`: papel `#F4F3F0` (fundo), superfície `#FFFFFF`, tinta `#15171B` (texto e fundo escuro), tinta-2 `#4B4F58` (texto secundário), linha `#E2E0DA` (bordas), coral `#F0634C` (marca; só ícone, linha, fundo escuro ou botão com texto escuro). Estados: amarelo `#FFC400`, vermelho `#D7261E`, verde `#17753F`. Letreiro e caixa de sensores: âmbar `#FFB000` sobre a tinta.
+- Fontes: **IBM Plex Sans** (texto e títulos) e **IBM Plex Mono** (rótulos, números de protocolo e letreiro). As mesmas do vídeo.
+- Estados sempre com **cor + forma + padrão + texto**: normal = visto; atenção = losango e fita listrada; crítico = octógono e fita vermelha. Nunca só cor.
+- Bordas de 1 px (`border-linha`), cantos arredondados (8 a 16 px), sombra suave (`shadow-suave`), títulos sem caixa-alta, peso médio. Pictogramas soltos (sem círculo atrás).
+- Página **Início** (`pages/Inicio.jsx`, textos em `data/inicio.js`): problema, solução (simulador com os 2 jeitos de abrir chamado), por dentro (diagrama do fluxo) e as duas demonstrações. Números reais só com fonte (lista `FONTES`, mostrada só no rodapé). O discurso segue o vídeo (chamado automático no 3º alerta seguido, como no app).
 - Botão principal do cidadão: **"Avisar problema"** (vermelho), com resposta no letreiro "Aviso recebido". (Antes era "Solicitar parada"; o aluno trocou por fazer mais sentido.)
 - Formulário: rua, trecho (os trechos de 100 m da rua escolhida), tipo (4 camadas + "Outros") e descrição.
 - Numeração exata (metro a metro) só na rua em foco; nos resumos, o trecho de 100 m.
 - Chamado = **bilhete**: protocolo, picote, carimbo de status, etiqueta "Dados simulados".
 - Texto curto, verbo no começo. Ex.: "Trecho escuro. Prefira outro caminho agora."
-- **Evitar:** gradientes de fundo, vidro fosco, ícone em bolinha, emoji, Inter e Space Grotesk, neon, linha de KPIs com setinha.
+- **Evitar:** gradientes de fundo, vidro fosco, ícone em bolinha, emoji, Inter e Space Grotesk, neon, linha de KPIs com setinha, bordas grossas e caixa-alta pesada em títulos.
 
 ## Acessibilidade e realidade de uso
 

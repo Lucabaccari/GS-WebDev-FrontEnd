@@ -10,17 +10,26 @@ import { useOnlineStatus } from './hooks/useOnlineStatus.js'
 import Cabecalho from './components/Cabecalho.jsx'
 import BannerOffline from './components/BannerOffline.jsx'
 import ControlesDemo from './components/ControlesDemo.jsx'
+import Inicio from './pages/Inicio.jsx'
 import Cidadao from './pages/Cidadao.jsx'
 import Agente from './pages/Agente.jsx'
 import { VELOCIDADES } from './utils/simulacao.js'
 
 const ABAS = [
+  { id: 'inicio', rotulo: 'Início' },
   { id: 'cidadao', rotulo: 'Cidadão' },
   { id: 'agente', rotulo: 'Agente' },
 ]
 
+// Lê a aba do endereço (ex.: ".../#agente" abre direto a tela do Agente). Sem # válido: Início.
+function abaDoEndereco() {
+  const id = window.location.hash.replace('#', '')
+  return ABAS.some((a) => a.id === id) ? id : 'inicio'
+}
+
 function App() {
-  const [aba, setAba] = useState('cidadao')
+  // A função dentro do useState só roda na primeira vez: abre a aba que está no endereço.
+  const [aba, setAba] = useState(abaDoEndereco)
   const [pausado, setPausado] = useState(false) // pausa do modo demonstração
   const [velocidade, setVelocidade] = useState('1x')
   // Começa desligado: só cria chamados automáticos na API quando alguém liga (ex.: na apresentação).
@@ -37,8 +46,26 @@ function App() {
 
   // Os chamados também ficam aqui: as duas telas veem a mesma lista.
   const { chamados, carregando, erro, carregar, criar, mudarStatus, excluir } = useChamados()
-  // Regra da 6ª passagem crítica em cada ponto: confere a cada leitura nova ("contagem").
+  // Regra do 3º alerta seguido em cada ponto: confere a cada leitura nova ("contagem").
   useChamadoAutomatico({ pontos, passagem: contagem, chamados, carregando, criar, ativo: automaticoLigado })
+
+  // Troca de tela: muda a aba, o endereço (#cidadao) e volta para o topo da página.
+  function irPara(novaAba) {
+    setAba(novaAba)
+    window.history.replaceState(null, '', `#${novaAba}`)
+    window.scrollTo({ top: 0 })
+  }
+
+  // Se a pessoa usar o "voltar" do navegador ou colar um link com #, a aba acompanha.
+  useEffect(() => {
+    function aoMudarEndereco() {
+      // Só troca se o # for de uma tela (o link "Pular para o conteúdo" usa #conteudo e não deve trocar).
+      const id = window.location.hash.replace('#', '')
+      if (ABAS.some((a) => a.id === id)) setAba(id)
+    }
+    window.addEventListener('hashchange', aoMudarEndereco)
+    return () => window.removeEventListener('hashchange', aoMudarEndereco)
+  }, [])
 
   // Quando a internet volta, busca os chamados de novo na API.
   const estavaOffline = useRef(false)
@@ -61,9 +88,16 @@ function App() {
         Pular para o conteúdo
       </a>
 
-      <Cabecalho abas={ABAS} abaAtiva={aba} aoTrocarAba={setAba} />
+      {/* No Início o topo é escuro; nas outras telas, claro. */}
+      <Cabecalho abas={ABAS} abaAtiva={aba} aoTrocarAba={irPara} escuro={aba === 'inicio'} />
       {!online && <BannerOffline />}
 
+      {aba === 'inicio' ? (
+        // O Início ocupa a largura toda (as seções têm fundo de ponta a ponta).
+        <main id="conteudo" tabIndex={-1} role="tabpanel" aria-labelledby="aba-inicio">
+          <Inicio frota={frota} pontos={pontos} aoIr={irPara} />
+        </main>
+      ) : (
       <div className="mx-auto max-w-7xl space-y-5 p-4">
         {/* role="tabpanel" liga este conteúdo à aba selecionada (acessibilidade) */}
         <main id="conteudo" tabIndex={-1} role="tabpanel" aria-labelledby={`aba-${aba}`}>
@@ -95,6 +129,7 @@ function App() {
           aoAlternarAutomatico={() => setAutomaticoLigado(!automaticoLigado)}
         />
       </div>
+      )}
     </>
   )
 }

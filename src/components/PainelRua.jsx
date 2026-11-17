@@ -47,7 +47,7 @@ function LinhaPonto({ ponto, camada, aberto, sensorAqui, aoSelecionar, aoAvisar 
           <StatusPicto estado={estado} tamanho={18} />
         </span>
         <span className="flex flex-1 flex-wrap items-center gap-2 text-sm">
-          <span className="font-bold tabular-nums">{ponto.nome}</span>
+          <span className="font-medium tabular-nums">{ponto.nome}</span>
           <span>{ROTULOS_ESTADO[estado]}</span>
           {sensorAqui && <span className="bg-painel px-1.5 font-letreiro text-xs text-ambar uppercase">Sensor aqui</span>}
         </span>
@@ -55,7 +55,7 @@ function LinhaPonto({ ponto, camada, aberto, sensorAqui, aoSelecionar, aoAvisar 
       </button>
 
       {aberto && (
-        <div className="mb-2 ml-3 border-2 border-asfalto bg-white p-3">
+        <div className="mb-2 ml-3 border border-linha rounded-lg bg-white p-3">
           <dl className="space-y-1.5">
             {Object.keys(CAMADAS).map((c) => (
               <div key={c} className="flex items-center justify-between gap-2 text-sm">
@@ -81,7 +81,7 @@ function LinhaPonto({ ponto, camada, aberto, sensorAqui, aoSelecionar, aoAvisar 
           <button
             type="button"
             onClick={() => aoAvisar(ponto)}
-            className="mt-3 min-h-11 w-full border-2 border-asfalto bg-critico px-3 font-bold text-white"
+            className="mt-3 min-h-11 w-full border border-linha rounded-lg bg-critico px-3 font-medium text-white"
           >
             Avisar problema aqui
           </button>
@@ -99,8 +99,8 @@ function PainelRua({ rua, camada, pontoSelecionadoId, aoSelecionarPonto, aoAvisa
 
   return (
     <section aria-labelledby="titulo-rua" className="space-y-4">
-      <header className="border-b-2 border-asfalto pb-3">
-        <h2 id="titulo-rua" className="text-2xl leading-none font-black uppercase [font-stretch:75%]">
+      <header className="border-b border-linha pb-3">
+        <h2 id="titulo-rua" className="text-2xl leading-none font-semibold tracking-tight">
           {rua.nome}
         </h2>
         <p className="mt-1 text-sm">
@@ -109,9 +109,9 @@ function PainelRua({ rua, camada, pontoSelecionadoId, aoSelecionarPonto, aoAvisa
       </header>
 
       <div>
-        <h3 className="mb-2 text-sm font-bold uppercase">Ocorrências</h3>
+        <h3 className="mb-2 text-sm font-semibold">Ocorrências</h3>
         {ocorrencias.length === 0 ? (
-          <p className="border-2 border-dashed border-asfalto/40 p-3 text-sm">Nenhum problema nesta rua agora.</p>
+          <p className="border border-dashed border-linha-forte rounded-xl/40 p-3 text-sm">Nenhum problema nesta rua agora.</p>
         ) : (
           <ul className="space-y-2">
             {ocorrencias.map((o) => (
@@ -120,12 +120,12 @@ function PainelRua({ rua, camada, pontoSelecionadoId, aoSelecionarPonto, aoAvisa
                   type="button"
                   onClick={() => aoSelecionarPonto(o.ponto)}
                   className={`flex min-h-11 w-full items-center gap-3 border-2 p-2 text-left ${
-                    o.estado === 'critico' ? 'border-critico bg-critico/10' : 'border-asfalto bg-atencao/20'
+                    o.estado === 'critico' ? 'border-critico bg-critico/10' : 'border-linha bg-atencao/15'
                   }`}
                 >
                   <StatusPicto estado={o.estado} tamanho={24} />
                   <span className="flex-1">
-                    <span className="block font-bold tabular-nums">
+                    <span className="block font-medium tabular-nums">
                       {rua.nome}, {o.local.nome}
                     </span>
                     <span className="block text-sm">
@@ -142,10 +142,10 @@ function PainelRua({ rua, camada, pontoSelecionadoId, aoSelecionarPonto, aoAvisa
 
       {/* <details> abre e fecha sozinho. Começa aberto se algum ponto foi escolhido. */}
       <details open={Boolean(pontoSelecionadoId)}>
-        <summary className="flex min-h-11 cursor-pointer items-center text-sm font-bold uppercase">
+        <summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">
           Todos os {rua.pontos.length} pontos de medição
         </summary>
-        <ol className="mt-2 border-l-4 border-asfalto">
+        <ol className="mt-2 border-l-2 border-linha-forte">
           {rua.pontos.map((ponto) => (
             <LinhaPonto
               key={ponto.id}

@@ -9,13 +9,13 @@ function PainelViagem({ onibus, trajeto }) {
   return (
     <section aria-labelledby="titulo-viagem" className="bg-painel p-3 text-white">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 id="titulo-viagem" className="text-xs font-bold tracking-widest text-ambar uppercase">
+        <h2 id="titulo-viagem" className="font-mono text-[11px] tracking-wider text-white/70 uppercase">
           Ônibus com sensor · passagem {onibus.passagem} · {onibus.indo ? 'ida' : 'volta'}
         </h2>
         <p className="text-xs tabular-nums">fim em {formatarRelogio(onibus.faltaMs)}</p>
       </div>
 
-      <p className="mt-1 font-letreiro text-2xl leading-tight text-ambar uppercase">Altura do nº {onibus.numero}</p>
+      <p className="mt-1 font-letreiro text-xl leading-tight text-ambar">Altura do nº {onibus.numero}</p>
       {/* aria-live: o leitor de tela avisa quando o ônibus para ou volta a andar */}
       <p className="text-sm" aria-live="polite">
         {onibus.parado
@@ -27,7 +27,7 @@ function PainelViagem({ onibus, trajeto }) {
           pedaço já percorrido nesta passagem: na ida cresce da esquerda, na volta, da direita.
           As marcas são as paradas de ônibus, no lugar certo da rua. */}
       <div
-        className="relative mt-3 h-3 border border-white/60 bg-white/10"
+        className="relative mt-3 h-2 rounded-full bg-white/15"
         role="progressbar"
         aria-label={`Trajeto do ônibus na ${onibus.ruaNome}, ${onibus.indo ? 'na ida' : 'na volta'}`}
         aria-valuemin={0}
@@ -35,7 +35,7 @@ function PainelViagem({ onibus, trajeto }) {
         aria-valuenow={Math.round((onibus.rastro[1] - onibus.rastro[0]) * 100)}
       >
         <div
-          className="absolute inset-y-0 bg-ambar"
+          className="absolute inset-y-0 rounded-full bg-ambar"
           style={{ left: `${onibus.rastro[0] * 100}%`, width: `${(onibus.rastro[1] - onibus.rastro[0]) * 100}%` }}
         />
         {trajeto.paradas.map((fracao, i) => {
@@ -44,7 +44,7 @@ function PainelViagem({ onibus, trajeto }) {
             <span
               key={i}
               aria-hidden="true"
-              className={`absolute -top-1 h-5 w-1.5 -translate-x-1/2 border border-painel ${jaPassou ? 'bg-ambar' : 'bg-white'}`}
+              className={`absolute -top-1 h-4 w-1 -translate-x-1/2 rounded-full ${jaPassou ? 'bg-ambar' : 'bg-white'}`}
               style={{ left: `${fracao * 100}%` }}
             />
           )

@@ -1,6 +1,6 @@
 // Controles do modo demonstração: pausar, adiantar 15 segundos e mudar a velocidade.
 // Na velocidade 1x cada ônibus leva 3 minutos para percorrer a sua rua (uma passagem).
-// Para ver a regra da 6ª passagem acontecer, use 10x: cada passagem leva 18 segundos.
+// Para ver a regra do 3º alerta seguido acontecer, use 10x: cada passagem leva 18 segundos.
 //
 // Props: passagem (a menor entre os 6 ônibus), pausado, aoPausar, aoAvancar, velocidade,
 // aoMudarVelocidade, bloqueado (sem conexão), automaticoLigado e aoAlternarAutomatico.
@@ -8,7 +8,7 @@ import { VELOCIDADES } from '../utils/simulacao.js'
 import { PASSAGENS_PARA_CHAMADO } from '../utils/regras.js'
 import { DURACAO_PASSAGEM_MS } from '../utils/rota.js'
 
-const BOTAO = 'min-h-11 border-2 border-asfalto px-3 text-sm font-bold disabled:opacity-60'
+const BOTAO = 'min-h-11 border border-linha rounded-lg px-3 text-sm font-medium disabled:opacity-60'
 
 function ControlesDemo({
   passagem,
@@ -22,21 +22,21 @@ function ControlesDemo({
   aoAlternarAutomatico,
 }) {
   const atual = VELOCIDADES.find((v) => v.id === velocidade)
-  // Quanto tempo de verdade leva uma passagem nesta velocidade, e as 6 passagens da regra.
+  // Quanto tempo de verdade leva uma passagem nesta velocidade, e as passagens da regra.
   const segundosPorPassagem = DURACAO_PASSAGEM_MS / 1000 / atual.fator
   const minutosAteRegra = (segundosPorPassagem * PASSAGENS_PARA_CHAMADO) / 60
 
   return (
     // <details> é uma caixa que abre e fecha sozinha (sem JavaScript). Começa fechada.
-    <details className="border-2 border-dashed border-asfalto bg-white">
-      <summary className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-3 px-3 text-sm font-bold uppercase">
+    <details className="border border-dashed border-linha-forte rounded-xl bg-white">
+      <summary className="flex min-h-11 cursor-pointer flex-wrap items-center gap-x-3 px-3 text-sm font-semibold">
         Modo demonstração
         <span className="font-normal normal-case">
           Passagem {passagem} · {pausado ? 'pausado' : `velocidade ${atual.rotulo}`} · chamado automático{' '}
           {automaticoLigado ? 'ligado' : 'desligado'}
         </span>
       </summary>
-      <div className="border-t-2 border-dashed border-asfalto p-3">
+      <div className="border-t border-dashed border-linha p-3">
       <p className="text-sm">
         Cada rua tem um ônibus com sensor. Nesta velocidade, cada um leva{' '}
         {segundosPorPassagem.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} s para percorrer a rua inteira.

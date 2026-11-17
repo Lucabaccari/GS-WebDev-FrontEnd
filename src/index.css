@@ -2,30 +2,46 @@
 @import "tailwindcss";
 
 /*
-  Cores e fontes do guia de estilo do Pulso.
+  Cores, fontes e sombras do Pulso (versão 2 do visual, alinhada ao vídeo do grupo).
   Cada variável --color-X vira classes do Tailwind: bg-X, text-X, border-X.
-  Ex.: bg-concreto, text-asfalto, border-critico.
+  Ex.: bg-papel, text-tinta, border-linha, text-critico.
 */
 @theme {
-  --color-concreto: #E9E6DF;   /* fundo */
-  --color-asfalto: #1B1C1E;    /* texto e bordas */
+  /* Base */
+  --color-papel: #F4F3F0;      /* fundo das telas do app (claro e suave) */
+  --color-superficie: #FFFFFF; /* cartões e painéis */
+  --color-tinta: #15171B;      /* texto principal e fundo escuro do index */
+  --color-tinta-2: #4B4F58;    /* texto secundário (contraste 7:1 no papel) */
+  --color-linha: #E2E0DA;      /* bordas finas */
+  --color-linha-forte: #C8C5BD;/* bordas em destaque e hover */
+  --color-coral: #F0634C;      /* destaque da marca (linha do "pulso"); só em ícones, linhas e no fundo escuro */
+
+  /* Nomes antigos, mantidos para o código que ainda usa */
+  --color-concreto: #F4F3F0;
+  --color-asfalto: #15171B;
+
+  /* Estados (os mesmos de antes: já passaram no teste de contraste) */
   --color-atencao: #FFC400;    /* amarelo */
   --color-critico: #D7261E;    /* vermelho */
   --color-normal: #17753F;     /* verde */
-  --color-ambar: #FFB000;      /* texto do letreiro */
-  --color-painel: #0E0E0F;     /* fundo do letreiro */
+  --color-ambar: #FFB000;      /* texto do letreiro e caixa de sensores */
+  --color-painel: #15171B;     /* fundo do letreiro */
 
-  --font-sans: "Archivo", system-ui, sans-serif;
-  --font-letreiro: "Doto", monospace;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-letreiro: "IBM Plex Mono", ui-monospace, monospace;
 
-  /* Sombra dura (sem desfoque), como pede o guia */
-  --shadow-dura: 4px 4px 0 0 #1B1C1E;
+  /* Sombra suave (substitui a sombra dura do visual antigo) */
+  --shadow-suave: 0 1px 2px rgb(21 23 27 / 0.05), 0 6px 20px rgb(21 23 27 / 0.06);
+  --shadow-dura: 0 1px 2px rgb(21 23 27 / 0.05), 0 6px 20px rgb(21 23 27 / 0.06);
 }
 
 body {
-  background-color: var(--color-concreto);
-  color: var(--color-asfalto);
+  background-color: var(--color-papel);
+  color: var(--color-tinta);
   font-family: var(--font-sans);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
 }
 
 /*
@@ -53,11 +69,18 @@ body {
   filter: grayscale(1) contrast(0.85) brightness(1.08);
 }
 .leaflet-tooltip {
-  border: 2px solid var(--color-asfalto);
-  border-radius: 0;
-  box-shadow: 3px 3px 0 0 var(--color-asfalto);
-  font-weight: 600;
-  color: var(--color-asfalto);
+  border: 1px solid var(--color-linha);
+  border-radius: 8px;
+  box-shadow: var(--shadow-suave);
+  font-weight: 500;
+  color: var(--color-tinta);
+}
+/* Botões de zoom do mapa no mesmo estilo dos nossos (cantos arredondados, borda fina) */
+.leaflet-bar {
+  border: 1px solid var(--color-linha) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-suave) !important;
 }
 
 /* Ônibus: desliza entre uma posição e outra (a tela atualiza 5 vezes por segundo).
@@ -89,6 +112,75 @@ body {
 }
 .leaflet-tooltip.balao-onibus::before {
   border-right-color: var(--color-painel);
+}
+
+/* ===== Efeitos do Início ===== */
+
+/* Texto "vazado": só o contorno das letras, bem claro. Usado nos números gigantes de fundo. */
+.texto-vazado {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.12);
+}
+.texto-vazado-escuro {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(21 23 27 / 0.12);
+}
+
+/* Elemento que "surge": sobe um pouco e aparece. */
+.surgir {
+  animation: surgir 0.5s ease-out both;
+}
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Linha do "pulso" que se desenha sozinha no topo do Início.
+   Em vez de tracejado (que depende do comprimento da linha), uma "cortina" (clip-path)
+   vai abrindo da esquerda para a direita: funciona em qualquer largura de tela. */
+.desenhar-pulso {
+  clip-path: inset(0 100% 0 0);
+  animation: desenhar-pulso 2.4s ease-out 0.3s forwards;
+}
+@keyframes desenhar-pulso {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Ligações do diagrama "Por dentro": linha coral tracejada que anda no sentido do fluxo.
+   @utility deixa usar com md: e lg: (deitada no computador, em pé no celular). */
+@utility fluxo-linha-v {
+  background-image: linear-gradient(180deg, var(--color-coral) 50%, transparent 50%);
+  background-size: 100% 12px;
+  animation: fluxo-desce 0.8s linear infinite;
+}
+@utility fluxo-linha-h {
+  background-image: linear-gradient(90deg, var(--color-coral) 50%, transparent 50%);
+  background-size: 12px 100%;
+  animation: fluxo-anda 0.8s linear infinite;
+}
+@keyframes fluxo-desce {
+  to {
+    background-position: 0 12px;
+  }
+}
+@keyframes fluxo-anda {
+  to {
+    background-position: 12px 0;
+  }
+}
+
+/* Pontinho "ao vivo" do letreiro: pulsa devagar. */
+.ponto-ao-vivo {
+  animation: ao-vivo 1.6s ease-in-out infinite;
+}
+@keyframes ao-vivo {
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* Acessibilidade: quem pediu menos movimento no sistema não vê animações. */

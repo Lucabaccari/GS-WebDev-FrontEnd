@@ -12,7 +12,7 @@ import StatusPicto from './StatusPicto.jsx'
 import { ROTULOS_ESTADO, CAMADAS } from '../utils/classificar.js'
 import { montarChamadoCidadao, validarFormulario, TIPOS_DE_PROBLEMA } from '../utils/chamados.js'
 
-const CLASSE_CAMPO = 'mt-1 block min-h-11 w-full border-2 border-asfalto bg-white px-3 py-2 disabled:bg-concreto'
+const CLASSE_CAMPO = 'mt-1 block min-h-11 w-full border border-linha rounded-lg bg-white px-3 py-2 disabled:bg-concreto'
 
 // Texto de um trecho na lista. Se o sensor achou algo ali, já avisa (ex.: "— Luz à noite: crítico").
 function textoDoTrecho(ponto) {
@@ -60,9 +60,9 @@ function FormChamado({ ruas, pontoInicialId = '', aoEnviar, aoCancelar }) {
   }
 
   return (
-    <form id="form-chamado" onSubmit={enviar} noValidate className="space-y-4 border-[3px] border-asfalto bg-white p-4 shadow-dura">
+    <form id="form-chamado" onSubmit={enviar} noValidate className="space-y-4 border border-linha rounded-xl bg-white p-4 shadow-suave">
       <div>
-        <h2 className="text-xl font-black uppercase [font-stretch:75%]">Avisar um problema</h2>
+        <h2 className="text-xl font-semibold tracking-tight">Avisar um problema</h2>
         <p className="text-sm">Conte o que você viu. A subprefeitura recebe o aviso no painel dela.</p>
       </div>
 
@@ -103,7 +103,7 @@ function FormChamado({ ruas, pontoInicialId = '', aoEnviar, aoCancelar }) {
       </label>
 
       {jaRegistrado && (
-        <p className="flex items-center gap-2 border-l-4 border-asfalto bg-atencao/20 px-3 py-2 text-sm">
+        <p className="flex items-center gap-2 border-l-2 border-linha-forte bg-atencao/20 px-3 py-2 text-sm">
           <StatusPicto estado={ponto.estados[tipo]} tamanho={18} />
           O sensor do ônibus também registrou {CAMADAS[tipo].nome.toLowerCase()} {ROTULOS_ESTADO[ponto.estados[tipo]].toLowerCase()} no{' '}
           {ponto.locais[tipo].nome}. Seu aviso ajuda a confirmar.
@@ -125,7 +125,7 @@ function FormChamado({ ruas, pontoInicialId = '', aoEnviar, aoCancelar }) {
 
       {/* role="alert": o leitor de tela lê o erro assim que ele aparece */}
       {erro && (
-        <p role="alert" className="border-2 border-asfalto bg-critico px-3 py-2 font-bold text-white">
+        <p role="alert" className="border border-linha rounded-lg bg-critico px-3 py-2 font-medium text-white">
           {erro}
         </p>
       )}
@@ -134,11 +134,11 @@ function FormChamado({ ruas, pontoInicialId = '', aoEnviar, aoCancelar }) {
         <button
           type="submit"
           disabled={enviando}
-          className="min-h-11 border-2 border-asfalto bg-asfalto px-5 font-bold text-white uppercase disabled:opacity-60"
+          className="min-h-11 border border-linha rounded-lg bg-asfalto px-5 font-medium text-white uppercase disabled:opacity-60"
         >
           {enviando ? 'Enviando...' : 'Enviar aviso'}
         </button>
-        <button type="button" onClick={aoCancelar} className="min-h-11 border-2 border-asfalto bg-white px-5 font-bold uppercase">
+        <button type="button" onClick={aoCancelar} className="min-h-11 border border-linha rounded-lg bg-white px-5 font-semibold">
           Cancelar
         </button>
       </div>

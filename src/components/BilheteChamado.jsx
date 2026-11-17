@@ -10,9 +10,9 @@ import { formatarProtocolo, formatarDataHora } from '../utils/formatadores.js'
 
 // Cor do carimbo de cada status (o texto também muda, então não depende só da cor).
 const CORES_CARIMBO = {
-  aberto: 'border-critico text-critico',
-  em_atendimento: 'border-asfalto text-asfalto bg-atencao',
-  resolvido: 'border-normal text-normal',
+  aberto: 'border-critico/60 text-[#A3160F] bg-critico/5',
+  em_atendimento: 'border-[#B58800] text-tinta bg-atencao/25',
+  resolvido: 'border-normal/60 text-normal bg-normal/5',
 }
 
 function BilheteChamado({ chamado, aoMudarStatus, aoExcluir, selecionado = false, aoVerNoMapa }) {
@@ -23,29 +23,29 @@ function BilheteChamado({ chamado, aoMudarStatus, aoExcluir, selecionado = false
     // id: permite rolar a fila até este bilhete quando ele é clicado no mapa
     <article
       id={`bilhete-${chamado.id}`}
-      className={`border-[3px] bg-white ${selecionado ? 'border-critico shadow-[6px_6px_0_0_#D7261E]' : 'border-asfalto shadow-dura'}`}
+      className={`overflow-hidden rounded-xl border bg-white ${selecionado ? 'border-critico ring-2 ring-critico/40' : 'border-linha shadow-suave'}`}
     >
       {/* Parte de cima: protocolo e carimbo */}
       <div className="flex items-start justify-between gap-3 p-3">
         <div>
-          <p className="text-xs font-bold uppercase">Protocolo</p>
-          <p className="font-letreiro text-xl font-bold">{formatarProtocolo(chamado.id)}</p>
+          <p className="font-mono text-[11px] tracking-wider text-tinta-2 uppercase">Protocolo</p>
+          <p className="font-letreiro text-lg font-medium">{formatarProtocolo(chamado.id)}</p>
         </div>
-        <span className={`-rotate-6 border-[3px] px-2 py-1 text-sm font-black uppercase ${CORES_CARIMBO[chamado.status]}`}>
+        <span className={`-rotate-3 rounded-md border-2 px-2 py-0.5 font-mono text-xs font-medium uppercase ${CORES_CARIMBO[chamado.status]}`}>
           {ROTULOS_STATUS[chamado.status] || chamado.status}
         </span>
       </div>
 
       {/* Picote: linha tracejada, como a de destacar um bilhete */}
-      <div aria-hidden="true" className="border-t-2 border-dashed border-asfalto" />
+      <div aria-hidden="true" className="border-t border-dashed border-linha" />
 
       <div className="space-y-2 p-3">
-        <p className="text-lg leading-tight font-black uppercase [font-stretch:75%]">
+        <p className="text-lg leading-tight font-semibold tracking-tight">
           {rotuloTipo(chamado.tipo)} · {localDoChamado(chamado)}
         </p>
         <p>{chamado.descricao}</p>
         {aoVerNoMapa && chamado.lat !== undefined && chamado.lat !== '' && (
-          <button type="button" onClick={() => aoVerNoMapa(chamado)} className="min-h-11 text-sm font-bold underline">
+          <button type="button" onClick={() => aoVerNoMapa(chamado)} className="min-h-11 text-sm font-medium underline">
             Ver no mapa
           </button>
         )}
@@ -65,16 +65,16 @@ function BilheteChamado({ chamado, aoMudarStatus, aoExcluir, selecionado = false
           )}
         </dl>
 
-        <span className="inline-block border-2 border-asfalto bg-atencao px-2 text-xs font-bold uppercase">
+        <span className="inline-block rounded-full bg-atencao/25 px-2 py-0.5 font-mono text-[11px] tracking-wide uppercase">
           Dados simulados
         </span>
       </div>
 
       {/* Ações do agente (só aparecem se as funções foram passadas) */}
       {aoMudarStatus && aoExcluir && (
-        <div className="space-y-3 border-t-2 border-asfalto p-3">
+        <div className="space-y-3 border-t border-linha p-3">
           <fieldset>
-            <legend className="mb-1 text-xs font-bold uppercase">Mudar status</legend>
+            <legend className="mb-1 text-xs font-semibold">Mudar status</legend>
             <div className="flex flex-wrap gap-2">
               {Object.entries(ROTULOS_STATUS).map(([status, rotulo]) => (
                 <button
@@ -83,7 +83,7 @@ function BilheteChamado({ chamado, aoMudarStatus, aoExcluir, selecionado = false
                   aria-pressed={chamado.status === status}
                   disabled={chamado.status === status}
                   onClick={() => aoMudarStatus(chamado, status)}
-                  className="min-h-11 border-2 border-asfalto bg-white px-3 text-sm font-bold disabled:bg-asfalto disabled:text-white"
+                  className="min-h-11 border border-linha rounded-lg bg-white px-3 text-sm font-medium disabled:border-tinta disabled:bg-tinta disabled:text-white"
                 >
                   {rotulo}
                 </button>
@@ -94,18 +94,18 @@ function BilheteChamado({ chamado, aoMudarStatus, aoExcluir, selecionado = false
           {/* Excluir pede confirmação antes, para evitar apagar sem querer */}
           {confirmando ? (
             <div role="alert" className="flex flex-wrap items-center gap-2">
-              <p className="font-bold">Excluir este chamado?</p>
+              <p className="font-medium">Excluir este chamado?</p>
               <button
                 type="button"
                 onClick={() => aoExcluir(chamado.id)}
-                className="min-h-11 border-2 border-asfalto bg-critico px-3 text-sm font-bold text-white"
+                className="min-h-11 border border-linha rounded-lg bg-critico px-3 text-sm font-medium text-white"
               >
                 Sim, excluir
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmando(false)}
-                className="min-h-11 border-2 border-asfalto bg-white px-3 text-sm font-bold"
+                className="min-h-11 border border-linha rounded-lg bg-white px-3 text-sm font-medium"
               >
                 Não
               </button>
@@ -114,7 +114,7 @@ function BilheteChamado({ chamado, aoMudarStatus, aoExcluir, selecionado = false
             <button
               type="button"
               onClick={() => setConfirmando(true)}
-              className="min-h-11 border-2 border-critico bg-white px-3 text-sm font-bold text-critico"
+              className="min-h-11 rounded-lg border border-critico/50 bg-white px-3 text-sm font-medium text-critico"
             >
               Excluir
             </button>

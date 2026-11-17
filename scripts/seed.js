@@ -11,6 +11,7 @@ import { readFileSync } from 'node:fs'
 import { buscarRua, pontoNoMetro, nomeDoTrecho } from '../src/data/ruas.js'
 import { localDaOcorrencia } from '../src/utils/simulacao.js'
 import { posicaoNoCaminho } from '../src/utils/geo.js'
+import { PASSAGENS_PARA_CHAMADO } from '../src/utils/regras.js'
 
 // Lê a VITE_API_URL do arquivo .env (o Node não lê o .env sozinho).
 function lerUrlDaApi() {
@@ -48,7 +49,8 @@ function exemplo(ruaId, metro, campos) {
   }
 }
 
-const AUTOMATICO = { origem: 'automatico', descricao: 'Leitura crítica em 6 passagens seguidas.', passagens: 6, prioridade: 'alta' }
+// Mesmo texto do chamado automático do app (utils/regras.js): 3 alertas seguidos.
+const AUTOMATICO = { origem: 'automatico', descricao: `Leitura crítica em ${PASSAGENS_PARA_CHAMADO} passagens seguidas.`, passagens: PASSAGENS_PARA_CHAMADO, prioridade: 'alta' }
 
 // Os exemplos ficam nos mesmos lugares dos problemas simulados (utils/simulacao.js).
 const EXEMPLOS = [

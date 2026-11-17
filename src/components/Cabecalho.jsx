@@ -1,25 +1,23 @@
-// Topo do app: marca, frase curta, etiqueta "Dados simulados" e as abas de tela.
+// Topo do app: marca, etiqueta "Dados simulados" e as abas (Início, Cidadão, Agente).
+// escuro = true: versão sobre fundo escuro (usada no Início, que tem o topo escuro).
 import Abas from './Abas.jsx'
+import MarcaPulso from './MarcaPulso.jsx'
 
-function Cabecalho({ abas, abaAtiva, aoTrocarAba }) {
+function Cabecalho({ abas, abaAtiva, aoTrocarAba, escuro = false }) {
   return (
-    <header className="border-b-2 border-asfalto bg-white">
+    <header className={escuro ? 'bg-tinta text-white' : 'border-b border-linha bg-white'}>
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* Marca: linha de "pulso" âmbar num quadrado asfalto (a mesma do favicon) */}
-          <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
-            <rect width="32" height="32" fill="#1B1C1E" />
-            <polyline points="3,17 10,17 13,9 18,24 21,17 29,17" fill="none" stroke="#FFB000" strokeWidth="3" />
-          </svg>
-          <div>
-            <h1 className="text-2xl leading-none font-black uppercase [font-stretch:75%]">Pulso</h1>
-            <p className="text-xs">Ruas medidas pelos ônibus de São Paulo</p>
-          </div>
-          <span className="border-2 border-asfalto bg-atencao px-2 py-0.5 text-xs font-bold uppercase">
+          <MarcaPulso escuro={escuro} />
+          <span
+            className={`rounded-full px-2.5 py-0.5 font-mono text-[11px] tracking-wide uppercase ${
+              escuro ? 'bg-white/10 text-white/80' : 'bg-atencao/25 text-tinta'
+            }`}
+          >
             Dados simulados
           </span>
         </div>
-        <Abas abas={abas} ativa={abaAtiva} aoTrocar={aoTrocarAba} />
+        <Abas abas={abas} ativa={abaAtiva} aoTrocar={aoTrocarAba} escuro={escuro} />
       </div>
     </header>
   )

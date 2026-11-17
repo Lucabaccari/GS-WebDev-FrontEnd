@@ -6,8 +6,9 @@
 // - abas: lista de { id, rotulo }
 // - ativa: id da aba selecionada
 // - aoTrocar: função chamada com o id da aba clicada
+// - escuro: true quando as abas ficam sobre fundo escuro (topo do Início)
 
-function Abas({ abas, ativa, aoTrocar }) {
+function Abas({ abas, ativa, aoTrocar, escuro = false }) {
   // Setas: vai para a aba vizinha e coloca o foco nela.
   function aoApertarTecla(evento, indice) {
     if (evento.key !== 'ArrowRight' && evento.key !== 'ArrowLeft') return
@@ -19,9 +20,22 @@ function Abas({ abas, ativa, aoTrocar }) {
   }
 
   return (
-    <div role="tablist" aria-label="Escolha a tela" className="flex">
+    // Um "controle segmentado": as abas ficam juntas numa pílula, e a ativa ganha destaque.
+    <div
+      role="tablist"
+      aria-label="Escolha a tela"
+      className={`flex rounded-full p-1 ${escuro ? 'bg-white/10' : 'bg-papel ring-1 ring-linha'}`}
+    >
       {abas.map((aba, indice) => {
         const selecionada = aba.id === ativa
+        // Cores da aba conforme o fundo (claro ou escuro) e se está selecionada.
+        const cores = escuro
+          ? selecionada
+            ? 'bg-white text-tinta'
+            : 'text-white/80 hover:text-white'
+          : selecionada
+            ? 'bg-tinta text-white shadow-suave'
+            : 'text-tinta-2 hover:text-tinta'
         return (
           <button
             key={aba.id}
@@ -34,9 +48,7 @@ function Abas({ abas, ativa, aoTrocar }) {
             tabIndex={selecionada ? 0 : -1}
             onClick={() => aoTrocar(aba.id)}
             onKeyDown={(e) => aoApertarTecla(e, indice)}
-            className={`min-h-11 border-2 border-asfalto px-4 font-bold uppercase -ml-0.5 first:ml-0 ${
-              selecionada ? 'bg-asfalto text-white' : 'bg-white text-asfalto hover:bg-concreto'
-            }`}
+            className={`min-h-11 rounded-full px-4 text-sm font-medium transition-colors ${cores}`}
           >
             {aba.rotulo}
           </button>

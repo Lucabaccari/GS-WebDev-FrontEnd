@@ -3,10 +3,10 @@
 // Regra: quando o mesmo PONTO de uma rua dá resultado CRÍTICO na mesma camada por
 // PASSAGENS_PARA_CHAMADO passagens seguidas, o sistema abre um chamado sozinho,
 // já dizendo o ponto exato do problema.
-// (O PDF do Pulso falava em 3 passagens; o grupo decidiu usar 6.)
+// (É a regra do PDF e do vídeo do Pulso: o chamado nasce no 3º alerta seguido.)
 import { classificar } from './classificar.js'
 
-export const PASSAGENS_PARA_CHAMADO = 6
+export const PASSAGENS_PARA_CHAMADO = 3
 
 const CAMADAS_IDS = ['calor', 'luz', 'pavimento', 'ar']
 
