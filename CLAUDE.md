@@ -43,7 +43,7 @@ src/
   pages/        telas: Cidadao.jsx, Agente.jsx
   hooks/        useChamados.js, useLeituras.js, useOnibus.js, useChamadoAutomatico.js, useOnlineStatus.js, useNaTela.js, useContagem.js, useTour.js
   services/     api.js, chamadosService.js, cache.js (HTTP e cópia local)
-  utils/        classificar.js, regras.js, simulacao.js, chamados.js, indicadores.js, formatadores.js, geo.js, icones.js (funções puras)
+  utils/        classificar.js, regras.js, simulacao.js, chamados.js, caminho.js, indicadores.js, formatadores.js, geo.js, icones.js, tela.js (funções puras)
   data/         ruas.js (as 6 ruas, traçado do OpenStreetMap e 5 pontos de medição por rua)
 ```
 
@@ -105,7 +105,8 @@ Conceito: interface **fina e escura nos destaques**, como no vídeo do Pulso: to
 - Bordas de 1 px (`border-linha`), cantos arredondados (8 a 16 px), sombra suave (`shadow-suave`), títulos sem caixa-alta, peso médio. Pictogramas soltos (sem círculo atrás).
 - Página **Início** (`pages/Inicio.jsx`, textos em `data/inicio.js`): problema, solução (simulador com os 2 jeitos de abrir chamado), por dentro (diagrama do fluxo) e as duas demonstrações. Números reais só com fonte (lista `FONTES`, mostrada só no rodapé). O discurso segue o vídeo (chamado automático no 3º alerta seguido, como no app).
 - Botão principal do cidadão: **"Avisar problema"** (vermelho), com resposta no letreiro "Aviso recebido". (Antes era "Solicitar parada"; o aluno trocou por fazer mais sentido.)
-- **Tour do Cidadão:** 6 passos na primeira visita (`TourGuiado` + `useTour`, textos em `data/tour.js`). Cada passo destaca um elemento marcado com `data-tour`. Pode pular (botão ou Esc); "Como usar" abre de novo.
+- **Tours:** Cidadão (6 passos) e Agente (5 passos) na primeira visita (`TourGuiado` + `useTour`, textos em `data/tour.js`). Cada passo destaca um elemento marcado com `data-tour`; o passo pode pedir uma visão (`visao`, no Cidadão) ou abrir um chamado (`abrirChamado`, no Agente). Pode pular (botão ou Esc); "Como usar" (`BotaoComoUsar`) abre de novo.
+- **Verifique seu caminho (plano B):** `VerificarCaminho` + `utils/caminho.js`. A pessoa escolhe ruas e intervalos de números; o app lista os alertas desses trechos. Fica sempre no mesmo lugar da tela (para não perder o caminho ao trocar de visão).
 - Formulário: rua, trecho (os trechos de 100 m da rua escolhida), tipo (4 camadas + "Outros") e descrição.
 - Numeração exata (metro a metro) só na rua em foco; nos resumos, o trecho de 100 m.
 - Chamado = **bilhete** (no Agente, deitado numa linha): canhoto com o ícone do problema, picote, protocolo, carimbo de status, etiqueta "Dados simulados".
@@ -118,6 +119,7 @@ Conceito: interface **fina e escura nos destaques**, como no vídeo do Pulso: to
 - Contraste mínimo de 4,5:1 no texto. Botões com no mínimo 44 px.
 - Respeitar `prefers-reduced-motion`.
 - Funciona bem no celular. Navegável por teclado, com `<button>` e `<a>` reais.
+- No celular (menos de 640 px, `ehCelular` em `utils/tela.js` para o Leaflet): menu das telas (`MenuCelular`), camadas fora do mapa, ícones do mapa 40% menores e enquadramento mais justo.
 - Sem conexão: mostrar as últimas leituras com aviso, em vez de quebrar.
 
 ## Como trabalhar neste repositório

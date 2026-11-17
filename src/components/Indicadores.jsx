@@ -1,5 +1,6 @@
 // Indicadores do painel do Agente, em placas (sem setinhas de alta/baixa, como pede o guia).
 // Recebe os números prontos de utils/indicadores.js pela prop "dados".
+// "acao" (opcional) aparece à direita do título (ex.: o botão "Como usar").
 import { TIPOS_DE_PROBLEMA } from '../utils/chamados.js'
 import { formatarDuracao } from '../utils/formatadores.js'
 
@@ -16,15 +17,18 @@ function Placa({ rotulo, valor, faixa }) {
   )
 }
 
-function Indicadores({ dados }) {
+function Indicadores({ dados, acao }) {
   // O tipo com mais chamados define o tamanho de 100% das barras.
   const maior = Math.max(1, ...Object.values(dados.porTipo))
 
   return (
     <section aria-labelledby="titulo-indicadores" className="space-y-4">
-      <h2 id="titulo-indicadores" className="text-2xl font-semibold tracking-tight">
-        Indicadores
-      </h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="titulo-indicadores" className="text-2xl font-semibold tracking-tight">
+          Indicadores
+        </h2>
+        {acao}
+      </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Placa rotulo="Abertos" valor={dados.abertos} faixa="bg-critico" />

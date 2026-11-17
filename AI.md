@@ -343,3 +343,69 @@ Regras que seguimos:
   - A fila passou a ser ordenada pela data de criação: o mais recente primeiro e o mais antigo por último (`ordenarFila`, antes era por status e prioridade).
   - A prioridade "pulava" quando o status mudava, porque o carimbo ("Em atendimento" é mais largo) ficava numa coluna de largura automática. A coluna do carimbo ganhou largura fixa no computador. Conferido no navegador: a prioridade começa na mesma posição em todas as linhas (Aberto, Em atendimento e Resolvido).
   - No modo demonstração, saiu o ponto que piscava, e a informação do canto ficou só "1 passagem = X s" (a prop `passagem`, que deixou de ser usada, saiu do componente).
+
+### Sessão 20: revisão para o celular (responsivo)
+
+- **O que o aluno pediu** (achados na versão do celular, mais uma revisão geral):
+  - A comparação das temperaturas quebrada no Início.
+  - As telas num menu do lado direito.
+  - No Cidadão: mesma altura para os blocos das ruas lado a lado; as camadas sem rolar para o lado; mapa mais aproximado nas ruas; ícones de problema e ônibus menores; botões "Avisar problema" e "Como usar" adequados; conferir o tour; caixas das 6 ruas e do modo demonstração menores.
+  - No Agente: ícone do alerta menor no mapa pequeno do chamado.
+- **O que a IA fez:**
+  - **`ComparacaoCalor`:** os termômetros passavam 70 px do cartão. No celular ficam mais baixos e com número menor, e o "+15°" vira uma etiqueta em cima (entre os dois não cabia).
+  - **`MenuCelular` (componente novo):** no celular, o topo mostra um botão com a tela atual e o ícone de menu, no canto direito. Ele abre a lista Início, Cidadão e Agente (a atual marcada "aqui") e fecha ao escolher, com Esc ou tocando fora. No tablet e no computador continuam as abas. A etiqueta "Dados simulados" ficou numa linha só.
+  - **`SeletorVisao`:** `auto-rows-fr`, todas as opções com a mesma altura.
+  - **`SeletorCamada`:** ganhou a prop `grade`. No celular sai de cima do mapa e fica numa linha logo acima dele, com as 5 opções dividindo a largura (fonte menor, nome em 2 linhas quando precisa).
+  - **Mapa no celular** (`utils/tela.js` com `ehCelular`, porque o Leaflet não lê as classes do Tailwind): ícones de estado 30% menores (`compacto` no `iconeEstado`), ônibus 30% menor, mapa mais baixo e enquadramento com margem de 8 px (`getBoundsZoom`), indo direto, sem animação. A `CameraDoMapa` também enquadra de novo quando o mapa muda de tamanho logo depois de abrir.
+  - **Botões:** "Avisar problema" com 44 px e texto menor no celular; "Como usar" vira só o "?" num círculo de 44 px (com nome para leitor de tela).
+  - **Tour:** com as camadas em dois lugares, o tour usa o elemento que está visível. Elementos com quase metade da tela ou mais aparecem a partir do topo, para o cartão não cobrir o mapa.
+  - **Caixas menores no celular:** cartões das 6 ruas (de 222 para 203 px) e modo demonstração (de 301 para 249 px).
+  - **Agente:** o marcador do mapa pequeno usa o tamanho `compacto` (de 34 para 24 px).
+  - **Revisão geral:** no simulador do Início, as 4 etapas ficam lado a lado numa linha no celular (a lista ocupava uns 300 px; agora 119 px); os links das fontes no rodapé ganharam área de toque maior.
+- **Correções no caminho:**
+  - O primeiro enquadramento do celular saía antes de o mapa terminar de mudar de tamanho (as ruas ficavam na parte de baixo). Resolvido enquadrando de novo no evento de mudança de tamanho.
+  - A primeira tentativa de aproximar (+1/4 de zoom) cortava as pontas das ruas e foi desfeita.
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - No celular (375 px): nada passa da borda em Início, Cidadão e Agente; botões com 44 px ou mais; o cartão de temperatura cabe inteiro; as ruas ocupam 321 de 341 px de largura do mapa; o menu abre, fecha com Esc e ao tocar fora, e leva ao Agente; o tour passa pelos 6 passos sem cobrir o elemento destacado (exceto o resumo, mais alto que a tela); o marcador do mapa do chamado fica no centro.
+  - No tablet (768 px): abas no topo, camadas por cima do mapa, nada vazando.
+  - No computador (1024 px): igual a antes (ícones de 28 px, "Como usar" com texto, ruas enquadradas).
+  - Console sem erros numa aba nova nas 3 telas. `npm run build` e `npm run lint` sem erros.
+- **Segunda rodada (pedido do aluno):**
+  - No celular, os números da escala do termômetro (20 a 50) ficavam por baixo da coluna. A escala ficou mais larga (\`w-11\`): agora os números ficam 8 px à esquerda da coluna.
+  - Ruas mais destacadas em todos os mapas (no mapa amplo, contorno de 12 px e linha de 6 px; antes 9 e 4).
+  - No celular e no mapa pequeno do chamado, ícones de alerta e ônibus 40% menores (antes 30%) e a fita colorida do alerta 30% mais fina. Medido no celular: alerta de 17 px (antes 20), ônibus de uns 29 px (antes 34), marcador do mapa do chamado de 20 px (antes 24). No computador, os tamanhos continuam os mesmos.
+
+### Sessão 21: ajustes gerais (topo, hero e ônibus no resumo)
+
+- **O que o aluno pediu:** tirar a etiqueta "Dados simulados" do topo (comum às 3 telas), tirar a etiqueta "Sensores nos ônibus de São Paulo" do hero e, nos cartões das 6 ruas, trocar o ponto amarelo pelo ícone do ônibus do mapa.
+- **O que a IA fez:**
+  - `Cabecalho`: só a marca e as abas (ou o menu, no celular). O aviso de dados simulados continua no conteúdo: tour, bilhetes, simulador e rodapé.
+  - Hero do Início: saiu a etiqueta; o título subiu.
+  - `PainelTodas`: componente interno `OnibusMini`, o mesmo desenho do ônibus do mapa (visto de cima, com a caixa âmbar), deitado na barrinha. Ele aponta para a direita na ida e para a esquerda na volta.
+- **O que mudamos:** _(completar)_
+- **Como validamos:** no navegador, o topo não tem mais a etiqueta, o hero não tem a frase, o rodapé ainda avisa dos dados simulados, e os 6 cartões mostram o ônibus (3 indo para a direita, 3 voltando para a esquerda, conferido pelo texto "indo →" / "← voltando"). `npm run build` e `npm run lint` sem erros.
+
+### Sessão 22: tour mostrando uma rua, tour do Agente e "Verifique seu caminho"
+
+- **O que o aluno pediu:**
+  - No tour do Cidadão, mostrar que ao tocar numa rua dá para ver o trecho com mais detalhes.
+  - Um tour também na tela do Agente.
+  - Uma funcionalidade para avisar o cidadão sobre o melhor caminho: ele escolhe uma ou mais ruas e o intervalo em cada uma, e o app verifica se há alerta nesses trechos. Na vida real o cálculo usaria origem e destino; aqui é um "plano B".
+- **O que a IA fez:**
+  - **`useTour`:** ganhou `aoMudarPasso(numero)`, que avisa a tela quando o passo muda (nos botões, sem efeito extra).
+  - **`data/tour.js`:** cada passo do Cidadão diz a visão (`visao`). O 6º passo ("Veja uma rua de perto") abre a Av. Paulista e destaca o painel ao lado do mapa (viagem, paradas e trechos). Para caber em 6 passos, o resumo das ruas passou a ser citado no 2º passo. Tour novo do Agente com 5 passos: boas-vindas, indicadores, filtros, fila e "Abra um chamado" (o tour abre o primeiro chamado sozinho; voltar fecha).
+  - **`BotaoComoUsar` (componente novo):** o mesmo botão nas duas telas ("?" no celular, "? Como usar" no computador). No Agente ele fica ao lado do título "Indicadores".
+  - **`TourGuiado`:** quando o elemento é grande e está na metade direita (como o painel da rua), o cartão vai para o canto esquerdo, sem cobrir o destaque.
+  - **`utils/caminho.js`:** `pontosDoTrecho` (os pontos de 100 m que o intervalo cobre, em qualquer sentido), `verificarCaminho` (alertas de cada trecho, crítico primeiro, e o pior estado) e `conselhoDoCaminho` ("Pode seguir", "Siga com cuidado" ou "Evite este caminho agora").
+  - **`VerificarCaminho` (componente novo, "Plano B"):** até 4 ruas; ao escolher a rua, o intervalo já vem com a rua inteira; "Do número" e "Até o número" usam os trechos de 100 m. Mudar algo apaga o resultado até verificar de novo. O resultado usa as leituras de agora (acompanha os ônibus), mostra cada alerta com o ícone, o local e o estado, e "Ver no mapa" abre a rua no ponto. Fica sempre no mesmo lugar da estrutura da tela (logo abaixo do mapa), para não perder o caminho ao trocar de visão.
+- **Correções no caminho:**
+  - Na primeira versão o "Verifique seu caminho" ficava em lugares diferentes em cada visão; ao tocar em "Ver no mapa", ele seria recriado e perderia o caminho. Passou a ficar num lugar fixo.
+  - O lint avisou que o tour usava `mudarVisao` antes de ela existir; a linha do tour foi para depois da função.
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - "Verificar caminho" começa desligado; Av. Paulista inteira dá "Evite" (calor nº 1201 a 1300 e pavimento nº 2206 a 2226, críticos); Av. Paulista do nº 1 ao 1200 dá "Pode seguir"; do nº 1 ao 1300 volta a dar "Evite"; R. Augusta do nº 1 ao 1000 dá "Sem alertas"; mudar um campo apaga o resultado; "Tirar" remove a rua; "Ver no mapa" abre a Av. Paulista e o resultado continua lá.
+  - Tour do Cidadão: o 6º passo abre a Av. Paulista e destaca o painel; voltar ao 5º volta para "Todas as ruas"; o cartão não cobre o painel (computador) e fica embaixo dele (celular).
+  - Tour do Agente: abre sozinho na primeira visita; o 5º passo abre o primeiro chamado; voltar fecha; concluir grava que já viu.
+  - No celular (375 px), nada vaza e os botões e campos têm 44 px ou mais. Console sem erros numa aba nova. `npm run build` e `npm run lint` sem erros.
+- **Ajuste seguinte (pedido do aluno):** no celular, o título "Vizinhos, mas com 15 °C de diferença" quebrava a linha entre o "15" e o "°C". O espaço entre número e unidade virou um espaço que não quebra (` `) nos textos do Início, nas leituras do simulador e no `formatarValor` (que escreve número + unidade em todo o app). Conferido no celular: o "15" e o "°C" ficam na mesma linha.

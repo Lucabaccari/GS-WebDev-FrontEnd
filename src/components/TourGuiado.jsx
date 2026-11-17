@@ -23,7 +23,9 @@ function posicaoDoCartao(caixa) {
   const left = Math.min(Math.max(caixa.left, MARGEM), larguraTela - largura - MARGEM)
   if (alturaTela - caixa.bottom > ALTURA_CARTAO) return { top: caixa.bottom + MARGEM, left, width: largura }
   if (caixa.top > ALTURA_CARTAO) return { top: caixa.top - MARGEM, left, width: largura, transform: 'translateY(-100%)' }
-  // Alvo grande (como o mapa): o cartão fica por cima, no canto de baixo à direita.
+  // Alvo grande (como o mapa): o cartão fica no canto de baixo, do lado oposto ao alvo
+  // (alvo na metade direita da tela, como o painel da rua: cartão à esquerda).
+  if (caixa.left > larguraTela / 2) return { bottom: MARGEM * 2, left: MARGEM * 2, width: largura }
   return { bottom: MARGEM * 2, right: MARGEM * 2, width: largura }
 }
 
@@ -36,11 +38,16 @@ function TourGuiado({ passos, passo, aoAvancar, aoVoltar, aoFechar }) {
   // A cada passo: rola a página até o alvo e mede onde ele ficou.
   // Mede de novo quando a página rola ou a janela muda de tamanho.
   useEffect(() => {
-    const alvo = atual.alvo ? document.querySelector(`[data-tour="${atual.alvo}"]`) : null
+    // Pode haver mais de um elemento com a mesma marca (ex.: as camadas têm uma versão para o celular
+    // e outra para o computador): usa o que está visível agora (o escondido mede 0 de largura).
+    const alvo = atual.alvo
+      ? [...document.querySelectorAll(`[data-tour="${atual.alvo}"]`)].find((el) => el.getBoundingClientRect().width > 0) || null
+      : null
     // Rola direto (sem animação): o destaque já desliza até o lugar novo.
-    // Elemento alto (mapa, resumo): mostra o começo dele. Elemento baixo: deixa no meio da tela.
+    // Elemento alto (mapa, resumo; quase metade da tela ou mais): mostra o começo dele, e o cartão
+    // fica embaixo. Elemento baixo: deixa no meio da tela.
     if (alvo) {
-      const alto = alvo.getBoundingClientRect().height > window.innerHeight * 0.6
+      const alto = alvo.getBoundingClientRect().height > window.innerHeight * 0.45
       alvo.scrollIntoView({ block: alto ? 'start' : 'center' })
     }
 

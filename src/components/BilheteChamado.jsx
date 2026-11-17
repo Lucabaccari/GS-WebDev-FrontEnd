@@ -35,7 +35,9 @@ function BilheteChamado({ chamado, aberto = false, aoAbrir, aoMudarStatus, aoExc
   const idDetalhe = `detalhe-${chamado.id}`
 
   return (
+    // data-tour: quando aberto, o tour do Agente destaca este bilhete ("Abra um chamado")
     <article
+      data-tour={aberto ? 'chamado-aberto' : undefined}
       className={`overflow-hidden rounded-xl border bg-white transition-shadow ${
         aberto ? 'border-agente shadow-suave ring-2 ring-agente/25' : 'border-agente-linha hover:border-agente'
       }`}

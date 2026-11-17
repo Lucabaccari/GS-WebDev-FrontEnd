@@ -22,10 +22,12 @@ Disciplinas: **Front-End Design** e **Web Development**.
 - **Local exato da ocorrência:** luz e pavimento (um poste, um buraco) mostram só o lugar do problema, com margem de 20 números (ex.: "R. Oscar Freire, nº 1036 a 1056"). Calor e ar, que se espalham, mostram o trecho de 100 m (ex.: "Av. Paulista, nº 1201 a 1300"). O resto da rua continua normal.
 - **Um ônibus com sensor em cada rua:** os 6 andam ao mesmo tempo. Cada um percorre a sua rua em 3 minutos (uma passagem), indo do começo ao fim e voltando do fim ao começo, para nas paradas de ônibus (a cada 450 m) e o sensor lê cada ponto quando o ônibus passa por ele.
 - **Dois jeitos de ver o mapa:** **Todas as ruas** (mapa amplo com os 6 ônibus andando e o resumo das ruas embaixo) e **cada rua separada** (só ela no mapa, com zoom, as paradas e a câmera acompanhando o ônibus).
-- **Tour da primeira visita (Cidadão):** na primeira vez que a pessoa abre a tela do Cidadão, um tutorial de 6 passos destaca cada parte (estados, escolha da rua, camadas, mapa, "Avisar problema" e resumo das ruas). Dá para pular a qualquer momento (botão ou Esc), e o botão "Como usar", no canto do mapa, abre o tour de novo. O navegador lembra que a pessoa já viu.
+- **Tours da primeira visita:** no Cidadão, 6 passos (estados, escolha da rua, camadas, mapa, "Avisar problema" e uma rua aberta de perto, que o tour abre sozinho). No Agente, 5 passos (painel, indicadores, filtros, fila e um chamado aberto com o mapa). Dá para pular a qualquer momento (botão ou Esc), e o botão "Como usar", no canto do mapa, abre o tour de novo. O navegador lembra que a pessoa já viu.
+- **Verifique seu caminho (plano B):** na tela do Cidadão, a pessoa escolhe uma ou mais ruas (até 4) e, em cada uma, de qual número até qual número vai passar. O app confere se há alerta nesses trechos agora e aconselha ("Pode seguir", "Siga com cuidado" ou "Evite"), com o local de cada alerta e "Ver no mapa". Na vida real, o caminho seria calculado pela origem e pelo destino.
 - **Tela do Cidadão:** escolha da rua numa grade fixa (com o intervalo de números onde cada ônibus está), resumo das 6 ruas com o ícone de cada tipo de problema, painel da viagem do ônibus da rua (numeração onde ele está, parada, barra do trajeto com as paradas), painel da rua com as ocorrências e todos os pontos (com "Sensor aqui") e o botão **"Avisar problema"**, que abre o formulário (ao enviar, um letreiro confirma "Aviso recebido" por alguns segundos) (rua, trecho de 100 m da rua escolhida, tipo do problema com a opção "Outros" e descrição) e cria um chamado na API.
 - **Tela do Agente:** em azul (cor própria da subprefeitura, diferente da tela do cidadão). Indicadores e a fila de atendimento: os chamados em linhas, um embaixo do outro, com o ícone do tipo do problema, ordenados por status e prioridade, com filtros. Clicar num chamado abre o detalhe com um mapa pequeno mostrando o ponto onde o problema foi reportado, a mudança de status e a exclusão com confirmação.
 - **Chamado automático:** no 3º alerta seguido (3ª passagem crítica) no mesmo ponto e camada, o app abre um chamado sozinho. Pode ser ligado ou desligado no modo demonstração.
+- **Celular:** menu no canto direito do topo para trocar de tela; no Cidadão, as camadas ficam numa linha acima do mapa, e o mapa, os ícones e os ônibus ficam mais compactos.
 - **Modo demonstração:** painel de controle no fim da tela do Cidadão para pausar, adiantar 15 s, mudar a velocidade (1x, 2x, 5x, 10x) e ligar a chave do chamado automático. A 10x, cada passagem leva 18 s, e dá para ver a regra do 3º alerta acontecer em menos de 1 minuto.
 - **Sem conexão:** aviso na tela, simulação parada nas últimas leituras e chamados salvos no navegador.
 - **Acessibilidade:** estados com cor, forma, padrão e texto; contraste de 4,5:1 ou mais; botões de 44 px; navegação por teclado; `prefers-reduced-motion`.
@@ -35,7 +37,7 @@ Disciplinas: **Front-End Design** e **Web Development**.
 | Requisito | Onde está |
 |---|---|
 | React + Vite + Tailwind | `vite.config.js`, `src/index.css` |
-| 8 ou mais componentes | 37 componentes em `src/components/` |
+| 8 ou mais componentes | 40 componentes em `src/components/` |
 | `useState` e `useEffect` | hooks e telas (ex.: `useLeituras`, `useChamados`, `Cidadao.jsx`) |
 | 2 ou mais custom hooks | `useChamados`, `useLeituras`, `useOnibus`, `useChamadoAutomatico`, `useOnlineStatus`, `useNaTela`, `useContagem`, `useTour` |
 | Separação de responsabilidades | `services/` (HTTP e cache), `utils/` (regras puras), `hooks/` (estado), `components/` (só tela) |
