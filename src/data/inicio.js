@@ -33,9 +33,10 @@ export const DADOS = [
 
 // A comparação do vídeo: dois bairros vizinhos, temperaturas de superfície muito diferentes.
 export const COMPARACAO_CALOR = {
-  titulo: 'Vizinhos, mas com 15 °C de diferença',
+  // \u00a0 é um espaço que não quebra: o "°C" nunca fica sozinho na linha de baixo.
+  titulo: 'Vizinhos, mas com 15\u00a0°C de diferença',
   texto:
-    'No verão de 2024/25, as ruas e os telhados de Paraisópolis chegaram a 45 °C. Os do Morumbi, a poucas ruas, ficaram perto de 30 °C.',
+    'No verão de 2024/25, as ruas e os telhados de Paraisópolis chegaram a 45\u00a0°C. Os do Morumbi, a poucas ruas, ficaram perto de 30\u00a0°C.',
   bairros: [
     { nome: 'Paraisópolis', valor: 45, estado: 'critico' },
     { nome: 'Morumbi', valor: 30, estado: 'atencao' },

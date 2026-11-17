@@ -2,7 +2,7 @@
 // O desenho segue o status: aberto = octógono, em atendimento = losango, resolvido = visto.
 // Chamados antigos sem latitude/longitude não aparecem no mapa (só na fila).
 //
-// Props: chamados, selecionadoId, aoSelecionar(chamado).
+// Props: chamados, selecionadoId, aoSelecionar(chamado) e compacto (ícone menor, para o mapa pequeno).
 import { Marker, Tooltip } from 'react-leaflet'
 import { iconeEstado } from '../utils/icones.js'
 import { ROTULOS_STATUS, localDoChamado, rotuloTipo } from '../utils/chamados.js'
@@ -11,7 +11,7 @@ import { formatarProtocolo } from '../utils/formatadores.js'
 // Qual pictograma representa cada status.
 const PICTO_DO_STATUS = { aberto: 'critico', em_atendimento: 'atencao', resolvido: 'normal' }
 
-function CamadaChamados({ chamados, selecionadoId, aoSelecionar }) {
+function CamadaChamados({ chamados, selecionadoId, aoSelecionar, compacto = false }) {
   // Number.isFinite confere se lat e lng são números de verdade.
   const comLocal = chamados.filter((c) => Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lng)) && c.lat !== '')
 
@@ -25,7 +25,7 @@ function CamadaChamados({ chamados, selecionadoId, aoSelecionar }) {
             // A key muda junto com o status: o marcador é recriado e o "title" fica certo.
             key={`${chamado.id}-${chamado.status}-${selecionado}`}
             position={[Number(chamado.lat), Number(chamado.lng)]}
-            icon={iconeEstado(PICTO_DO_STATUS[chamado.status] || 'sem_dados', { selecionado })}
+            icon={iconeEstado(PICTO_DO_STATUS[chamado.status] || 'sem_dados', { selecionado, compacto })}
             title={texto}
             keyboard
             zIndexOffset={selecionado ? 1000 : chamado.status === 'aberto' ? 500 : 0}

@@ -9,7 +9,8 @@ function BotaoAvisar({ aoClicar, aberto }) {
       onClick={aoClicar}
       aria-expanded={aberto}
       aria-controls="form-chamado"
-      className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-critico px-5 font-medium text-white shadow-suave transition-transform hover:brightness-110 active:scale-[0.98]"
+      // No celular, um pouco menor (44 px e texto menor), para não cobrir tanto o mapa.
+      className="flex min-h-11 items-center justify-center gap-2 rounded-full bg-critico px-4 text-sm font-medium text-white shadow-suave transition-transform hover:brightness-110 active:scale-[0.98] sm:min-h-12 sm:px-5 sm:text-base"
     >
       {/* Pictograma: alfinete de mapa com um "!" (um problema num lugar), desenhado em SVG */}
       <svg width="18" height="22" viewBox="0 0 22 26" aria-hidden="true">

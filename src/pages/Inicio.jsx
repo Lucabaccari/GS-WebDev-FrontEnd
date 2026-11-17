@@ -45,11 +45,7 @@ function Inicio({ frota, pontos, aoIr }) {
 
         <div className="mx-auto grid min-h-[calc(100vh-72px)] max-w-7xl content-center gap-12 px-4 pt-16 pb-28 lg:grid-cols-[1.4fr_1fr] lg:items-end">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1 font-mono text-[11px] tracking-wider text-white/80 uppercase">
-              <span aria-hidden="true" className="ponto-ao-vivo h-1.5 w-1.5 rounded-full bg-coral" />
-              Sensores nos ônibus de São Paulo
-            </p>
-            <h1 className="mt-6 max-w-3xl text-[2.6rem] leading-[1] font-medium tracking-tighter sm:text-6xl xl:text-7xl">
+            <h1 className="max-w-3xl text-[2.6rem] leading-[1] font-medium tracking-tighter sm:text-6xl xl:text-7xl">
               São Paulo já tem 13 mil sensores andando pelas ruas.
               <span className="mt-2 block text-coral">Só falta ligar.</span>
             </h1>
@@ -211,10 +207,10 @@ function Inicio({ frota, pontos, aoIr }) {
             <MarcaPulso escuro grande />
             <div>
               <h2 className="font-mono text-[11px] tracking-[0.18em] text-white/60 uppercase">Fontes dos números</h2>
-              <ul className="mt-3 space-y-1.5 text-sm text-white/75">
+              <ul className="mt-3 space-y-0.5 text-sm text-white/75">
                 {Object.entries(FONTES).map(([id, f]) => (
                   <li key={id}>
-                    <a href={f.url} target="_blank" rel="noreferrer" className="underline decoration-white/30 underline-offset-2 hover:text-white">
+                    <a href={f.url} target="_blank" rel="noreferrer" className="inline-block py-1.5 underline decoration-white/30 underline-offset-2 hover:text-white">
                       {f.texto}
                     </a>
                   </li>

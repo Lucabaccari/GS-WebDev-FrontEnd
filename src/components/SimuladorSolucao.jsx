@@ -19,10 +19,10 @@ import { TIPOS_DE_PROBLEMA, prioridadePorEstado, ROTULOS_PRIORIDADE, rotuloTipo 
 // O exemplo usado nas etapas (o mesmo trecho escuro da R. Oscar Freire da simulação).
 const LUGAR = 'R. Oscar Freire, nº 1036 a 1056'
 const LEITURAS = [
-  { nome: 'Calor', valor: '26,4 °C', estado: 'normal' },
-  { nome: 'Luz à noite', valor: '1,8 lux', estado: 'critico' },
-  { nome: 'Pavimento', valor: '1,05 g', estado: 'normal' },
-  { nome: 'Ar (PM2.5)', valor: '17 µg/m³', estado: 'normal' },
+  { nome: 'Calor', valor: '26,4\u00a0°C', estado: 'normal' }, // \u00a0: espaço que não quebra
+  { nome: 'Luz à noite', valor: '1,8\u00a0lux', estado: 'critico' },
+  { nome: 'Pavimento', valor: '1,05\u00a0g', estado: 'normal' },
+  { nome: 'Ar (PM2.5)', valor: '17\u00a0µg/m³', estado: 'normal' },
 ]
 // Estado de cada camada neste lugar (a prioridade do aviso do cidadão segue o sensor, como no app).
 const ESTADOS_DO_LUGAR = { calor: 'normal', luz: 'critico', pavimento: 'normal', ar: 'normal' }
@@ -182,8 +182,9 @@ function SimuladorSolucao({ passos }) {
   return (
     <div className="grid overflow-hidden rounded-3xl border border-linha bg-white shadow-suave lg:grid-cols-[300px_1fr]">
       {/* Lista das etapas (à esquerda). No computador, as 4 etapas dividem a altura toda da barra,
-          cada uma com o número grande, o título e a situação (agora, feita ou bloqueada). */}
-      <ol className="flex flex-col gap-2 border-b border-linha bg-papel p-3 lg:border-r lg:border-b-0">
+          cada uma com o número grande, o título e a situação (agora, feita ou bloqueada).
+          No celular, as 4 ficam lado a lado numa linha (número em cima, título embaixo). */}
+      <ol className="grid grid-cols-4 gap-1 border-b border-linha bg-papel p-2 sm:flex sm:flex-col sm:gap-2 sm:p-3 lg:border-r lg:border-b-0">
         {passos.map((p, i) => {
           const aberta = i === etapa
           const situacao = feitas[i] ? 'Feita' : aberta ? 'Agora' : liberada(i) ? 'Liberada' : 'Bloqueada: termine a anterior'
@@ -194,7 +195,7 @@ function SimuladorSolucao({ passos }) {
                 disabled={!liberada(i)}
                 aria-current={aberta ? 'step' : undefined}
                 onClick={() => setEtapa(i)}
-                className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition lg:h-full lg:flex-col lg:items-start lg:justify-between lg:gap-4 lg:border lg:p-4 ${
+                className={`flex h-full min-h-12 w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition sm:flex-row sm:gap-3 sm:px-3 sm:text-left lg:flex-col lg:items-start lg:justify-between lg:gap-4 lg:border lg:p-4 ${
                   aberta ? 'bg-white shadow-suave lg:border-tinta' : 'hover:bg-white/60 lg:border-linha lg:border-dashed'
                 } disabled:cursor-not-allowed disabled:opacity-60`}
               >
@@ -206,14 +207,14 @@ function SimuladorSolucao({ passos }) {
                   {feitas[i] ? '✓' : liberada(i) ? p.numero : <Cadeado />}
                 </span>
                 <span>
-                  <span className="block font-medium lg:text-lg">{p.titulo}</span>
+                  <span className="block text-xs leading-tight font-medium sm:text-base lg:text-lg">{p.titulo}</span>
                   <span className="hidden font-mono text-[11px] text-tinta-2 lg:block">{situacao}</span>
                 </span>
               </button>
             </li>
           )
         })}
-        <li className="px-3 pt-1 font-mono text-[11px] text-tinta-2">Exemplo ilustrativo · dados simulados</li>
+        <li className="col-span-4 px-1 pt-1 text-center font-mono text-[11px] text-tinta-2 sm:px-3 sm:text-left">Exemplo ilustrativo · dados simulados</li>
       </ol>
 
       {/* Palco da etapa aberta (à direita) */}

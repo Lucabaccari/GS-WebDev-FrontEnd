@@ -6,7 +6,8 @@ import { CAMADAS, leituraValida } from './classificar.js'
 export function formatarValor(camada, valor) {
   if (!leituraValida(camada, valor)) return '—'
   const numero = Number(valor).toLocaleString('pt-BR')
-  return `${numero} ${CAMADAS[camada].unidade}`
+  // \u00a0 é um espaço que não quebra: número e unidade ficam sempre na mesma linha.
+  return `${numero}\u00a0${CAMADAS[camada].unidade}`
 }
 
 // Número de protocolo do bilhete a partir do id do MockAPI. Ex.: 7 -> 'PL-000007'.

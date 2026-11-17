@@ -22,18 +22,21 @@ const DESENHOS = {
 // selecionado = true desenha uma moldura quadrada escura em volta (sem círculo, como pede o guia).
 // lendo = true desenha a moldura em âmbar: é o ponto que o sensor está lendo agora.
 // grande = true deixa os pontos normais maiores (quando o mapa mostra uma rua só).
+// compacto = true deixa tudo 40% menor (celular e mapa pequeno do chamado).
 const cacheEstado = new Map() // guarda ícones já criados: a tela redesenha 5 vezes por segundo
 
-export function iconeEstado(estado, { selecionado = false, lendo = false, grande = false } = {}) {
-  const chave = `${estado}-${selecionado}-${lendo}-${grande}`
+export function iconeEstado(estado, { selecionado = false, lendo = false, grande = false, compacto = false } = {}) {
+  const chave = `${estado}-${selecionado}-${lendo}-${grande}-${compacto}`
   if (cacheEstado.has(chave)) return cacheEstado.get(chave)
 
   // Pontos normais ficam menores, para o mapa não ficar poluído; os problemas chamam atenção.
-  const tamanho = selecionado || lendo ? 34 : estado === 'normal' ? (grande ? 24 : 18) : 28
+  const tamanhoNormal = selecionado || lendo ? 34 : estado === 'normal' ? (grande ? 24 : 18) : 28
+  const tamanho = compacto ? Math.round(tamanhoNormal * 0.6) : tamanhoNormal
   const fundo = estado === 'normal' ? '<rect x="1" y="1" width="22" height="22" fill="#FFFFFF" stroke="#1B1C1E" stroke-width="1.5"/>' : ''
   const svg = `<svg width="${tamanho}" height="${tamanho}" viewBox="0 0 24 24" aria-hidden="true">${fundo}${DESENHOS[estado]}</svg>`
   const corMoldura = lendo ? '#FFB000' : '#1B1C1E'
-  const moldura = selecionado || lendo ? `outline:3px solid ${corMoldura};outline-offset:3px;background:#FFFFFF;` : ''
+  const borda = compacto ? 2 : 3 // moldura mais fina no ícone menor
+  const moldura = selecionado || lendo ? `outline:${borda}px solid ${corMoldura};outline-offset:${borda}px;background:#FFFFFF;` : ''
   const icone = L.divIcon({
     html: `<div style="display:flex;${moldura}">${svg}</div>`,
     className: 'pulso-icone', // sem a caixa branca padrão do Leaflet
@@ -64,12 +67,13 @@ export const ICONE_PARADA = L.divIcon({
 const cacheOnibus = new Map() // guarda ícones já criados, para não criar um novo a cada quadro
 
 // pequeno = true: versão menor, para o mapa amplo com as 6 ruas.
-export function iconeOnibus(rumo, lendo, pequeno = false) {
+// compacto = true: ainda menor, para o celular.
+export function iconeOnibus(rumo, lendo, pequeno = false, compacto = false) {
   const angulo = Math.round(rumo / 5) * 5 // arredonda de 5 em 5 graus
-  const chave = `${angulo}-${lendo}-${pequeno}`
+  const chave = `${angulo}-${lendo}-${pequeno}-${compacto}`
   if (cacheOnibus.has(chave)) return cacheOnibus.get(chave)
 
-  const escala = pequeno ? 0.65 : 1
+  const escala = (pequeno ? 0.65 : 1) * (compacto ? 0.6 : 1)
   const icone = L.divIcon({
     html: `<div style="transform:rotate(${angulo}deg) scale(${escala});width:44px;height:64px;display:flex;align-items:center;justify-content:center">
       <svg width="30" height="64" viewBox="-15 -32 30 64" aria-hidden="true">

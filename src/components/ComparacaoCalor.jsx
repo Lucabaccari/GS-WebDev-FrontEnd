@@ -18,9 +18,10 @@ function Termometro({ nome, valor, estado, ativo, atrasoMs }) {
   const altura = ((atual - MINIMO) / (MAXIMO - MINIMO)) * 100
 
   return (
-    <div className="flex items-end gap-4">
-      {/* Escala com risquinhos + coluna */}
-      <div className="relative h-56 w-10">
+    <div className="flex items-end gap-2 sm:gap-4">
+      {/* Escala com risquinhos + coluna. No celular, mais baixa, para os dois termômetros caberem lado a lado.
+          A largura (w-11) deixa os números da escala à esquerda, sem a coluna (à direita) passar por cima. */}
+      <div className="relative h-40 w-11 sm:h-56 sm:w-12">
         {MARCAS.map((m) => (
           <span
             key={m}
@@ -38,9 +39,9 @@ function Termometro({ nome, valor, estado, ativo, atrasoMs }) {
       </div>
       <div>
         <StatusPicto estado={estado} tamanho={20} />
-        <p className="mt-1 text-6xl font-medium tracking-tighter tabular-nums sm:text-7xl">
+        <p className="mt-1 text-5xl font-medium tracking-tighter tabular-nums sm:text-7xl">
           {Math.round(atual)}
-          <span className="ml-1 align-top text-xl text-white/50">°C</span>
+          <span className="ml-0.5 align-top text-base text-white/50 sm:ml-1 sm:text-xl">°C</span>
         </p>
         <p className="mt-1 font-mono text-xs tracking-wider text-white/70 uppercase">{nome}</p>
       </div>
@@ -65,19 +66,25 @@ function ComparacaoCalor({ titulo, texto, bairros, nota }) {
         </div>
 
         {/* Os dois termômetros. role="img" + aria-label: o leitor de tela lê o resumo (sem esperar a animação). */}
-        <div className="flex items-end gap-5 sm:gap-8" role="img" aria-label={bairros.map((b) => `${b.nome}: ${b.valor} °C`).join(', ')}>
-          {bairros.map((b, i) => (
-            <Fragment key={b.nome}>
-              {/* Entre os dois termômetros: a diferença, em tamanho discreto */}
-              {i === 1 && (
-                <span aria-hidden="true" className="mb-28 flex flex-col items-center font-mono text-coral">
-                  <span className="text-2xl font-medium">+15°</span>
-                  <span className="text-[11px] text-white/60">diferença</span>
-                </span>
-              )}
-              <Termometro {...b} ativo={apareceu} atrasoMs={i * 300} />
-            </Fragment>
-          ))}
+        <div role="img" aria-label={bairros.map((b) => `${b.nome}: ${b.valor} °C`).join(', ')}>
+          {/* No celular, a diferença vira uma etiqueta em cima (entre os termômetros não cabe) */}
+          <p aria-hidden="true" className="mb-4 inline-block rounded-full border border-coral/50 px-3 py-1 font-mono text-sm text-coral sm:hidden">
+            +15° de diferença
+          </p>
+          <div className="flex items-end justify-between gap-4 sm:justify-start sm:gap-8">
+            {bairros.map((b, i) => (
+              <Fragment key={b.nome}>
+                {/* Entre os dois termômetros (tela maior): a diferença, em tamanho discreto */}
+                {i === 1 && (
+                  <span aria-hidden="true" className="mb-28 hidden flex-col items-center font-mono text-coral sm:flex">
+                    <span className="text-2xl font-medium">+15°</span>
+                    <span className="text-[11px] text-white/60">diferença</span>
+                  </span>
+                )}
+                <Termometro {...b} ativo={apareceu} atrasoMs={i * 300} />
+              </Fragment>
+            ))}
+          </div>
         </div>
       </div>
     </article>

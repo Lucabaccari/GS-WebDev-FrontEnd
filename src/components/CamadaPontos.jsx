@@ -11,6 +11,7 @@ import { Fragment } from 'react'
 import { Marker, Polyline } from 'react-leaflet'
 import { CAMADAS, ROTULOS_ESTADO, estadoDoPonto } from '../utils/classificar.js'
 import { iconeEstado } from '../utils/icones.js'
+import { ehCelular } from '../utils/tela.js'
 
 // Linhas desenhadas por cima do lugar do problema, conforme o estado.
 // Cada item vira uma <Polyline>; a segunda linha da atenção faz as listras.
@@ -53,14 +54,19 @@ function CamadaPontos({ ruas, camada, pontoSelecionadoId, pontosLendo = [], most
         return (
           <Fragment key={ponto.id}>
             {FITAS[estado].map((opcoes, i) => (
-              <Polyline key={i} positions={trecho} pathOptions={{ ...opcoes, opacity: 1, lineCap: 'butt', interactive: false }} />
+              // No celular, a fita do alerta fica mais fina (70%), como os ícones.
+              <Polyline
+                key={i}
+                positions={trecho}
+                pathOptions={{ ...opcoes, weight: ehCelular() ? opcoes.weight * 0.7 : opcoes.weight, opacity: 1, lineCap: 'butt', interactive: false }}
+              />
             ))}
             <Marker
               // A key muda junto com o estado: o React recria o marcador e o "title" fica certo
               // (o react-leaflet não atualiza o title de um marcador que já existe).
               key={`${estado}-${selecionado}-${lendo}-${nome}`}
               position={posicao}
-              icon={iconeEstado(estado, { selecionado, lendo, grande })}
+              icon={iconeEstado(estado, { selecionado, lendo, grande, compacto: ehCelular() })} // menor no celular
               // title vira o nome acessível do marcador (teclado e leitor de tela)
               title={`${ponto.ruaNome}, ${nome}: ${ROTULOS_ESTADO[estado]}`}
               keyboard

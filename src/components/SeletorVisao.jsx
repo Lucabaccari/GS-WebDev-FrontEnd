@@ -19,7 +19,8 @@ function classeBotao(ativo) {
 function SeletorVisao({ ruas, camada, valor, aoMudar, frota }) {
   return (
     <nav aria-label="O que ver no mapa">
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+      {/* auto-rows-fr: todas as linhas da grade com a mesma altura (a da opção mais alta) */}
+      <ul className="grid auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
         <li>
           <button type="button" aria-pressed={valor === 'todas'} onClick={() => aoMudar('todas')} className={classeBotao(valor === 'todas')}>
             Todas as ruas

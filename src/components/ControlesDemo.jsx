@@ -36,7 +36,7 @@ function ControlesDemo({
   const numero = (n) => n.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
 
   return (
-    <section aria-labelledby="titulo-demo" className="rounded-2xl bg-tinta p-4 text-white md:p-5">
+    <section aria-labelledby="titulo-demo" className="rounded-2xl bg-tinta p-3 text-white sm:p-4 md:p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="titulo-demo" className="font-mono text-[11px] tracking-[0.18em] text-coral uppercase">
           Modo demonstração
@@ -47,14 +47,14 @@ function ControlesDemo({
         </p>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4 sm:gap-3">
         {/* Tempo: play/pausa e adiantar */}
         <div className="flex gap-2">
           <button
             type="button"
             onClick={aoPausar}
             disabled={bloqueado}
-            className="flex min-h-11 items-center gap-2 rounded-full bg-coral px-5 font-medium text-tinta transition hover:brightness-110 disabled:opacity-50"
+            className="flex min-h-11 items-center gap-2 rounded-full bg-coral px-4 text-sm font-medium text-tinta transition hover:brightness-110 disabled:opacity-50 sm:px-5 sm:text-base"
           >
             <IconePlay pausado={pausado} />
             {pausado ? 'Continuar' : 'Pausar'}
@@ -63,7 +63,7 @@ function ControlesDemo({
             type="button"
             onClick={aoAvancar}
             disabled={bloqueado}
-            className="min-h-11 rounded-full border border-white/30 px-4 font-medium transition hover:border-white disabled:opacity-50"
+            className="min-h-11 rounded-full border border-white/30 px-4 text-sm font-medium transition hover:border-white disabled:opacity-50 sm:text-base"
           >
             +15 s
           </button>
@@ -71,7 +71,8 @@ function ControlesDemo({
 
         {/* Velocidade: controle segmentado (a escolhida fica branca) */}
         <div role="group" aria-labelledby="rotulo-velocidade" className="flex items-center gap-2">
-          <span id="rotulo-velocidade" className="text-sm text-white/70">
+          {/* No celular o rótulo fica só para o leitor de tela (as opções 1x, 2x... já se explicam) */}
+          <span id="rotulo-velocidade" className="sr-only text-sm text-white/70 sm:not-sr-only">
             Velocidade
           </span>
           <div className="flex rounded-full bg-white/10 p-1">
@@ -114,7 +115,7 @@ function ControlesDemo({
         </button>
       </div>
 
-      <p className="mt-3 text-sm text-white/70">
+      <p className="mt-2 text-xs text-white/70 sm:mt-3 sm:text-sm">
         {automaticoLigado
           ? `Ligado: no ${PASSAGENS_PARA_CHAMADO}º alerta seguido num ponto, o app abre um chamado na API (nesta velocidade, uns ${numero(minutosAteRegra)} min).`
           : `Ligue para a regra do ${PASSAGENS_PARA_CHAMADO}º alerta seguido criar chamados na API. Use 10x para ver acontecer mais rápido.`}

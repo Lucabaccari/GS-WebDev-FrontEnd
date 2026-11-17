@@ -6,7 +6,9 @@
 //
 // Props: chaveVisao (muda quando a visão muda), limites, seguir, alvo ([lat, lng] do ônibus), aoArrastar.
 import { useEffect, useRef } from 'react'
+import L from 'leaflet'
 import { useMap } from 'react-leaflet'
+import { ehCelular } from '../utils/tela.js'
 
 const ZOOM_SEGUINDO = 16.5
 
@@ -29,9 +31,34 @@ function CameraDoMapa({ chaveVisao, limites, seguir, alvo, aoArrastar }) {
   // Quando a visão muda (outra rua, todas, ligou o seguir): enquadra ou aproxima.
   useEffect(() => {
     const animar = !semMovimento()
-    const { alvo: posicao, limites: area } = ultimo.current
-    if (seguir && posicao) mapa.setView(posicao, ZOOM_SEGUINDO, { animate: animar })
-    else mapa.fitBounds(area, { padding: [32, 32], animate: animar })
+    const { alvo: posicao } = ultimo.current
+    if (seguir && posicao) {
+      mapa.setView(posicao, ZOOM_SEGUINDO, { animate: animar })
+      return
+    }
+    function enquadrar(animarAgora) {
+      const limites = ultimo.current.limites
+      if (!ehCelular()) {
+        mapa.fitBounds(limites, { padding: [32, 32], animate: animarAgora })
+        return
+      }
+      // No celular: calcula o maior zoom em que as ruas cabem com uma margem pequena (8 px),
+      // para as ruas ficarem maiores na tela. Vai direto, sem animação.
+      const zoom = mapa.getBoundsZoom(limites, false, L.point(8, 8))
+      mapa.setView(L.latLngBounds(limites).getCenter(), zoom, { animate: false })
+    }
+    enquadrar(animar)
+    // Se o mapa mudar de tamanho logo depois (a página ainda montando), enquadra de novo,
+    // até a pessoa arrastar o mapa.
+    let pessoaMexeu = false
+    const marcar = () => (pessoaMexeu = true)
+    const aoMudarTamanho = () => !pessoaMexeu && enquadrar(false)
+    mapa.on('dragstart', marcar)
+    mapa.on('resize', aoMudarTamanho)
+    return () => {
+      mapa.off('dragstart', marcar)
+      mapa.off('resize', aoMudarTamanho)
+    }
   }, [mapa, chaveVisao, seguir])
 
   // Enquanto segue, a cada posição nova do ônibus o mapa desliza até ele.

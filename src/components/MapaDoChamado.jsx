@@ -24,8 +24,8 @@ function MapaDoChamado({ chamado }) {
   return (
     <div className="h-56 overflow-hidden rounded-lg border border-agente-linha md:h-full md:min-h-56">
       <MapaBase ruas={rua ? [rua] : []} enquadrarSozinho={false} rotulo={`Mapa do local do chamado: ${chamado.trechoNome}`}>
-        {/* O mesmo marcador do status (octógono, losango ou visto), com moldura de selecionado */}
-        <CamadaChamados chamados={[chamado]} selecionadoId={chamado.id} aoSelecionar={() => {}} />
+        {/* O mesmo marcador do status (octógono, losango ou visto), em tamanho menor, como o mapa */}
+        <CamadaChamados chamados={[chamado]} selecionadoId={chamado.id} aoSelecionar={() => {}} compacto />
         {/* Centraliza no ponto do problema, direto (sem animação), com zoom que mostra as quadras em volta */}
         <FocoNoMapa local={[lat, lng]} zoom={16} animar={false} />
       </MapaBase>

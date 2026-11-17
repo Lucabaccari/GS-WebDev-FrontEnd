@@ -39,12 +39,13 @@ function MapaBase({ ruas, aoSelecionarRua, enquadrarSozinho = true, children, ro
 
         {ruas.map((rua) => (
           // Duas linhas por rua: uma branca larga por baixo (contorno) e a de asfalto por cima.
+          // Grossas o bastante para as ruas do Pulso se destacarem no mapa cinza.
           // Fragment (<Fragment>) agrupa sem criar elemento extra na página.
           <Fragment key={rua.id}>
-            <Polyline positions={rua.caminho} pathOptions={{ color: '#FFFFFF', weight: umaRuaSo ? 16 : 9, opacity: 1 }} />
+            <Polyline positions={rua.caminho} pathOptions={{ color: '#FFFFFF', weight: umaRuaSo ? 18 : 12, opacity: 1 }} />
             <Polyline
               positions={rua.caminho}
-              pathOptions={{ color: '#1B1C1E', weight: umaRuaSo ? 9 : 4, opacity: umaRuaSo ? 1 : 0.8 }}
+              pathOptions={{ color: '#1B1C1E', weight: umaRuaSo ? 11 : 6, opacity: umaRuaSo ? 1 : 0.85 }}
               eventHandlers={{ click: () => aoSelecionarRua?.(rua.id) }}
             >
               <Tooltip sticky>{rua.nome}</Tooltip>
