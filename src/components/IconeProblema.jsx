@@ -1,6 +1,6 @@
 // Ícone do tipo de problema de um chamado, desenhado em SVG (traço fino, sem círculo atrás).
-// calor = termômetro com sol | luz = poste apagado | pavimento = buraco na rua
-// ar = nuvem de fumaça | outros = alfinete com "?"
+// calor = termômetro com sol | luz = poste apagado | pavimento = cone de sinalização no asfalto rachado
+// ar = fábrica com chaminé soltando fumaça | outros = alfinete com "?"
 // Props: tipo ('calor', 'luz', 'pavimento', 'ar' ou 'outros') e tamanho (em px).
 // aria-hidden: o nome do tipo sempre aparece escrito ao lado.
 
@@ -30,20 +30,23 @@ function IconeProblema({ tipo, tamanho = 40 }) {
       )}
       {tipo === 'pavimento' && (
         <>
-          {/* rua com faixa e um buraco rachado */}
-          <path d="M3 30h34M3 10h34" {...traco} />
-          <path d="M8 20h6M26 20h6" {...traco} />
-          <ellipse cx="20" cy="22" rx="7" ry="4" fill="#15171B" />
-          <path d="M13 19l-3-4M27 20l4-3M19 26l-1 4" {...traco} />
+          {/* cone de sinalização (laranja com faixas brancas) em cima de um asfalto rachado */}
+          <path d="M20 5 27 31H13z" fill="#F0634C" stroke="#15171B" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M16.4 18h7.2M15 24h10" stroke="#FFFFFF" strokeWidth="2.6" />
+          <rect x="9" y="31" width="22" height="3.5" rx="1" fill="#15171B" />
+          <path d="M3 37h34" {...traco} />
+          <path d="M6 37l3-3 2 3M31 37l2-2.5 2.5 2.5" {...traco} strokeWidth="1.4" />
         </>
       )}
       {tipo === 'ar' && (
         <>
-          {/* nuvem de fumaça saindo e partículas */}
-          <path d="M10 26a6 6 0 0 1 1-12 8 8 0 0 1 15-2 6 6 0 0 1 4 14z" {...traco} fill="#E2E0DA" />
-          <circle cx="12" cy="33" r="1.6" fill="#4B4F58" />
-          <circle cx="20" cy="35" r="1.6" fill="#4B4F58" />
-          <circle cx="28" cy="32" r="1.6" fill="#4B4F58" />
+          {/* fábrica com chaminé soltando fumaça cinza */}
+          <path d="M4 36V22l8 5v-5l8 5v-5l8 5V10h6v26z" {...traco} fill="#FFFFFF" />
+          <rect x="9" y="30" width="3" height="3" fill="#15171B" />
+          <rect x="17" y="30" width="3" height="3" fill="#15171B" />
+          <circle cx="31" cy="6.5" r="3" fill="#4B4F58" />
+          <circle cx="25.5" cy="4.5" r="2.4" fill="#4B4F58" />
+          <circle cx="20.5" cy="5" r="1.8" fill="#4B4F58" />
         </>
       )}
       {tipo === 'outros' && (

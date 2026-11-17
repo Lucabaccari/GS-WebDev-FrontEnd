@@ -1,11 +1,11 @@
-// Tela do Cidadão: letreiro, escolha do que ver, mapa com os 6 ônibus do sensor andando,
+// Tela do Cidadão: escolha do que ver, mapa com os 6 ônibus do sensor andando,
 // painel da viagem, painel da rua e o botão "Avisar problema".
-// Recebe as ruas (do useLeituras), os ônibus (do useOnibus) e os chamados (do useChamados) do App.
-import { useState, useEffect } from 'react'
+// Na primeira visita, abre um tour guiado de 6 passos (pode pular; o botão "Como usar" abre de novo).
+// Recebe as ruas e os pontos (do useLeituras), os ônibus (do useOnibus) e aoCriarChamado (do useChamados) do App.
+import { useState, useEffect, useRef } from 'react'
 import LetreiroLED from '../components/LetreiroLED.jsx'
 import BotaoAvisar from '../components/BotaoAvisar.jsx'
 import FormChamado from '../components/FormChamado.jsx'
-import BilheteChamado from '../components/BilheteChamado.jsx'
 import SeletorCamada from '../components/SeletorCamada.jsx'
 import SeletorVisao from '../components/SeletorVisao.jsx'
 import MapaBase from '../components/MapaBase.jsx'
@@ -17,16 +17,16 @@ import OnibusMarcador from '../components/OnibusMarcador.jsx'
 import PainelViagem from '../components/PainelViagem.jsx'
 import PainelRua from '../components/PainelRua.jsx'
 import PainelTodas from '../components/PainelTodas.jsx'
-import Legenda from '../components/Legenda.jsx'
+import TourGuiado from '../components/TourGuiado.jsx'
+import { useTour } from '../hooks/useTour.js'
+import { PASSOS_TOUR_CIDADAO } from '../data/tour.js'
 import { LIMITES_MAPA } from '../data/ruas.js'
-import { mensagemLetreiro } from '../utils/mensagens.js'
-import { filtrarChamados, FILTROS_VAZIOS } from '../utils/chamados.js'
 import { limitesDe } from '../utils/geo.js'
 import { trajetoDaRua } from '../utils/rota.js'
 
-const TEMPO_AVISO_MS = 5000 // quanto tempo a confirmação do aviso fica no letreiro
+const TEMPO_AVISO_MS = 5000 // quanto tempo a confirmação do aviso fica na tela
 
-function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
+function Cidadao({ ruas, pontos, frota, aoCriarChamado }) {
   // Camada que o mapa e o letreiro mostram: 'geral', 'calor', 'luz', 'pavimento' ou 'ar'.
   const [camada, setCamada] = useState('geral')
   // O que o mapa mostra: 'todas' (mapa amplo com os 6 ônibus) ou o id de uma rua.
@@ -35,10 +35,15 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
   const [pontoId, setPontoId] = useState(null) // ponto aberto no painel, ou null
   const [formAberto, setFormAberto] = useState(false)
   const [aviso, setAviso] = useState(null) // texto temporário do letreiro, ou null
+  const avisoRef = useRef(null) // o letreiro do aviso, para a tela rolar até ele
+  // Tour da primeira visita (o navegador lembra se a pessoa já viu).
+  const tour = useTour('pulso-tour-cidadao', PASSOS_TOUR_CIDADAO.length)
 
-  // Depois de alguns segundos, o aviso some e o letreiro volta ao alerta normal.
+  // Quando o aviso aparece, a tela rola até ele (o formulário pode estar lá embaixo).
+  // Depois de alguns segundos, o aviso (e o letreiro com ele) some.
   useEffect(() => {
     if (!aviso) return
+    avisoRef.current?.scrollIntoView({ block: 'center' })
     const timer = setTimeout(() => setAviso(null), TEMPO_AVISO_MS)
     return () => clearTimeout(timer) // limpa se o aviso mudar antes do tempo
   }, [aviso])
@@ -76,6 +81,12 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
     setFormAberto(true)
   }
 
+  // "Como usar": volta para "Todas as ruas" (onde estão todos os elementos do tour) e abre o tour.
+  function abrirTour() {
+    mudarVisao('todas')
+    tour.abrir()
+  }
+
   // Chamado pelo formulário. Devolve true/false para o formulário saber se deu certo.
   async function enviarChamado(dados) {
     const novo = await aoCriarChamado(dados)
@@ -84,12 +95,6 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
     setAviso('Aviso recebido. A subprefeitura vai analisar.')
     return true
   }
-
-  // Os 3 avisos mais recentes feitos por cidadãos.
-  const ultimosAvisos = filtrarChamados(
-    chamados.filter((c) => c.origem === 'cidadao'),
-    FILTROS_VAZIOS,
-  ).slice(0, 3)
 
   // O formulário aparece no lugar do painel da rua (ou embaixo do mapa, na visão "todas").
   const formulario = formAberto && (
@@ -144,8 +149,9 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
         ))}
       </MapaBase>
 
-      {/* Controles por cima do mapa. z-[1000] fica acima das camadas do Leaflet. */}
-      <div className="absolute top-3 left-3 z-[1000] max-w-[calc(100%-4.5rem)]">
+      {/* Controles por cima do mapa. z-[1000] fica acima das camadas do Leaflet.
+          data-tour: marca o elemento que o tour guiado destaca. */}
+      <div data-tour="camadas" className="absolute top-3 left-3 z-[1000] max-w-[calc(100%-4.5rem)]">
         <SeletorCamada valor={camada} aoMudar={setCamada} />
       </div>
 
@@ -160,20 +166,34 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
         </button>
       )}
 
-      <div className="absolute bottom-6 left-3 z-[1000]">
+      <div data-tour="avisar" className="absolute bottom-6 left-3 z-[1000]">
         <BotaoAvisar aberto={formAberto} aoClicar={() => setFormAberto(!formAberto)} />
       </div>
+
+      {/* Abre o tour de novo (acima do crédito do mapa, no canto de baixo à direita) */}
+      <button
+        type="button"
+        onClick={abrirTour}
+        className="absolute right-3 bottom-8 z-[1000] flex min-h-11 items-center gap-2 rounded-full border border-linha bg-white px-4 text-sm font-medium shadow-suave hover:border-tinta"
+      >
+        <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full border border-tinta font-mono text-xs">?</span>
+        Como usar
+      </button>
     </div>
   )
 
   return (
     <div className="space-y-4">
-      <LetreiroLED
-        mensagem={aviso || mensagemLetreiro(pontos, camada)}
-        info={onibusDaRua ? `Ônibus: ${onibusDaRua.ruaNome} · nº ${onibusDaRua.numero}` : '6 ônibus com sensor'}
-      />
+      {/* O letreiro só aparece por alguns segundos, para confirmar que o aviso foi recebido. */}
+      {aviso && (
+        <div ref={avisoRef}>
+          <LetreiroLED mensagem={aviso} estado="normal" />
+        </div>
+      )}
 
-      <SeletorVisao ruas={ruas} camada={camada} valor={visao} aoMudar={mudarVisao} frota={frota} />
+      <div data-tour="ruas">
+        <SeletorVisao ruas={ruas} camada={camada} valor={visao} aoMudar={mudarVisao} frota={frota} />
+      </div>
 
       {ruaFoco ? (
         // Uma rua em foco: mapa à esquerda; viagem e painel da rua à direita (embaixo, no celular).
@@ -198,28 +218,24 @@ function Cidadao({ ruas, pontos, frota, chamados, aoCriarChamado }) {
       ) : (
         // Todas as ruas: mapa amplo, ocupando a largura toda; resumo das ruas embaixo.
         <>
-          <div className="overflow-hidden rounded-2xl border border-linha bg-white shadow-suave">{mapa}</div>
+          <div data-tour="mapa" className="overflow-hidden rounded-2xl border border-linha bg-white shadow-suave">
+            {mapa}
+          </div>
           {formulario}
-          <PainelTodas ruas={ruas} camada={camada} frota={frota} aoVerRua={mudarVisao} />
+          <div data-tour="resumo">
+            <PainelTodas ruas={ruas} camada={camada} frota={frota} aoVerRua={mudarVisao} />
+          </div>
         </>
       )}
 
-      <Legenda />
-
-      {ultimosAvisos.length > 0 && (
-        <section aria-labelledby="titulo-avisos">
-          <h2 id="titulo-avisos" className="mb-3 text-2xl font-semibold tracking-tight">
-            Últimos avisos
-          </h2>
-          {/* Sem aoMudarStatus/aoExcluir: o cidadão só vê o bilhete */}
-          <ul className="grid gap-5 md:grid-cols-3">
-            {ultimosAvisos.map((chamado) => (
-              <li key={chamado.id}>
-                <BilheteChamado chamado={chamado} />
-              </li>
-            ))}
-          </ul>
-        </section>
+      {tour.aberto && (
+        <TourGuiado
+          passos={PASSOS_TOUR_CIDADAO}
+          passo={tour.passo}
+          aoAvancar={tour.avancar}
+          aoVoltar={tour.voltar}
+          aoFechar={tour.fechar}
+        />
       )}
     </div>
   )
