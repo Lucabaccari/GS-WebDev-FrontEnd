@@ -9,7 +9,7 @@ Trabalho da Global Solution 2026.2 da FIAP (Engenharia de Software, 1º ano), te
 **Pulso:** caixas de sensores no teto dos ônibus de São Paulo medem calor, iluminação, buracos e poluição por trecho da rua. O **Pulso Web** é o app que mostra isso:
 
 - **Cidadão:** mapa da linha com o estado de cada trecho, letreiro, e o botão "Avisar problema".
-- **Agente da subprefeitura:** painel de chamados e indicadores.
+- **Agente da subprefeitura:** indicadores e fila de chamados em linhas (com mapa pequeno ao abrir um chamado), em azul (`agente` no `index.css`), para ser uma visão diferente da do cidadão.
 
 É uma **demonstração acadêmica**: dados simulados, nada de dados pessoais reais.
 
@@ -27,7 +27,7 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 - React com **Vite** (JavaScript, JSX) e **Tailwind CSS**.
 - No mínimo **8 componentes** React organizados e reutilizáveis.
 - **useState** e **useEffect** obrigatórios.
-- No mínimo **2 custom hooks** (usamos 7: `useNaTela`, `useContagem`, `useChamados`, `useLeituras`, `useOnibus`, `useChamadoAutomatico`, `useOnlineStatus`).
+- No mínimo **2 custom hooks** (usamos 8: `useNaTela`, `useContagem`, `useTour`, `useChamados`, `useLeituras`, `useOnibus`, `useChamadoAutomatico`, `useOnlineStatus`).
 - **Separação de responsabilidades:** lógica de negócio e acesso a dados fora dos componentes visuais.
 - **API externa com CRUD completo** (criar, consultar, atualizar, excluir).
 - Funcionalidades reais ligadas ao tema. **Não pode ser só uma interface estática.**
@@ -41,9 +41,9 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 src/
   components/   componentes visuais reutilizáveis
   pages/        telas: Cidadao.jsx, Agente.jsx
-  hooks/        useChamados.js, useLeituras.js, useOnibus.js, useChamadoAutomatico.js, useOnlineStatus.js, useNaTela.js, useContagem.js
+  hooks/        useChamados.js, useLeituras.js, useOnibus.js, useChamadoAutomatico.js, useOnlineStatus.js, useNaTela.js, useContagem.js, useTour.js
   services/     api.js, chamadosService.js, cache.js (HTTP e cópia local)
-  utils/        classificar.js, regras.js, simulacao.js, chamados.js, indicadores.js, mensagens.js, formatadores.js, geo.js, icones.js (funções puras)
+  utils/        classificar.js, regras.js, simulacao.js, chamados.js, indicadores.js, formatadores.js, geo.js, icones.js (funções puras)
   data/         ruas.js (as 6 ruas, traçado do OpenStreetMap e 5 pontos de medição por rua)
 ```
 
@@ -105,9 +105,11 @@ Conceito: interface **fina e escura nos destaques**, como no vídeo do Pulso: to
 - Bordas de 1 px (`border-linha`), cantos arredondados (8 a 16 px), sombra suave (`shadow-suave`), títulos sem caixa-alta, peso médio. Pictogramas soltos (sem círculo atrás).
 - Página **Início** (`pages/Inicio.jsx`, textos em `data/inicio.js`): problema, solução (simulador com os 2 jeitos de abrir chamado), por dentro (diagrama do fluxo) e as duas demonstrações. Números reais só com fonte (lista `FONTES`, mostrada só no rodapé). O discurso segue o vídeo (chamado automático no 3º alerta seguido, como no app).
 - Botão principal do cidadão: **"Avisar problema"** (vermelho), com resposta no letreiro "Aviso recebido". (Antes era "Solicitar parada"; o aluno trocou por fazer mais sentido.)
+- **Tour do Cidadão:** 6 passos na primeira visita (`TourGuiado` + `useTour`, textos em `data/tour.js`). Cada passo destaca um elemento marcado com `data-tour`. Pode pular (botão ou Esc); "Como usar" abre de novo.
 - Formulário: rua, trecho (os trechos de 100 m da rua escolhida), tipo (4 camadas + "Outros") e descrição.
 - Numeração exata (metro a metro) só na rua em foco; nos resumos, o trecho de 100 m.
-- Chamado = **bilhete**: protocolo, picote, carimbo de status, etiqueta "Dados simulados".
+- Chamado = **bilhete** (no Agente, deitado numa linha): canhoto com o ícone do problema, picote, protocolo, carimbo de status, etiqueta "Dados simulados".
+- Modo demonstração: painel escuro no fim da tela do **Cidadão** (play/pausa, +15 s, velocidade e a chave do chamado automático).
 - Texto curto, verbo no começo. Ex.: "Trecho escuro. Prefira outro caminho agora."
 - **Evitar:** gradientes de fundo, vidro fosco, ícone em bolinha, emoji, Inter e Space Grotesk, neon, linha de KPIs com setinha, bordas grossas e caixa-alta pesada em títulos.
 

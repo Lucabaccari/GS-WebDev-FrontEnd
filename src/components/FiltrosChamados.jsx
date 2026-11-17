@@ -4,7 +4,7 @@
 import { ROTULOS_STATUS, FILTROS_VAZIOS, TIPOS_DE_PROBLEMA } from '../utils/chamados.js'
 import { RUAS } from '../data/ruas.js'
 
-const CLASSE_CAMPO = 'mt-1 block min-h-11 w-full border border-linha rounded-lg bg-white px-2'
+const CLASSE_CAMPO = 'mt-1 block min-h-11 w-full rounded-lg border border-agente-linha bg-white px-2 focus:border-agente'
 
 function FiltrosChamados({ filtros, aoMudar }) {
   // Troca só um campo e mantém os outros (o "..." copia o objeto).
@@ -13,7 +13,8 @@ function FiltrosChamados({ filtros, aoMudar }) {
   }
 
   return (
-    <fieldset className="grid grid-cols-2 items-end gap-3 border border-linha rounded-lg bg-white p-3">
+    // Em linha no computador (4 colunas), em 2 colunas no celular.
+    <fieldset className="grid grid-cols-2 items-end gap-3 rounded-xl border border-agente-linha bg-white p-3 md:grid-cols-[1fr_1fr_1fr_auto]">
       <legend className="px-1 text-sm font-semibold">Filtrar chamados</legend>
 
       <label className="text-sm font-semibold">
@@ -46,7 +47,7 @@ function FiltrosChamados({ filtros, aoMudar }) {
         </select>
       </label>
 
-      <button type="button" onClick={() => aoMudar(FILTROS_VAZIOS)} className="min-h-11 border border-linha rounded-lg bg-white px-3 text-sm font-medium">
+      <button type="button" onClick={() => aoMudar(FILTROS_VAZIOS)} className="min-h-11 rounded-lg border border-agente bg-white px-4 text-sm font-medium text-agente hover:bg-agente hover:text-white">
         Limpar
       </button>
     </fieldset>

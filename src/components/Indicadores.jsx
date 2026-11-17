@@ -6,7 +6,7 @@ import { formatarDuracao } from '../utils/formatadores.js'
 // Uma placa: rótulo pequeno (com um pontinho da cor do status) + número grande.
 function Placa({ rotulo, valor, faixa }) {
   return (
-    <div className="rounded-xl border border-linha bg-white p-4 shadow-suave">
+    <div className="rounded-xl border border-agente-linha bg-white p-4 shadow-suave">
       <p className="flex items-center gap-2 font-mono text-[11px] tracking-wider text-tinta-2 uppercase">
         <span aria-hidden="true" className={`h-2 w-2 rounded-full ${faixa}`} />
         {rotulo}
@@ -30,12 +30,12 @@ function Indicadores({ dados }) {
         <Placa rotulo="Abertos" valor={dados.abertos} faixa="bg-critico" />
         <Placa rotulo="Em atendimento" valor={dados.emAtendimento} faixa="bg-atencao" />
         <Placa rotulo="Resolvidos" valor={dados.resolvidos} faixa="bg-normal" />
-        <Placa rotulo="Tempo médio p/ resolver" valor={formatarDuracao(dados.tempoMedioMin)} faixa="bg-asfalto" />
+        <Placa rotulo="Tempo médio p/ resolver" valor={formatarDuracao(dados.tempoMedioMin)} faixa="bg-agente" />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         {/* Barras simples: largura proporcional ao número de chamados de cada tipo */}
-        <div className="border border-linha rounded-lg bg-white p-3">
+        <div className="rounded-xl border border-agente-linha bg-white p-3">
           <h3 className="mb-2 text-sm font-semibold">Chamados por tipo</h3>
           <ul className="space-y-2">
             {TIPOS_DE_PROBLEMA.map(({ id: tipo, nome }) => {
@@ -43,8 +43,8 @@ function Indicadores({ dados }) {
               return (
                 <li key={tipo} className="grid grid-cols-[7rem_1fr_2rem] items-center gap-2 text-sm">
                   <span className="font-semibold">{nome}</span>
-                  <span className="h-2 overflow-hidden rounded-full bg-linha">
-                    <span className="block h-full rounded-full bg-tinta" style={{ width: `${(quantidade / maior) * 100}%` }} />
+                  <span className="h-2 overflow-hidden rounded-full bg-agente-fundo">
+                    <span className="block h-full rounded-full bg-agente" style={{ width: `${(quantidade / maior) * 100}%` }} />
                   </span>
                   <span className="text-right font-medium tabular-nums">{quantidade}</span>
                 </li>
@@ -53,7 +53,7 @@ function Indicadores({ dados }) {
           </ul>
         </div>
 
-        <div className="border border-linha rounded-lg bg-white p-3">
+        <div className="rounded-xl border border-agente-linha bg-white p-3">
           <h3 className="mb-2 text-sm font-semibold">Quem abriu</h3>
           <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
             <dt className="font-semibold">Automático (sensores)</dt>

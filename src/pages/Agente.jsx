@@ -1,85 +1,55 @@
-// Tela do Agente da subprefeitura: indicadores, mapa com os chamados no ponto exato
-// do problema e a fila de atendimento (filtros, mudança de status e exclusão).
+// Tela do Agente da subprefeitura: indicadores e a fila de atendimento.
+// A fila mostra os chamados em linhas, um embaixo do outro, com filtros.
+// Clicar num chamado abre o detalhe com um mapa pequeno do ponto do problema,
+// a mudança de status e a exclusão.
+// Cores: azul institucional (tokens "agente" no index.css), diferente da tela do cidadão.
 import { useState } from 'react'
-import LetreiroLED from '../components/LetreiroLED.jsx'
 import Indicadores from '../components/Indicadores.jsx'
 import FiltrosChamados from '../components/FiltrosChamados.jsx'
 import ListaChamados from '../components/ListaChamados.jsx'
-import MapaBase from '../components/MapaBase.jsx'
-import CamadaChamados from '../components/CamadaChamados.jsx'
-import FocoNoMapa from '../components/FocoNoMapa.jsx'
-import StatusPicto from '../components/StatusPicto.jsx'
-import { RUAS } from '../data/ruas.js'
 import { filtrarChamados, ordenarFila, FILTROS_VAZIOS } from '../utils/chamados.js'
 import { calcularIndicadores } from '../utils/indicadores.js'
 
 function Agente({ chamados, carregando, erro, aoRecarregar, aoMudarStatus, aoExcluir }) {
   const [filtros, setFiltros] = useState(FILTROS_VAZIOS)
-  const [selecionadoId, setSelecionadoId] = useState(null) // chamado em destaque
-  const [foco, setFoco] = useState(null) // [lat, lng] para onde o mapa deve ir
+  const [abertoId, setAbertoId] = useState(null) // chamado com o detalhe aberto, ou null
 
-  // A fila mostra primeiro o que está sem resolver e com prioridade mais alta.
+  // A fila mostra os chamados mais recentes primeiro.
   const fila = ordenarFila(filtrarChamados(chamados, filtros))
   const indicadores = calcularIndicadores(chamados)
-  const semResolver = indicadores.abertos + indicadores.emAtendimento
 
-  // Clicou no marcador: destaca o bilhete e rola a fila até ele.
-  function selecionarNoMapa(chamado) {
-    setSelecionadoId(chamado.id)
-    document.getElementById(`bilhete-${chamado.id}`)?.scrollIntoView({ block: 'nearest' })
-  }
-
-  // Clicou em "Ver no mapa" no bilhete: destaca e leva o mapa até o ponto.
-  function verNoMapa(chamado) {
-    setSelecionadoId(chamado.id)
-    setFoco([Number(chamado.lat), Number(chamado.lng)])
+  // Clicar no chamado aberto fecha; clicar em outro abre o outro (um aberto por vez).
+  function alternar(id) {
+    setAbertoId(id === abertoId ? null : id)
   }
 
   return (
-    <div className="space-y-5">
-      <LetreiroLED mensagem={`${semResolver} chamado(s) sem resolver.`} info="Painel do agente" />
-
+    <div className="space-y-6">
       <Indicadores dados={indicadores} />
 
-      <div className="grid overflow-hidden rounded-2xl border border-linha bg-white shadow-suave lg:grid-cols-[minmax(0,1fr)_420px]">
-        <div className="flex flex-col">
-          <div className="h-[50vh] min-h-[320px] lg:h-[680px]">
-            <MapaBase ruas={RUAS} rotulo="Mapa dos chamados">
-              <CamadaChamados chamados={fila} selecionadoId={selecionadoId} aoSelecionar={selecionarNoMapa} />
-              <FocoNoMapa local={foco} />
-            </MapaBase>
-          </div>
-          {/* Legenda do mapa do agente: a forma mostra o status */}
-          <ul className="flex flex-wrap gap-x-5 gap-y-1 border-t border-linha px-3 py-2 text-sm">
-            <li className="flex items-center gap-1.5"><StatusPicto estado="critico" tamanho={16} /> Aberto</li>
-            <li className="flex items-center gap-1.5"><StatusPicto estado="atencao" tamanho={16} /> Em atendimento</li>
-            <li className="flex items-center gap-1.5"><StatusPicto estado="normal" tamanho={16} /> Resolvido</li>
-          </ul>
+      <section aria-labelledby="titulo-fila" className="space-y-4">
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 id="titulo-fila" className="text-2xl font-semibold tracking-tight">
+            Fila de atendimento
+          </h2>
+          <p className="text-sm font-semibold text-agente" role="status">
+            {fila.length} de {chamados.length} chamados
+          </p>
         </div>
 
-        <section
-          aria-labelledby="titulo-fila"
-          className="space-y-4 border-t border-linha p-4 lg:h-[722px] lg:overflow-y-auto lg:border-t-0 lg:border-l"
-        >
-          <div className="flex items-baseline justify-between gap-2">
-            <h2 id="titulo-fila" className="text-2xl font-semibold tracking-tight">Fila de atendimento</h2>
-            <p className="text-sm font-semibold" role="status">{fila.length} de {chamados.length}</p>
-          </div>
+        <FiltrosChamados filtros={filtros} aoMudar={setFiltros} />
 
-          <FiltrosChamados filtros={filtros} aoMudar={setFiltros} />
-
-          <ListaChamados
-            chamados={fila}
-            carregando={carregando}
-            erro={erro}
-            aoTentarDeNovo={aoRecarregar}
-            aoMudarStatus={aoMudarStatus}
-            aoExcluir={aoExcluir}
-            selecionadoId={selecionadoId}
-            aoVerNoMapa={verNoMapa}
-          />
-        </section>
-      </div>
+        <ListaChamados
+          chamados={fila}
+          carregando={carregando}
+          erro={erro}
+          aoTentarDeNovo={aoRecarregar}
+          aoMudarStatus={aoMudarStatus}
+          aoExcluir={aoExcluir}
+          abertoId={abertoId}
+          aoAbrir={alternar}
+        />
+      </section>
     </div>
   )
 }

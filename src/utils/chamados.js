@@ -84,18 +84,10 @@ export function filtrarChamados(chamados, filtros) {
     .sort((a, b) => (a.criadoEm < b.criadoEm ? 1 : -1))
 }
 
-// Ordem da fila do agente: primeiro o que está sem resolver, depois a prioridade
-// (alta, média, baixa) e, empatando, o chamado mais antigo primeiro (espera há mais tempo).
-const ORDEM_STATUS = { aberto: 0, em_atendimento: 1, resolvido: 2 }
-const ORDEM_PRIORIDADE = { alta: 0, media: 1, baixa: 2 }
-
+// Ordem da fila do agente: o chamado mais recente primeiro e o mais antigo por último
+// (pela data de criação). A data é ISO (ex.: '2026-11-17T10:44:00Z'), então comparar o texto já funciona.
 export function ordenarFila(chamados) {
-  return [...chamados].sort(
-    (a, b) =>
-      (ORDEM_STATUS[a.status] ?? 3) - (ORDEM_STATUS[b.status] ?? 3) ||
-      (ORDEM_PRIORIDADE[a.prioridade] ?? 3) - (ORDEM_PRIORIDADE[b.prioridade] ?? 3) ||
-      (a.criadoEm < b.criadoEm ? -1 : 1),
-  )
+  return [...chamados].sort((a, b) => (a.criadoEm > b.criadoEm ? -1 : a.criadoEm < b.criadoEm ? 1 : 0))
 }
 
 // Texto do local do chamado. Chamados antigos podem não ter o ponto.

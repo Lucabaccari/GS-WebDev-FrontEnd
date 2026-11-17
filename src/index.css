@@ -16,6 +16,13 @@
   --color-linha-forte: #C8C5BD;/* bordas em destaque e hover */
   --color-coral: #F0634C;      /* destaque da marca (linha do "pulso"); só em ícones, linhas e no fundo escuro */
 
+  /* Visão do Agente: azul institucional, para a tela da subprefeitura ser bem diferente da do cidadão
+     (texto branco sobre o azul tem contraste de 8:1) */
+  --color-agente: #1D4E89;
+  --color-agente-escuro: #143A68;
+  --color-agente-fundo: #EDF2F8;
+  --color-agente-linha: #C9D6E8;
+
   /* Nomes antigos, mantidos para o código que ainda usa */
   --color-concreto: #F4F3F0;
   --color-asfalto: #15171B;

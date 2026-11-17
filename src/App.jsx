@@ -88,8 +88,8 @@ function App() {
         Pular para o conteúdo
       </a>
 
-      {/* No Início o topo é escuro; nas outras telas, claro. */}
-      <Cabecalho abas={ABAS} abaAtiva={aba} aoTrocarAba={irPara} escuro={aba === 'inicio'} />
+      {/* O topo muda de cor em cada tela: escuro no Início, claro no Cidadão e azul no Agente. */}
+      <Cabecalho abas={ABAS} abaAtiva={aba} aoTrocarAba={irPara} tema={aba === 'inicio' ? 'escuro' : aba === 'agente' ? 'agente' : 'claro'} />
       {!online && <BannerOffline />}
 
       {aba === 'inicio' ? (
@@ -98,37 +98,40 @@ function App() {
           <Inicio frota={frota} pontos={pontos} aoIr={irPara} />
         </main>
       ) : (
-      <div className="mx-auto max-w-7xl space-y-5 p-4">
-        {/* role="tabpanel" liga este conteúdo à aba selecionada (acessibilidade) */}
-        <main id="conteudo" tabIndex={-1} role="tabpanel" aria-labelledby={`aba-${aba}`}>
-          {aba === 'cidadao' ? (
-            <Cidadao ruas={ruas} pontos={pontos} frota={frota} chamados={chamados} aoCriarChamado={criar} />
-          ) : (
-            <Agente
-              chamados={chamados}
-              carregando={carregando}
-              erro={erro}
-              aoRecarregar={carregar}
-              aoMudarStatus={mudarStatus}
-              aoExcluir={excluir}
-            />
-          )}
-        </main>
+        // No Agente, o fundo da página fica azul-claro (visão da subprefeitura).
+        <div className={aba === 'agente' ? 'min-h-[calc(100vh-72px)] bg-agente-fundo' : ''}>
+          <div className="mx-auto max-w-7xl space-y-5 p-4">
+            {/* role="tabpanel" liga este conteúdo à aba selecionada (acessibilidade) */}
+            <main id="conteudo" tabIndex={-1} role="tabpanel" aria-labelledby={`aba-${aba}`}>
+              {aba === 'cidadao' ? (
+                <Cidadao ruas={ruas} pontos={pontos} frota={frota} aoCriarChamado={criar} />
+              ) : (
+                <Agente
+                  chamados={chamados}
+                  carregando={carregando}
+                  erro={erro}
+                  aoRecarregar={carregar}
+                  aoMudarStatus={mudarStatus}
+                  aoExcluir={excluir}
+                />
+              )}
+            </main>
 
-        {/* Modo demonstração: fica no fim da página e começa fechado,
-            para não parecer parte do produto. */}
-        <ControlesDemo
-          passagem={Math.min(...frota.map((o) => o.passagem))}
-          pausado={pausado}
-          aoPausar={() => setPausado(!pausado)}
-          aoAvancar={() => avancar(15000)}
-          velocidade={velocidade}
-          aoMudarVelocidade={setVelocidade}
-          bloqueado={!online}
-          automaticoLigado={automaticoLigado}
-          aoAlternarAutomatico={() => setAutomaticoLigado(!automaticoLigado)}
-        />
-      </div>
+            {/* Modo demonstração: fica no fim da tela do Cidadão, onde os ônibus andam no mapa. */}
+            {aba === 'cidadao' && (
+              <ControlesDemo
+                pausado={pausado}
+                aoPausar={() => setPausado(!pausado)}
+                aoAvancar={() => avancar(15000)}
+                velocidade={velocidade}
+                aoMudarVelocidade={setVelocidade}
+                bloqueado={!online}
+                automaticoLigado={automaticoLigado}
+                aoAlternarAutomatico={() => setAutomaticoLigado(!automaticoLigado)}
+              />
+            )}
+          </div>
+        </div>
       )}
     </>
   )

@@ -256,7 +256,7 @@ Regras que seguimos:
   - Elementos visuais no "Por dentro" que ajudem a entender o fluxo do negócio.
   - Cartões da demonstração com uma cor cada.
   - Depois: o "+15°" do problema estava grande demais; e o quadro do simulador encolhia depois da etapa 1. Tirar o botão que levava à demo na etapa 4.
-- **Ajustes finais:** o "+15°" saiu do fundo (vazado gigante) e virou um rótulo pequeno coral entre os dois termômetros ("+15° diferença"). O palco do simulador ganhou altura mínima igual à da etapa 1 (conta com a proporção 16:9 da foto), e a altura ficou igual em todas as etapas (medido em 1024 e 1440 px). Na etapa 4 ficou só o "Recomeçar". Na etapa 1, as leituras passaram a aparecer uma por vez (a cada 0,9 s, com "lendo…" na vez de cada uma); o texto do 1º alerta e o "Próxima etapa" só aparecem depois da 4ª. Na etapa 3, o bilhete ganhou o ícone do tipo do problema (componente novo `IconeProblema`: termômetro com sol, poste apagado, buraco, nuvem de fumaça e alfinete com "?" para "Outros"), conferido nos 5 tipos e no chamado automático.
+- **Ajustes finais:** o "+15°" saiu do fundo (vazado gigante) e virou um rótulo pequeno coral entre os dois termômetros ("+15° diferença"). O palco do simulador ganhou altura mínima igual à da etapa 1 (conta com a proporção 16:9 da foto), e a altura ficou igual em todas as etapas (medido em 1024 e 1440 px). Na etapa 4 ficou só o "Recomeçar". Na etapa 1, as leituras passaram a aparecer uma por vez (a cada 0,9 s, com "lendo…" na vez de cada uma); o texto do 1º alerta e o "Próxima etapa" só aparecem depois da 4ª. Na etapa 3, o bilhete ganhou o ícone do tipo do problema (componente novo `IconeProblema`: termômetro com sol, poste apagado, buraco, nuvem de fumaça e alfinete com "?" para "Outros"), conferido nos 5 tipos e no chamado automático. Depois do commit, as etapas da barra lateral passaram a dividir a altura toda dela no computador (cada uma com número maior, título e a situação: "Agora", "Feita" ou "Bloqueada: termine a anterior"); no celular continuam como lista compacta. A caixa do simulador passava da altura da tela (737 a 883 px); a foto ganhou largura máxima de 480 px, os espaços e o título diminuíram, e a altura ficou fixa em 632 px (medida a etapa mais alta), igual em todas as etapas e em 1024 e 1440 px.
 - **O que a IA fez:**
   - **Regra do 3º alerta:** `PASSAGENS_PARA_CHAMADO = 3` em `utils/regras.js`. O seed passou a usar a mesma constante (texto e número de passagens), e os textos do Início também (`data/inicio.js`). README, CLAUDE.md, PLANO-DE-COMMITS.md e comentários de `App.jsx` e `ControlesDemo` foram atualizados.
   - **Topo:** sem foto e sem véu, fundo `tinta`. A linha do pulso se desenhava com tracejado de tamanho fixo e não chegava ao fim em telas largas. Agora ela se revela com uma "cortina" (`clip-path`), que funciona em qualquer largura.
@@ -268,8 +268,78 @@ Regras que seguimos:
 - **O que mudamos:** _(completar)_
 - **Como validamos:**
   - Teste da regra (script no computador): 1º e 2º alertas não abrem; o 3º abre um chamado com "Leitura crítica em 3 passagens seguidas."; não duplica se já houver um aberto; o 4º não abre de novo; uma leitura normal zera a contagem.
-  - O seed não foi rodado de novo: os chamados que já estão na API ainda dizem "6 passagens" até rodar `npm run seed`.
+  - Depois do commit, o seed foi rodado com `--limpar` (com a aprovação do aluno): a API ficou com os 6 chamados de exemplo, e os automáticos dizem "3 passagens". (A primeira tentativa, sem `--limpar`, só somou os exemplos aos antigos.)
   - No navegador, o simulador foi percorrido pelos 2 jeitos (automático até o 3º alerta, depois "Testar o outro jeito" e o aviso do cidadão), e a etapa 4 deu o aviso na opção A e liberou o botão na B.
   - A linha do pulso mede a largura toda da tela. "Quem participa" e as fontes da seção do problema não aparecem mais.
   - No celular (375 px), nada vaza e os botões têm 44 px ou mais. Console sem erros depois de recarregar.
   - `npm run build` e `npm run lint` sem erros.
+
+### Sessão 17: tela do Cidadão mais limpa
+
+- **O que o aluno pediu:**
+  - No letreiro, trocar o ponto que pisca por um ícone de estado (alerta, atenção...).
+  - Escolha das ruas sem rolar para o lado, com só o intervalo de números do ônibus embaixo do nome.
+  - Tirar a legenda do mapa, os "Últimos avisos" e o bloco do modo demonstração da tela do Cidadão.
+  - Em "As 6 ruas agora", alinhar as partes de dentro dos cartões lado a lado e usar os ícones de tipo de problema que já existiam.
+- **O que a IA fez:**
+  - **`LetreiroLED`:** ganhou a prop opcional `estado`. No Cidadão, ela recebe o estado do alerta mais urgente (`alertaMaisUrgente`) e mostra o `StatusPicto` (octógono, losango ou visto) sobre um fundo branco. Depois de "Aviso recebido", mostra o visto. No Agente, sem `estado`, continua o pontinho.
+  - **`SeletorVisao`:** grade fixa (2 colunas no celular, 4 no tablet e as 7 opções numa linha no computador), sem rolagem. Embaixo do nome, só o intervalo (ex.: "nº 1301 a 1400"); o leitor de tela ouve "Ônibus no ...".
+  - **Saíram do Cidadão:** a `Legenda` (componente apagado, só era usado ali), "Últimos avisos" e o `ControlesDemo`, que agora aparece só na tela do Agente (lá continua o liga/desliga do chamado automático).
+  - **`PainelTodas`:** cada cartão tem 5 partes (nome, resumo, ocorrências, ônibus e botão) e usa `grid-rows-subgrid`: a mesma parte fica na mesma altura em todos os cartões da linha. Cada ocorrência mostra o `IconeProblema` do tipo, o nome, o lugar e o estado (pictograma + texto). Rua sem problema mostra "Nenhuma ocorrência agora."
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - No navegador (1024 px): o seletor não rola, as 7 opções ficam na mesma linha e com a mesma altura; nos cartões, as 5 partes começam na mesma altura que as do cartão ao lado.
+  - O letreiro mostra o ícone e não tem mais o ponto que pisca; legenda, "Últimos avisos" e demonstração não aparecem no Cidadão; no Agente, o modo demonstração continua.
+  - No celular (375 px), a página não vaza para o lado e os botões têm 44 px ou mais. (O seletor de camadas, por cima do mapa, continua rolando para o lado dentro do mapa, como antes.)
+  - Console sem erros numa aba nova, no Cidadão e no Agente. `npm run build` e `npm run lint` sem erros.
+- **Segunda rodada (pedido do aluno):**
+  - O letreiro do topo do Cidadão saiu. Ele só aparece por 5 segundos depois de enviar um aviso ("Aviso recebido"). Com isso, `utils/mensagens.js` (as frases do letreiro) ficou sem uso e foi apagado.
+  - Ícones novos no `IconeProblema`: **pavimento** virou um cone de sinalização laranja no asfalto rachado (o buraco visto de cima não era claro) e **ar** virou uma fábrica com a chaminé soltando fumaça (a nuvem com pontinhos parecia chuva).
+  - Nos cartões das 6 ruas, saiu o ícone de estado ao lado do nome; o estado aparece só em cada ocorrência.
+  - Conferido no navegador (cartões e ícones na tela, sem letreiro no topo), console sem erros, lint e build sem erros.
+
+### Sessão 18: tour guiado na tela do Cidadão
+
+- **O que o aluno pediu:** um tour (tutorial) na primeira visita à tela do Cidadão, com no máximo 6 passos e a opção de pular, para quem visita entender tudo o que existe na tela.
+- **O que a IA fez:**
+  - **`useTour` (hook novo):** guarda o passo e se o tour está aberto. Abre sozinho só se o navegador não tiver a marca `pulso-tour-cidadao` (lida e gravada pelo `services/cache.js`, com try/catch). Pular ou concluir grava a marca.
+  - **`data/tour.js`:** os 6 passos. 1) Boas-vindas, com os 3 estados (visto, losango e octógono; faz o papel da legenda que saiu do mapa); 2) escolha da rua; 3) camadas; 4) mapa; 5) "Avisar problema"; 6) resumo das ruas.
+  - **`TourGuiado` (componente novo):** escurece a tela e destaca o elemento do passo com uma moldura coral (uma sombra enorme em volta faz o "furo" iluminado). O elemento é achado pelo atributo `data-tour`. O cartão mostra "Passo X de 6", bolinhas do progresso, título, texto e os botões "Pular tour", "Voltar" e "Próximo" ("Concluir" no último). Ele fica embaixo ou em cima do elemento; no celular, no pé da tela. Esc pula, o foco do teclado vai para o cartão a cada passo, e a página não recebe cliques enquanto o tour está aberto.
+  - **Tela do Cidadão:** marcas `data-tour` nos elementos e o botão "Como usar" no canto de baixo do mapa, que volta para "Todas as ruas" e abre o tour de novo.
+- **Correções no caminho:**
+  - A medição da posição usava `requestAnimationFrame` e a rolagem era suave; no painel do navegador em segundo plano, os dois ficam parados e o destaque não aparecia. Passou a medir com `setTimeout` e a rolar direto (sem animação); o destaque desliza até o lugar novo.
+  - No celular, o cartão de boas-vindas ficava estreito: ganhou largura fixa. Elementos mais altos que a tela (mapa e resumo) passaram a ser mostrados a partir do começo.
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - No navegador (1024 px e 375 px), o tour foi percorrido inteiro: em todos os passos o cartão fica dentro da tela e o elemento destacado aparece. Nos elementos baixos, o cartão não cobre o destaque; no computador, no mapa e no resumo (mais altos que a tela), o cartão fica no canto de baixo, por cima.
+  - "Voltar", "Concluir", "Pular tour" e Esc fecham ou voltam como esperado; "Como usar" reabre no passo 1; ao recarregar depois de ver, o tour não abre sozinho.
+  - Botões do tour com 44 px ou mais. Console sem erros. `npm run build` e `npm run lint` sem erros.
+- **Depois (pedido do aluno):** ao enviar um aviso, a tela rola até o letreiro "Aviso recebido" (antes, quem estava com o formulário lá embaixo não via a confirmação). Testado no navegador com a resposta da API simulada dentro da página (nenhum chamado foi criado no MockAPI): a tela estava a 745 px do topo, voltou e o letreiro apareceu inteiro.
+
+### Sessão 19: tela do Agente com cara própria
+
+- **O que o aluno pediu:**
+  - Cores principais diferentes da tela do cidadão, para mostrar 2 visões diferentes.
+  - Tirar o bloco abaixo da navegação (o letreiro "X chamados sem resolver", repetido nos indicadores) e o mapa grande.
+  - Chamados em linhas, um embaixo do outro, mantendo o filtro, com o ícone do tipo do problema.
+  - Ao clicar num chamado, um mapa pequeno com o ponto onde o problema foi reportado.
+  - Tirar o modo demonstração do Agente. A IA perguntou o que fazer com o chamado automático, que só é ligado ali; o aluno pediu para levar o modo demonstração para o painel do cidadão, com um visual que pareça interativo (antes parecia só um bloco informativo).
+- **O que a IA fez:**
+  - **Cores:** tokens novos no `index.css` (`agente` #1D4E89, `agente-escuro`, `agente-fundo` e `agente-linha`). O `Cabecalho` ganhou a prop `tema` (claro, escuro ou agente): no Agente o topo fica azul e a página, azul-clara. Indicadores, filtros, bordas e botões de status usam o azul.
+  - **`BilheteChamado`:** virou um bilhete deitado. A linha inteira é um botão (`aria-expanded`): canhoto com o `IconeProblema`, picote tracejado, protocolo e data, tipo e local, descrição, prioridade e origem, carimbo do status e uma setinha. Aberto, mostra o mapa pequeno, os dados, "Dados simulados", a mudança de status e a exclusão com confirmação. Só um chamado fica aberto por vez.
+  - **`MapaDoChamado` (componente novo):** mapa pequeno só com a rua do chamado e o marcador do status no ponto do problema. Sem local guardado, mostra um aviso.
+  - **`FocoNoMapa`:** ganhou as props `zoom` e `animar`. No mapa pequeno vai direto ao ponto (zoom 16) e centraliza de novo quando o mapa muda de tamanho.
+  - **`FiltrosChamados`:** numa linha só no computador (2 colunas no celular).
+  - **`ControlesDemo`:** saiu do Agente e foi para o fim do Cidadão. Virou um painel escuro: botão coral de play/pausa com ícone, "+15 s", velocidades numa pílula (a escolhida fica branca) e uma chave liga/desliga (`role="switch"`) para o chamado automático, com a situação atual em fonte de letreiro.
+- **Correções no caminho:**
+  - O ponto do mapa pequeno ficava fora do centro: o "voo" do mapa não termina com o painel do navegador oculto, e o mapa muda de tamanho logo depois de aparecer. Passou a ir direto e a recentralizar a cada mudança de tamanho.
+  - Os botões de velocidade tinham 36 px e passaram para 44 px.
+- **O que mudamos:** _(completar)_
+- **Como validamos:**
+  - No navegador: topo azul (rgb 29, 78, 137) e fundo azul-claro no Agente; sem letreiro, sem mapa grande e sem modo demonstração; os chamados em linhas, cada um com o ícone do tipo; abrir um chamado mostra o mapa pequeno com o marcador exatamente no centro (diferença de 0 px, em 2 chamados), e abrir outro fecha o primeiro.
+  - No Cidadão, a chave do chamado automático liga e desliga, a velocidade 10x muda a situação para "1 passagem = 18 s".
+  - No celular (375 px), nada vaza nas duas telas e os botões têm 44 px ou mais. Console sem erros numa aba nova. `npm run build` e `npm run lint` sem erros.
+- **Ajustes seguintes (pedido do aluno):**
+  - A fila passou a ser ordenada pela data de criação: o mais recente primeiro e o mais antigo por último (`ordenarFila`, antes era por status e prioridade).
+  - A prioridade "pulava" quando o status mudava, porque o carimbo ("Em atendimento" é mais largo) ficava numa coluna de largura automática. A coluna do carimbo ganhou largura fixa no computador. Conferido no navegador: a prioridade começa na mesma posição em todas as linhas (Aberto, Em atendimento e Resolvido).
+  - No modo demonstração, saiu o ponto que piscava, e a informação do canto ficou só "1 passagem = X s" (a prop `passagem`, que deixou de ser usada, saiu do componente).
