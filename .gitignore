@@ -25,3 +25,6 @@ dist-ssr
 
 # Variáveis de ambiente (nunca commitar)
 .env
+
+# Plano de commits do grupo (arquivo de trabalho, fica só no computador)
+PLANO-DE-COMMITS.md

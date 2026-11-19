@@ -31,7 +31,7 @@ O aluno é do 1º ano e precisa **explicar cada parte do código ao professor**.
 - **Separação de responsabilidades:** lógica de negócio e acesso a dados fora dos componentes visuais.
 - **API externa com CRUD completo** (criar, consultar, atualizar, excluir).
 - Funcionalidades reais ligadas ao tema. **Não pode ser só uma interface estática.**
-- Git com no mínimo 15 commits significativos. O `PLANO-DE-COMMITS.md` detalha o primeiro lote de 10 e prevê os seguintes.
+- Git com no mínimo 15 commits significativos. O `PLANO-DE-COMMITS.md` (arquivo local, fora do Git) detalha o primeiro lote de 10 e prevê os seguintes.
 - `README.md` (descrição, pré-requisitos, instalação e execução) e `AI.md` na raiz.
 - Deploy publicado.
 
@@ -126,7 +126,7 @@ Conceito: interface **fina e escura nos destaques**, como no vídeo do Pulso: to
 
 - Comandos: `npm install`, `npm run dev`, `npm run build`, `npm run lint`.
 - **Não faça `git commit` sozinho.** Mostre as alterações, proponha a mensagem de commit e espere eu aprovar.
-- Mensagens de commit no padrão `tipo(escopo): descrição`, em português (veja `PLANO-DE-COMMITS.md`). Siga a ordem do plano.
+- Mensagens de commit no padrão `tipo(escopo): descrição`, em português (veja o `PLANO-DE-COMMITS.md`, arquivo local fora do Git).
 - Um commit = uma ideia pequena. Nunca commite `.env`, `node_modules/` ou `dist/`.
 - Antes de propor o commit: rode o app ou o build e confirme que não há erro.
 - Ao fim de cada sessão, me entregue um resumo para o `AI.md`: o que a IA sugeriu, o que eu mudei e como validei.
