@@ -13,7 +13,7 @@ Disciplinas: **Front-End Design** e **Web Development**.
 | | |
 |---|---|
 | **Problema** | Calor, ruas escuras, buracos e poluição afetam quem anda e pega ônibus em São Paulo, mas quase nunca são medidos trecho a trecho. |
-| **Solução** | **Pulso**: caixas de sensores no teto dos ônibus medem calor, iluminação, buracos e poluição em **pontos de medição** ao longo de cada rua, a cada passagem. |
+| **Solução** | **Pulso**: caixas de sensores no teto dos ônibus medem calor, iluminação, buracos e poluição em **pontos de medição** ao longo de cada rua, a cada passagem. Reportam à prefeitura ou subprefeitura, com objetivo de solucionar o determinado problema |
 | **Quem usa** | **Cidadão**: vê no mapa onde exatamente está o problema e avisa com o botão "Avisar problema". **Agente da subprefeitura**: vê os chamados no mapa e atende pela fila de prioridade. |
 | **Regra principal** | No 3º alerta seguido (3 passagens com o mesmo resultado crítico no mesmo ponto), o sistema abre um chamado sozinho, já com o local. |
 
@@ -98,18 +98,7 @@ src/
 
 Componentes não chamam a API direto: quem faz isso são os `services/`, usados pelos `hooks/`.
 
-## Deploy
 
-O app é publicado na [Vercel](https://vercel.com), ligada a este repositório do GitHub:
-
-1. Na Vercel, clique em **Add New → Project** e importe o repositório `GS-WebDev-FrontEnd`.
-2. A Vercel reconhece o Vite sozinha: comando `npm run build`, pasta `dist`.
-3. Em **Environment Variables**, crie `VITE_API_URL` com o mesmo valor do `.env.example`.
-4. Clique em **Deploy**. A cada `git push` na `main`, a Vercel publica de novo.
-
-Link do deploy: **https://gs-web-dev-front-end-nu.vercel.app**
-
-Na Vercel, a variável `VITE_API_URL` (a mesma do `.env.example`) fica em **Settings → Environment Variables**. O Vite coloca o valor dela no código na hora do build, então, se ela mudar, é preciso publicar de novo.
 
 ## Limitações (é uma demonstração)
 
